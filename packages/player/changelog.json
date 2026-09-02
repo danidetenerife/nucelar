@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-02T22:35",
+    "description": "Migrated Android audio playback to a 100% native MediaPlayer engine in the Foreground Service with a valid vector notification icon (ic_stat_aurora), enabling uninterrupted background playback and instant lockscreen widget interaction.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Android",
+        "color": "green"
+      },
+      {
+        "label": "Native Audio",
+        "color": "cyan"
+      },
+      {
+        "label": "Lockscreen Widget",
+        "color": "purple"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T22:20",
     "description": "Implemented Spotify-style interactive lockscreen and notification media controls: enabled native Android seekbar by broadcasting track duration, added zero-latency optimistic playback toggling, lockscreen album artwork, and full transport controls.",
     "type": "feature",

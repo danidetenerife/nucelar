@@ -208,6 +208,70 @@ public class NativeMediaSessionPlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod
+    public void playStream(PluginCall call) {
+        String url = call.getString("url", "");
+        Double posDouble = call.getDouble("positionMs");
+        long pos = posDouble != null ? posDouble.longValue() : 0;
+        AudioForegroundService service = AudioForegroundService.getInstance();
+        if (service != null) {
+            service.playStream(url, pos);
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void pauseStream(PluginCall call) {
+        AudioForegroundService service = AudioForegroundService.getInstance();
+        if (service != null) {
+            service.pauseStream();
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void resumeStream(PluginCall call) {
+        AudioForegroundService service = AudioForegroundService.getInstance();
+        if (service != null) {
+            service.resumeStream();
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void seekStream(PluginCall call) {
+        Double posDouble = call.getDouble("positionMs");
+        long pos = posDouble != null ? posDouble.longValue() : 0;
+        AudioForegroundService service = AudioForegroundService.getInstance();
+        if (service != null) {
+            service.seekStream(pos);
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getPlaybackStatus(PluginCall call) {
+        AudioForegroundService service = AudioForegroundService.getInstance();
+        JSObject ret = new JSObject();
+        if (service != null && service.getMediaPlayer() != null) {
+            try {
+                android.media.MediaPlayer mp = service.getMediaPlayer();
+                ret.put("isPlaying", mp.isPlaying());
+                ret.put("positionMs", mp.getCurrentPosition());
+                ret.put("durationMs", mp.getDuration());
+            } catch (Throwable t) {
+                ret.put("isPlaying", false);
+                ret.put("positionMs", 0);
+                ret.put("durationMs", 0);
+            }
+        } else {
+            ret.put("isPlaying", false);
+            ret.put("positionMs", 0);
+            ret.put("durationMs", 0);
+        }
+        call.resolve(ret);
+    }
+
     public void notifyMediaAction(String action, long seekPositionMs) {
         JSObject data = new JSObject();
         data.put("action", action);

@@ -21,6 +21,7 @@ import androidx.media.session.MediaButtonReceiver;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
+import android.media.MediaPlayer;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -47,6 +48,8 @@ public class AudioForegroundService extends Service {
     private Bitmap currentArtworkBitmap = null;
     private long currentDurationMs = 0;
     private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
+    private MediaPlayer mediaPlayer;
+    private String currentStreamUrl = "";
 
     private static AudioForegroundService instance;
 
@@ -58,6 +61,83 @@ public class AudioForegroundService extends Service {
 
     public static AudioForegroundService getInstance() {
         return instance;
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    public synchronized void playStream(String url, long positionMs) {
+        if (url == null || url.isEmpty()) return;
+        try {
+            if (mediaPlayer != null && url.equals(currentStreamUrl)) {
+                if (!mediaPlayer.isPlaying()) {
+                    if (positionMs > 0 && Math.abs(mediaPlayer.getCurrentPosition() - positionMs) > 2000) {
+                        mediaPlayer.seekTo((int) positionMs);
+                    }
+                    mediaPlayer.start();
+                    setOptimisticPlaybackState(true);
+                }
+                return;
+            }
+
+            currentStreamUrl = url;
+            if (mediaPlayer == null) {
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build());
+                mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+            } else {
+                mediaPlayer.reset();
+            }
+
+            mediaPlayer.setOnPreparedListener(mp -> {
+                if (positionMs > 0) {
+                    mp.seekTo((int) positionMs);
+                }
+                mp.start();
+                setOptimisticPlaybackState(true);
+                notifyJsMediaAction("playing");
+            });
+
+            mediaPlayer.setOnCompletionListener(mp -> {
+                setOptimisticPlaybackState(false);
+                notifyJsMediaAction("nexttrack");
+            });
+
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                notifyJsMediaAction("error");
+                return true;
+            });
+
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync();
+        } catch (Throwable t) {
+            // ignore
+        }
+    }
+
+    public synchronized void pauseStream() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            setOptimisticPlaybackState(false);
+        }
+    }
+
+    public synchronized void resumeStream() {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+            setOptimisticPlaybackState(true);
+        }
+    }
+
+    public synchronized void seekStream(long positionMs) {
+        if (mediaPlayer != null) {
+            mediaPlayer.seekTo((int) positionMs);
+            setOptimisticPlaybackState(mediaPlayer.isPlaying());
+        }
     }
 
     @Override
@@ -105,12 +185,14 @@ public class AudioForegroundService extends Service {
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onPlay() {
+                resumeStream();
                 setOptimisticPlaybackState(true);
                 notifyJsMediaAction("play");
             }
 
             @Override
             public void onPause() {
+                pauseStream();
                 setOptimisticPlaybackState(false);
                 notifyJsMediaAction("pause");
             }
@@ -127,29 +209,14 @@ public class AudioForegroundService extends Service {
 
             @Override
             public void onStop() {
+                pauseStream();
                 setOptimisticPlaybackState(false);
                 notifyJsMediaAction("stop");
             }
 
             @Override
             public void onSeekTo(long pos) {
-                PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
-                boolean isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
-                PlaybackStateCompat seekState = new PlaybackStateCompat.Builder()
-                    .setActions(
-                        PlaybackStateCompat.ACTION_PLAY |
-                        PlaybackStateCompat.ACTION_PAUSE |
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
-                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                        PlaybackStateCompat.ACTION_SEEK_TO |
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                        PlaybackStateCompat.ACTION_STOP
-                    )
-                    .setState(isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
-                              pos,
-                              isPlaying ? 1.0f : 0f)
-                    .build();
-                mediaSession.setPlaybackState(seekState);
+                seekStream(pos);
                 NativeMediaSessionPlugin pluginInstance = NativeMediaSessionPlugin.getInstance();
                 if (pluginInstance != null) {
                     pluginInstance.notifyMediaAction("seekto", pos);
@@ -176,7 +243,7 @@ public class AudioForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Notification notification = buildNotification("Nuclear Music Player", "", false);
+        Notification notification = buildNotification("Aurora", "", false);
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
@@ -201,9 +268,21 @@ public class AudioForegroundService extends Service {
                 notifyJsMediaAction("previoustrack");
                 return START_STICKY;
             } else if ("com.nuclearplayer.ACTION_PLAY_PAUSE".equals(action)) {
-                PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
-                boolean isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
+                boolean isPlaying = false;
+                if (mediaPlayer != null) {
+                    try {
+                        isPlaying = mediaPlayer.isPlaying();
+                    } catch (Throwable t) {}
+                } else {
+                    PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
+                    isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
+                }
                 boolean targetPlaying = !isPlaying;
+                if (targetPlaying) {
+                    resumeStream();
+                } else {
+                    pauseStream();
+                }
                 setOptimisticPlaybackState(targetPlaying);
                 notifyJsMediaAction(targetPlaying ? "play" : "pause");
                 return START_STICKY;
@@ -390,9 +469,17 @@ public class AudioForegroundService extends Service {
         updateNotification(title, artist);
     }
 
-    private void setOptimisticPlaybackState(boolean isPlaying) {
-        PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
-        long pos = state != null ? state.getPosition() : 0;
+    public void setOptimisticPlaybackState(boolean isPlaying) {
+        long pos = 0;
+        if (mediaPlayer != null) {
+            try {
+                pos = mediaPlayer.getCurrentPosition();
+            } catch (Throwable t) {}
+        } else {
+            PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
+            pos = state != null ? state.getPosition() : 0;
+        }
+
         PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
             .setActions(
                 PlaybackStateCompat.ACTION_PLAY |
@@ -439,7 +526,7 @@ public class AudioForegroundService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(title.isEmpty() ? "Aurora" : title)
             .setContentText(artist)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_stat_aurora)
             .setContentIntent(contentIntent)
             .setOngoing(true)
             .setSilent(true)
@@ -486,10 +573,6 @@ public class AudioForegroundService extends Service {
         NativeMediaSessionPlugin pluginInstance = NativeMediaSessionPlugin.getInstance();
         if (pluginInstance != null) {
             pluginInstance.notifyMediaAction(action, -1);
-        }
-
-        if ("com.nuclearplayer.ACTION_PREVIOUS".equals(action)) {
-            // handled via plugin
         }
     }
 
@@ -549,6 +632,13 @@ public class AudioForegroundService extends Service {
 
     @Override
     public void onDestroy() {
+        if (mediaPlayer != null) {
+            try {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+            } catch (Throwable t) {}
+            mediaPlayer = null;
+        }
         if (mediaSession != null) {
             mediaSession.setActive(false);
             mediaSession.release();

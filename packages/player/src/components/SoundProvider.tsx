@@ -12,6 +12,7 @@ import { playbackManager } from '../services/playback';
 import { useQueueStore } from '../stores/queueStore';
 import { useSoundStore } from '../stores/soundStore';
 import { errorMessage } from '../utils/errorMessage';
+import { isCapacitorEnvironment } from '../services/universalStore';
 
 const describePlaybackError = (error: Error, t: TFunction): string => {
   if (error instanceof SoundError) {
@@ -86,7 +87,7 @@ export const SoundProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <>
-      {src && status !== 'stopped' && (
+      {src && status !== 'stopped' && !isCapacitorEnvironment() && (
         <Sound
           src={src}
           status={status}

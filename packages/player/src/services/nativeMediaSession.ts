@@ -5,6 +5,12 @@ type BluetoothStateData = {
   deviceName?: string;
 };
 
+type PlaybackStatusData = {
+  isPlaying: boolean;
+  positionMs: number;
+  durationMs: number;
+};
+
 type NativeMediaSessionPluginInterface = {
   updateMetadata(options: {
     title: string;
@@ -17,6 +23,16 @@ type NativeMediaSessionPluginInterface = {
     isPlaying: boolean;
     positionMs: number;
   }): Promise<void>;
+  playStream(options: {
+    url: string;
+    positionMs?: number;
+  }): Promise<void>;
+  pauseStream(): Promise<void>;
+  resumeStream(): Promise<void>;
+  seekStream(options: {
+    positionMs: number;
+  }): Promise<void>;
+  getPlaybackStatus(): Promise<PlaybackStatusData>;
   isBluetoothConnected(): Promise<BluetoothStateData>;
   addListener(
     event: 'mediaAction',
@@ -35,10 +51,16 @@ const NativeMediaSessionPlugin =
       web: {
         updateMetadata: () => Promise.resolve(),
         updatePlaybackState: () => Promise.resolve(),
+        playStream: () => Promise.resolve(),
+        pauseStream: () => Promise.resolve(),
+        resumeStream: () => Promise.resolve(),
+        seekStream: () => Promise.resolve(),
+        getPlaybackStatus: () =>
+          Promise.resolve({ isPlaying: false, positionMs: 0, durationMs: 0 }),
         isBluetoothConnected: () => Promise.resolve({ isConnected: false }),
         addListener: () => Promise.resolve({ remove: () => {} }),
       },
     },
   );
 
-export { NativeMediaSessionPlugin, type BluetoothStateData };
+export { NativeMediaSessionPlugin, type BluetoothStateData, type PlaybackStatusData };

@@ -86,6 +86,8 @@ export const initMediaSessionService = () => {
   let lastStatus = '';
   let lastReportedSeek = 0;
   let lastReportedTime = 0;
+  let lastStreamUrl = '';
+  let isInternalSeekUpdate = false;
 
   useSoundStore.subscribe((state) => {
     const isPlaying = state.status === 'playing';
@@ -100,22 +102,56 @@ export const initMediaSessionService = () => {
       // ignore
     }
 
-    if (
-      isCapacitorEnvironment() &&
-      (statusChanged || seekDelta > 3 || timeDelta > 15000)
-    ) {
-      lastStatus = state.status;
-      lastReportedSeek = state.seek;
-      lastReportedTime = now;
+    if (isCapacitorEnvironment()) {
+      const currentUrl = state.src?.url || '';
+      if (currentUrl && currentUrl !== lastStreamUrl && isPlaying) {
+        lastStreamUrl = currentUrl;
+        NativeMediaSessionPlugin.playStream({
+          url: currentUrl,
+          positionMs: secondsToMs(state.seek),
+        }).catch(() => {});
+      } else if (state.status === 'playing' && lastStatus === 'paused') {
+        NativeMediaSessionPlugin.resumeStream().catch(() => {});
+      } else if (state.status === 'paused' && lastStatus === 'playing') {
+        NativeMediaSessionPlugin.pauseStream().catch(() => {});
+      }
 
-      NativeMediaSessionPlugin.updatePlaybackState({
-        isPlaying,
-        positionMs: secondsToMs(state.seek),
-      }).catch(() => {});
+      if (!isInternalSeekUpdate && seekDelta > 2) {
+        NativeMediaSessionPlugin.seekStream({
+          positionMs: secondsToMs(state.seek),
+        }).catch(() => {});
+      }
+
+      if (statusChanged || seekDelta > 3 || timeDelta > 15000) {
+        lastStatus = state.status;
+        lastReportedSeek = state.seek;
+        lastReportedTime = now;
+
+        NativeMediaSessionPlugin.updatePlaybackState({
+          isPlaying,
+          positionMs: secondsToMs(state.seek),
+        }).catch(() => {});
+      }
     }
   });
 
   if (isCapacitorEnvironment()) {
+    setInterval(() => {
+      if (useSoundStore.getState().status === 'playing') {
+        NativeMediaSessionPlugin.getPlaybackStatus()
+          .then((status) => {
+            if (status && status.durationMs > 0) {
+              isInternalSeekUpdate = true;
+              useSoundStore
+                .getState()
+                .updatePlayback(status.positionMs / 1000, status.durationMs / 1000);
+              isInternalSeekUpdate = false;
+            }
+          })
+          .catch(() => {});
+      }
+    }, 1000);
+
     NativeMediaSessionPlugin.addListener('mediaAction', (data) => {
       switch (data.action) {
         case 'play':
