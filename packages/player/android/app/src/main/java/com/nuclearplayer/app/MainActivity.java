@@ -135,8 +135,7 @@ public class MainActivity extends BridgeActivity {
     }
 
     /**
-     * Periodically pokes the WebView to signal VISIBLE and resume timers.
-     * This counteracts Chromium's auto-suspend behavior when the screen is off.
+     * Periodically ensures WebView JavaScript timers stay active in background.
      */
     private void startKeepAliveLoop() {
         keepAliveRunnable = new Runnable() {
@@ -146,15 +145,14 @@ public class MainActivity extends BridgeActivity {
                     WebView wv = getBridge() != null ? getBridge().getWebView() : null;
                     if (wv != null) {
                         wv.resumeTimers();
-                        wv.dispatchWindowVisibilityChanged(View.VISIBLE);
                     }
                 } catch (Throwable t) {
                     // ignore
                 }
-                keepAliveHandler.postDelayed(this, 5000); // every 5 seconds
+                keepAliveHandler.postDelayed(this, 10000); // every 10 seconds
             }
         };
-        keepAliveHandler.postDelayed(keepAliveRunnable, 5000);
+        keepAliveHandler.postDelayed(keepAliveRunnable, 10000);
     }
 
     @Override
@@ -164,7 +162,7 @@ public class MainActivity extends BridgeActivity {
             WebView wv = getBridge() != null ? getBridge().getWebView() : null;
             if (wv != null) {
                 wv.resumeTimers();
-                wv.dispatchWindowVisibilityChanged(View.VISIBLE);
+                wv.onResume();
             }
         } catch (Throwable t) {}
     }
@@ -176,7 +174,7 @@ public class MainActivity extends BridgeActivity {
             WebView wv = getBridge() != null ? getBridge().getWebView() : null;
             if (wv != null) {
                 wv.resumeTimers();
-                wv.dispatchWindowVisibilityChanged(View.VISIBLE);
+                wv.onResume();
             }
         } catch (Throwable t) {}
     }
@@ -188,7 +186,6 @@ public class MainActivity extends BridgeActivity {
             WebView wv = getBridge() != null ? getBridge().getWebView() : null;
             if (wv != null) {
                 wv.resumeTimers();
-                wv.onResume();
             }
             if (!audioFocusGranted) {
                 setupAudioFocus();
@@ -203,7 +200,6 @@ public class MainActivity extends BridgeActivity {
             WebView wv = getBridge() != null ? getBridge().getWebView() : null;
             if (wv != null) {
                 wv.resumeTimers();
-                wv.dispatchWindowVisibilityChanged(View.VISIBLE);
             }
         } catch (Throwable t) {}
     }

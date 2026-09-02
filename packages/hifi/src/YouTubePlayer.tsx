@@ -38,6 +38,7 @@ type YTPlayerInstance = {
   setVolume: (volume: number) => void;
   getCurrentTime: () => number;
   getDuration: () => number;
+  getPlayerState?: () => number;
   destroy: () => void;
 };
 
@@ -92,15 +93,20 @@ export const YouTubePlayer: FC<SoundProps> = ({
     }
   }, []);
 
-  // Resume playback when app comes back to foreground from background/screen-off
+  // Resume playback only if unintentionally paused when app comes back to foreground
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && statusRef.current === 'playing') {
-        setTimeout(() => {
-          try {
-            playerRef.current?.playVideo();
-          } catch {}
-        }, 200);
+        try {
+          const player = playerRef.current;
+          if (player) {
+            const playerState = player.getPlayerState?.();
+            // Only resume if it was actually paused (state 2), avoiding audio buffer resets when already playing (state 1)
+            if (playerState === 2) {
+              player.playVideo();
+            }
+          }
+        } catch {}
       }
     };
 

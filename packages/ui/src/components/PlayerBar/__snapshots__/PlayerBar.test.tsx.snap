@@ -3,19 +3,19 @@
 exports[`PlayerBar > (Snapshot) active states render 1`] = `
 <DocumentFragment>
   <footer
-    class="bg-background-secondary border-border flex h-16 items-center border-t-(length:--border-width) px-4"
+    class="bg-background-secondary border-border flex items-center border-t-(length:--border-width) px-2 sm:px-4 py-1.5 h-14 sm:h-16"
   >
     <div
-      class="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4"
+      class="flex w-full items-center justify-between sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 sm:gap-4"
     >
       <div
-        class="min-w-0"
+        class="min-w-0 flex-1 sm:flex-initial"
       >
         <div
-          class="flex min-w-0 items-center gap-3"
+          class="flex min-w-0 flex-1 items-center gap-2 sm:gap-3"
         >
           <div
-            class="border-border bg-background-secondary size-12 shrink-0 overflow-hidden rounded-md border-(length:--border-width)"
+            class="border-border bg-background-secondary size-9 sm:size-12 shrink-0 overflow-hidden rounded-md border-(length:--border-width)"
           >
             <img
               alt=""
@@ -28,13 +28,13 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
             class="min-w-0 flex-1"
           >
             <div
-              class="text-foreground truncate text-sm font-bold"
+              class="text-foreground truncate text-xs sm:text-sm font-bold"
               data-testid="now-playing-title"
             >
               Crystalized
             </div>
             <div
-              class="text-foreground-secondary truncate text-xs"
+              class="text-foreground-secondary truncate text-[11px] sm:text-xs"
               data-testid="player-now-playing-artist"
             >
               XX
@@ -43,14 +43,14 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
         </div>
       </div>
       <div
-        class="justify-self-center"
+        class="justify-self-center shrink-0"
       >
         <div
-          class="flex items-center justify-center gap-2"
+          class="flex items-center justify-center gap-1 sm:gap-2"
         >
           <div>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border shadow-shadow hover:translate-x-shadow-x hover:translate-y-shadow-y border-(length:--border-width) hover:shadow-none size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border shadow-shadow hover:translate-x-shadow-x hover:translate-y-shadow-y border-(length:--border-width) hover:shadow-none size-8 justify-center sm:size-10"
               data-headlessui-state=""
               data-testid="player-shuffle-button"
               type="button"
@@ -87,7 +87,7 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
             </button>
           </div>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
             data-headlessui-state=""
             type="button"
           >
@@ -113,7 +113,7 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
             </svg>
           </button>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border shadow-shadow hover:translate-x-shadow-x hover:translate-y-shadow-y border-(length:--border-width) hover:shadow-none size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border border-(length:--border-width) size-8 justify-center sm:size-10 shadow-none"
             data-headlessui-state=""
             data-testid="player-pause-button"
             type="button"
@@ -122,13 +122,13 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
               aria-hidden="true"
               class="lucide lucide-pause"
               fill="none"
-              height="16"
+              height="18"
               stroke="currentColor"
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
               viewBox="0 0 24 24"
-              width="16"
+              width="18"
               xmlns="http://www.w3.org/2000/svg"
             >
               <rect
@@ -148,7 +148,7 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
             </svg>
           </button>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
             data-headlessui-state=""
             data-testid="player-next-button"
             type="button"
@@ -176,7 +176,7 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
           </button>
           <div>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border shadow-shadow hover:translate-x-shadow-x hover:translate-y-shadow-y border-(length:--border-width) hover:shadow-none size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border shadow-shadow hover:translate-x-shadow-x hover:translate-y-shadow-y border-(length:--border-width) hover:shadow-none size-8 justify-center sm:size-10"
               data-headlessui-state=""
               data-testid="player-repeat-button"
               type="button"
@@ -212,7 +212,7 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
         </div>
       </div>
       <div
-        class="justify-self-end"
+        class="hidden sm:block justify-self-end"
       >
         <div
           class="flex items-center gap-2"
@@ -299,19 +299,19 @@ exports[`PlayerBar > (Snapshot) active states render 1`] = `
 exports[`PlayerBar > (Snapshot) default render 1`] = `
 <DocumentFragment>
   <footer
-    class="bg-background-secondary border-border flex h-16 items-center border-t-(length:--border-width) px-4"
+    class="bg-background-secondary border-border flex items-center border-t-(length:--border-width) px-2 sm:px-4 py-1.5 h-14 sm:h-16"
   >
     <div
-      class="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4"
+      class="flex w-full items-center justify-between sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 sm:gap-4"
     >
       <div
-        class="min-w-0"
+        class="min-w-0 flex-1 sm:flex-initial"
       >
         <div
-          class="flex min-w-0 items-center gap-3"
+          class="flex min-w-0 flex-1 items-center gap-2 sm:gap-3"
         >
           <div
-            class="border-border bg-background-secondary size-12 shrink-0 overflow-hidden rounded-md border-(length:--border-width)"
+            class="border-border bg-background-secondary size-9 sm:size-12 shrink-0 overflow-hidden rounded-md border-(length:--border-width)"
           >
             <img
               alt=""
@@ -324,13 +324,13 @@ exports[`PlayerBar > (Snapshot) default render 1`] = `
             class="min-w-0 flex-1"
           >
             <div
-              class="text-foreground truncate text-sm font-bold cursor-pointer hover:underline"
+              class="text-foreground truncate text-xs sm:text-sm font-bold cursor-pointer hover:underline"
               data-testid="now-playing-title"
             >
               Song Title
             </div>
             <div
-              class="text-foreground-secondary truncate text-xs cursor-pointer hover:underline"
+              class="text-foreground-secondary truncate text-[11px] sm:text-xs cursor-pointer hover:underline"
               data-testid="player-now-playing-artist"
             >
               Artist Name
@@ -339,14 +339,14 @@ exports[`PlayerBar > (Snapshot) default render 1`] = `
         </div>
       </div>
       <div
-        class="justify-self-center"
+        class="justify-self-center shrink-0"
       >
         <div
-          class="flex items-center justify-center gap-2"
+          class="flex items-center justify-center gap-1 sm:gap-2"
         >
           <div>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
               data-headlessui-state=""
               data-testid="player-shuffle-button"
               type="button"
@@ -383,7 +383,7 @@ exports[`PlayerBar > (Snapshot) default render 1`] = `
             </button>
           </div>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
             data-headlessui-state=""
             type="button"
           >
@@ -409,7 +409,7 @@ exports[`PlayerBar > (Snapshot) default render 1`] = `
             </svg>
           </button>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border shadow-shadow hover:translate-x-shadow-x hover:translate-y-shadow-y border-(length:--border-width) hover:shadow-none size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border border-(length:--border-width) size-8 justify-center sm:size-10 shadow-none"
             data-headlessui-state=""
             data-testid="player-play-button"
             type="button"
@@ -418,13 +418,13 @@ exports[`PlayerBar > (Snapshot) default render 1`] = `
               aria-hidden="true"
               class="lucide lucide-play"
               fill="none"
-              height="16"
+              height="18"
               stroke="currentColor"
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
               viewBox="0 0 24 24"
-              width="16"
+              width="18"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
@@ -433,7 +433,7 @@ exports[`PlayerBar > (Snapshot) default render 1`] = `
             </svg>
           </button>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
             data-headlessui-state=""
             data-testid="player-next-button"
             type="button"
@@ -461,7 +461,7 @@ exports[`PlayerBar > (Snapshot) default render 1`] = `
           </button>
           <div>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
               data-headlessui-state=""
               data-testid="player-repeat-button"
               type="button"
@@ -497,7 +497,7 @@ exports[`PlayerBar > (Snapshot) default render 1`] = `
         </div>
       </div>
       <div
-        class="justify-self-end"
+        class="hidden sm:block justify-self-end"
       >
         <div
           class="flex items-center gap-2"
@@ -587,19 +587,19 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
     style="width: 420px;"
   >
     <footer
-      class="bg-background-secondary border-border flex h-16 items-center border-t-(length:--border-width) px-4"
+      class="bg-background-secondary border-border flex items-center border-t-(length:--border-width) px-2 sm:px-4 py-1.5 h-14 sm:h-16"
     >
       <div
-        class="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4"
+        class="flex w-full items-center justify-between sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 sm:gap-4"
       >
         <div
-          class="min-w-0"
+          class="min-w-0 flex-1 sm:flex-initial"
         >
           <div
-            class="flex min-w-0 items-center gap-3"
+            class="flex min-w-0 flex-1 items-center gap-2 sm:gap-3"
           >
             <div
-              class="border-border bg-background-secondary size-12 shrink-0 overflow-hidden rounded-md border-(length:--border-width)"
+              class="border-border bg-background-secondary size-9 sm:size-12 shrink-0 overflow-hidden rounded-md border-(length:--border-width)"
             >
               <img
                 alt=""
@@ -612,13 +612,13 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
               class="min-w-0 flex-1"
             >
               <div
-                class="text-foreground truncate text-sm font-bold"
+                class="text-foreground truncate text-xs sm:text-sm font-bold"
                 data-testid="now-playing-title"
               >
                 An Incredibly, Ridiculously Long Song Title That Should Truncate Nicely
               </div>
               <div
-                class="text-foreground-secondary truncate text-xs"
+                class="text-foreground-secondary truncate text-[11px] sm:text-xs"
                 data-testid="player-now-playing-artist"
               >
                 A Very Long Artist Name Featuring Another Long Artist With Even More Characters
@@ -627,14 +627,14 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
           </div>
         </div>
         <div
-          class="justify-self-center"
+          class="justify-self-center shrink-0"
         >
           <div
-            class="flex items-center justify-center gap-2"
+            class="flex items-center justify-center gap-1 sm:gap-2"
           >
             <div>
               <button
-                class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+                class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
                 data-headlessui-state=""
                 data-testid="player-shuffle-button"
                 type="button"
@@ -671,7 +671,7 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
               </button>
             </div>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
               data-headlessui-state=""
               type="button"
             >
@@ -697,7 +697,7 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
               </svg>
             </button>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border shadow-shadow hover:translate-x-shadow-x hover:translate-y-shadow-y border-(length:--border-width) hover:shadow-none size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border border-(length:--border-width) size-8 justify-center sm:size-10 shadow-none"
               data-headlessui-state=""
               data-testid="player-play-button"
               type="button"
@@ -706,13 +706,13 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
                 aria-hidden="true"
                 class="lucide lucide-play"
                 fill="none"
-                height="16"
+                height="18"
                 stroke="currentColor"
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
                 viewBox="0 0 24 24"
-                width="16"
+                width="18"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
@@ -721,7 +721,7 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
               </svg>
             </button>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
               data-headlessui-state=""
               data-testid="player-next-button"
               type="button"
@@ -749,7 +749,7 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
             </button>
             <div>
               <button
-                class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+                class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
                 data-headlessui-state=""
                 data-testid="player-repeat-button"
                 type="button"
@@ -785,7 +785,7 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
           </div>
         </div>
         <div
-          class="justify-self-end"
+          class="hidden sm:block justify-self-end"
         >
           <div
             class="flex items-center gap-2"
@@ -873,19 +873,19 @@ exports[`PlayerBar > (Snapshot) long metadata truncation 1`] = `
 exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
 <DocumentFragment>
   <footer
-    class="bg-background-secondary border-border flex h-16 items-center border-t-(length:--border-width) px-4"
+    class="bg-background-secondary border-border flex items-center border-t-(length:--border-width) px-2 sm:px-4 py-1.5 h-14 sm:h-16"
   >
     <div
-      class="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4"
+      class="flex w-full items-center justify-between sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 sm:gap-4"
     >
       <div
-        class="min-w-0"
+        class="min-w-0 flex-1 sm:flex-initial"
       >
         <div
-          class="flex min-w-0 items-center gap-3"
+          class="flex min-w-0 flex-1 items-center gap-2 sm:gap-3"
         >
           <div
-            class="border-border bg-background-secondary size-12 shrink-0 overflow-hidden rounded-md border-(length:--border-width)"
+            class="border-border bg-background-secondary size-9 sm:size-12 shrink-0 overflow-hidden rounded-md border-(length:--border-width)"
           >
             <div
               class="text-foreground-secondary flex size-full items-center justify-center"
@@ -895,13 +895,13 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
                 aria-hidden="true"
                 class="lucide lucide-music2 lucide-music-2"
                 fill="none"
-                height="20"
+                height="16"
                 stroke="currentColor"
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
                 viewBox="0 0 24 24"
-                width="20"
+                width="16"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <circle
@@ -919,13 +919,13 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
             class="min-w-0 flex-1"
           >
             <div
-              class="text-foreground truncate text-sm font-bold"
+              class="text-foreground truncate text-xs sm:text-sm font-bold"
               data-testid="now-playing-title"
             >
               Untitled Track
             </div>
             <div
-              class="text-foreground-secondary truncate text-xs"
+              class="text-foreground-secondary truncate text-[11px] sm:text-xs"
               data-testid="player-now-playing-artist"
             >
               Unknown Artist
@@ -934,14 +934,14 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
         </div>
       </div>
       <div
-        class="justify-self-center"
+        class="justify-self-center shrink-0"
       >
         <div
-          class="flex items-center justify-center gap-2"
+          class="flex items-center justify-center gap-1 sm:gap-2"
         >
           <div>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
               data-headlessui-state=""
               data-testid="player-shuffle-button"
               type="button"
@@ -978,7 +978,7 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
             </button>
           </div>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
             data-headlessui-state=""
             type="button"
           >
@@ -1004,7 +1004,7 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
             </svg>
           </button>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border shadow-shadow hover:translate-x-shadow-x hover:translate-y-shadow-y border-(length:--border-width) hover:shadow-none size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-primary border-border border-(length:--border-width) size-8 justify-center sm:size-10 shadow-none"
             data-headlessui-state=""
             data-testid="player-play-button"
             type="button"
@@ -1013,13 +1013,13 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
               aria-hidden="true"
               class="lucide lucide-play"
               fill="none"
-              height="16"
+              height="18"
               stroke="currentColor"
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
               viewBox="0 0 24 24"
-              width="16"
+              width="18"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
@@ -1028,7 +1028,7 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
             </svg>
           </button>
           <button
-            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+            class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
             data-headlessui-state=""
             data-testid="player-next-button"
             type="button"
@@ -1056,7 +1056,7 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
           </button>
           <div>
             <button
-              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-10 justify-center"
+              class="inline-flex cursor-pointer items-center rounded-md whitespace-nowrap transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground bg-transparent size-8 justify-center sm:size-10"
               data-headlessui-state=""
               data-testid="player-repeat-button"
               type="button"
@@ -1092,7 +1092,7 @@ exports[`PlayerBar > (Snapshot) no artwork fallback 1`] = `
         </div>
       </div>
       <div
-        class="justify-self-end"
+        class="hidden sm:block justify-self-end"
       >
         <div
           class="flex items-center gap-2"

@@ -9,10 +9,7 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioAttributes;
-import android.media.AudioFormat;
 import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -41,11 +38,6 @@ public class AudioForegroundService extends Service {
     private String currentArtworkUrl = "";
     private Bitmap currentArtworkBitmap = null;
     private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
-
-    private AudioTrack nativeAudioTrack = null;
-    private final Object audioTrackLock = new Object();
-    private Thread audioKeepAliveThread = null;
-    private volatile boolean isKeepAliveRunning = false;
 
     private static AudioForegroundService instance;
 
@@ -238,91 +230,6 @@ public class AudioForegroundService extends Service {
             .build();
 
         mediaSession.setPlaybackState(playbackState);
-        ensureNativeAudioTrack(isPlaying);
-    }
-
-    private void ensureNativeAudioTrack(boolean isPlaying) {
-        synchronized (audioTrackLock) {
-            if (isPlaying) {
-                if (nativeAudioTrack == null) {
-                    try {
-                        int sampleRate = 48000;
-                        int minBufferSize = AudioTrack.getMinBufferSize(
-                            sampleRate,
-                            AudioFormat.CHANNEL_OUT_STEREO,
-                            AudioFormat.ENCODING_PCM_16BIT
-                        );
-                        if (minBufferSize <= 0) minBufferSize = 4096;
-
-                        AudioAttributes audioAttributes;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            audioAttributes = new AudioAttributes.Builder()
-                                .setUsage(AudioAttributes.USAGE_MEDIA)
-                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                .setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
-                                .build();
-                        } else {
-                            audioAttributes = new AudioAttributes.Builder()
-                                .setUsage(AudioAttributes.USAGE_MEDIA)
-                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                .build();
-                        }
-
-                        AudioFormat audioFormat = new AudioFormat.Builder()
-                            .setSampleRate(sampleRate)
-                            .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
-                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                            .build();
-
-                        nativeAudioTrack = new AudioTrack(
-                            audioAttributes,
-                            audioFormat,
-                            minBufferSize,
-                            AudioTrack.MODE_STREAM,
-                            AudioManager.AUDIO_SESSION_ID_GENERATE
-                        );
-
-                        if (nativeAudioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
-                            nativeAudioTrack.play();
-                            isKeepAliveRunning = true;
-                            final int bufferSize = minBufferSize;
-                            audioKeepAliveThread = new Thread(() -> {
-                                byte[] silentBuffer = new byte[bufferSize];
-                                while (isKeepAliveRunning && nativeAudioTrack != null) {
-                                    try {
-                                        if (nativeAudioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
-                                            nativeAudioTrack.write(silentBuffer, 0, silentBuffer.length);
-                                        }
-                                        Thread.sleep(400);
-                                    } catch (Throwable t) {
-                                        break;
-                                    }
-                                }
-                            }, "NuclearAudioKeepAlive");
-                            audioKeepAliveThread.setDaemon(true);
-                            audioKeepAliveThread.start();
-                        }
-                    } catch (Throwable t) {
-                        // ignore
-                    }
-                }
-            } else {
-                isKeepAliveRunning = false;
-                if (audioKeepAliveThread != null) {
-                    try {
-                        audioKeepAliveThread.interrupt();
-                    } catch (Throwable t) {}
-                    audioKeepAliveThread = null;
-                }
-                if (nativeAudioTrack != null) {
-                    try {
-                        nativeAudioTrack.stop();
-                        nativeAudioTrack.release();
-                    } catch (Throwable t) {}
-                    nativeAudioTrack = null;
-                }
-            }
-        }
     }
 
     private Notification buildNotification(String title, String artist, boolean isPlaying) {
@@ -462,7 +369,6 @@ public class AudioForegroundService extends Service {
 
     @Override
     public void onDestroy() {
-        ensureNativeAudioTrack(false);
         if (mediaSession != null) {
             mediaSession.setActive(false);
             mediaSession.release();

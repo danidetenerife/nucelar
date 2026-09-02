@@ -60,19 +60,16 @@ export const usePlaybackStatus = (
     }
   }, [status, srcUrl, audioRef, onError]);
 
-  // Resume playback on visibility restored (screen-on, app foreground)
+  // Resume playback on visibility restored only if unintentionally paused
   useEffect(() => {
-    let resumeTimer: ReturnType<typeof setTimeout> | null = null;
-
     const handleVisibilityChange = () => {
       const audio = audioRef.current;
       if (!audio) return;
       if (document.visibilityState === 'visible' && status === 'playing') {
-        resumeTimer = setTimeout(() => {
-          if (audio.paused && isReadyToPlay(audio)) {
-            audio.play().catch(() => {});
-          }
-        }, 300);
+        // Only trigger play if audio was actually paused, avoiding buffer interruption
+        if (audio.paused && isReadyToPlay(audio)) {
+          audio.play().catch(() => {});
+        }
       }
     };
 
@@ -81,9 +78,6 @@ export const usePlaybackStatus = (
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleVisibilityChange);
-      if (resumeTimer !== null) {
-        clearTimeout(resumeTimer);
-      }
     };
   }, [audioRef, status]);
 };
