@@ -84,6 +84,94 @@
   </requires>
 
   <releases>
+    <release version="1.47.13" date="2026-09-02">
+      <description>
+        <ul>
+          <li>Implemented direct stream extraction for Android to bypass Chromium WebView limitations and permanently fix background playback.</li>
+          <li>Fixed automatic update checks on Android and added signed desktop update packages.</li>
+          <li>Fixed Android playback stopping when the screen turns off or the app is backgrounded, and made the Google TV layout adapt to the visible screen size.</li>
+          <li>Fixed pressing Enter in the search box searching for a hovered recent search instead of the typed text.</li>
+          <li>Clickable artist/track title in the player bar</li>
+          <li>Fixed various Appimage issues caused by Wayland.</li>
+          <li>Fixed playback stopping after double clicking a track in the queue.</li>
+          <li>Fixed duplicate entries appearing in the listening history.</li>
+          <li>Fixed the previous track briefly playing when starting a new track before its stream is ready.</li>
+          <li>Nuclear starts maximized by default</li>
+          <li>Nuclear Jam remote control now supports searching for music, adding tracks to the queue, and removing tracks from the queue.</li>
+          <li>Playlists can now be sorted.</li>
+          <li>Playlists can now be filtered.</li>
+          <li>History stats tab shows a selection of charts showcasing your listening habits.</li>
+          <li>Fix bluetooth issues on Linux.</li>
+          <li>Tracks that failed to resolve their streams now retry with a fresh search when you come back to them. When no streaming provider is installed, the error message now prompts you to install one.</li>
+          <li>Fix streaming getting permanently stuck at 10s intervals.</li>
+          <li>Listening history: Nuclear now keeps a history of the tracks you play. Can be disabled in the preferences.</li>
+          <li>Fix playback stalling at 10-second fMP4 segment boundaries (0:09, 0:19, 0:29...) when streaming via yt-dlp, caused by sub-frame gaps between appended segments</li>
+          <li>Theme loading performance improvements</li>
+          <li>Recent searches appear under the search box, with keyboard navigation and one-click history clearing</li>
+          <li>Search box with clear button, search icon, Escape to clear, and URL sync</li>
+          <li>Fix audio going silent after about a second over Bluetooth on Linux</li>
+          <li>Fix yt-dlp playback stalling at segment boundaries (e.g. 0:09, 0:29) when buffered audio drifted past the next segment's start time</li>
+          <li>Fix marketplace themes resetting to default on restart</li>
+          <li>Custom title bar for frameless window mode. Enable in Settings -&gt; Appearance</li>
+          <li>Fix HLS playback failing on Windows with Chromium 147+</li>
+          <li>We're temporarily switching to nightly yt-dlp due to a regression. This will fix playlist imports.</li>
+          <li>Navigate to playlists directly from artist pages that have them</li>
+          <li>Fix the queue getting stuck at the end of some tracks, where playback parked a fraction of a second before the end and never advanced to the next track</li>
+          <li>Right-click a queue item to see its stream candidates and switch to a different source; picking a failed source retries it</li>
+          <li>Fix TSX plugins failing with 'React is not defined' unless they imported React manually, and fix stale plugin code being served when an imported file changed but the entry file didn't</li>
+          <li>The window now remembers its size, position, and maximized state between restarts</li>
+          <li>Nuclear Jam lets you control playback from any device on your local network. Enable it in Settings -&gt; Integrations, then scan the QR code with your phone.</li>
+          <li>Fix HLS tracks getting stuck at 0:00 when the queue advances</li>
+          <li>Fix tracks failing to play in saved playlists and in queues restored after restart by re-resolving stream URLs when they expire</li>
+          <li>MPD server lets you control Nuclear from MPD clients like mpc and ncmpcpp</li>
+          <li>Installed plugins are automatically updated to the latest version on startup</li>
+          <li>Fix legacy playlist import failing when track durations use mm:ss or hh:mm:ss format</li>
+          <li>Fix source selection being reset to the first available provider on startup</li>
+          <li>Show an empty state in Sources when no providers of a given kind are installed</li>
+          <li>Streaming providers can now access full track metadata when resolving streams</li>
+          <li>Fix paired streaming provider not activating when registered after the metadata provider</li>
+          <li>Frameless window toggle in settings</li>
+          <li>Back and forward navigation buttons in the top bar</li>
+          <li>Theme store for browsing and installing community themes</li>
+          <li>Discord rich presence integration</li>
+          <li>Plugins can provide music discovery recommendations based on the current queue</li>
+          <li>Introduce dark mode as persistent preference</li>
+          <li>Fix issues with tables being way too wide with longer track titles</li>
+          <li>Nuclear is now built from source for Flatpak, with new app icons</li>
+          <li>Fixed album tracks being added to the queue without thumbnails</li>
+          <li>Dashboard, search, and plugins views now prompt to install plugins when none are active</li>
+          <li>AUR packages are now automatically updated when a new release is published</li>
+          <li>Fixed a console window briefly appearing on Windows each time yt-dlp was invoked</li>
+          <li>Queue items are now correctly restored when restarting Nuclear.</li>
+          <li>New Sources view lets you switch the active metadata and streaming providers from the sidebar</li>
+          <li>yt-dlp is now downloaded and updated automatically at runtime, fixing Flatpak and AppImage compatibility</li>
+          <li>Border width is now themable - advanced themes can set border-width to control all borders in the app</li>
+          <li>Improved dark mode for all basic themes with better backgrounds, toned-down primaries, and themed borders</li>
+          <li>Update badge shows download progress and lets you click to update or restart</li>
+          <li>Social links in settings sidebar (Discord, GitHub, Mastodon, Website)</li>
+          <li>Fixed repeat, shuffle, and volume for MSE streams</li>
+          <li>Plugins can import YouTube playlists by URL via yt-dlp</li>
+          <li>YouTube tracks now play using MSE-based streaming, fixing incorrect duration display and enabling proper seeking</li>
+          <li>Customizable keyboard shortcuts with settings UI for rebinding</li>
+          <li>Plugin event bus with trackFinished and trackStarted events</li>
+          <li>Custom settings widgets for plugins (render React components in settings UI)</li>
+          <li>Shell API for plugins to open URLs in the system browser</li>
+          <li>Plugins can use Nuclear UI components (Button, Toggle, etc.)</li>
+          <li>Fixed plugin settings using wrong storage key (core prefix instead of plugin prefix)</li>
+          <li>Fixed old audio stream continuing to play when switching tracks or clearing the queue</li>
+          <li>In-app changelog in settings (What's New tab)</li>
+          <li>Release pipeline auto-generates GitHub release notes from changelog data</li>
+          <li>Support importing legacy format playlists (from old Nuclear)</li>
+          <li>Migrated repository to nukeop/nuclear</li>
+          <li>Playlist import from URL</li>
+          <li>Playlist provider adapter view with cover art</li>
+          <li>Fixed loading status getting stuck on stream resolution</li>
+          <li>MCP server for controlling Nuclear from AI agents and other tools</li>
+          <li>Plugin store with browsing, search, and installation</li>
+          <li>Flatpak packaging</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.47.1" date="2026-08-16">
       <description>
         <ul>
