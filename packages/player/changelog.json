@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-02T22:45",
+    "description": "Full Xiaomi HyperOS & MIUI lockscreen compatibility: added dedicated public playback channel with default importance, display metadata keys, restored reactive Sound synchronization, and added visitor session token caching to eliminate YouTube bot challenges.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Xiaomi HyperOS",
+        "color": "orange"
+      },
+      {
+        "label": "Lockscreen",
+        "color": "purple"
+      },
+      {
+        "label": "Streaming",
+        "color": "green"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T22:35",
     "description": "Migrated Android audio playback to a 100% native MediaPlayer engine in the Foreground Service with a valid vector notification icon (ic_stat_aurora), enabling uninterrupted background playback and instant lockscreen widget interaction.",
     "type": "feature",

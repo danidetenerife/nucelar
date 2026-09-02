@@ -10,7 +10,43 @@ import type {
 import { httpHost } from './httpHost';
 import { isTauriEnvironment } from './universalStore';
 
+let cachedVisitorId = '';
+let cachedCookies = '';
+
+async function ensureVisitorSession(videoId: string): Promise<void> {
+  if (cachedVisitorId && cachedCookies) {
+    return;
+  }
+  try {
+    const pageRes = await httpHost.fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+    });
+    if (pageRes.body) {
+      const match = pageRes.body.match(/"VISITOR_DATA":"([^"]+)"/);
+      if (match && match[1]) {
+        cachedVisitorId = match[1];
+      }
+    }
+    const setCookie = (pageRes.headers as Record<string, string>)?.['set-cookie'] || '';
+    if (setCookie) {
+      cachedCookies = setCookie
+        .split(',')
+        .map((part) => part.split(';')[0].trim())
+        .filter(Boolean)
+        .join('; ');
+    }
+  } catch {
+    // ignore
+  }
+}
+
 async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInfo | null> {
+  await ensureVisitorSession(videoId);
+
   const body = {
     context: {
       client: {
@@ -38,6 +74,13 @@ async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInf
     'X-YouTube-Client-Version': '1.65.10',
     Origin: 'https://www.youtube.com',
   };
+
+  if (cachedCookies) {
+    headers.Cookie = cachedCookies;
+  }
+  if (cachedVisitorId) {
+    headers['X-Goog-Visitor-Id'] = cachedVisitorId;
+  }
 
   try {
     const res = await httpHost.fetch('https://www.youtube.com/youtubei/v1/player', {
