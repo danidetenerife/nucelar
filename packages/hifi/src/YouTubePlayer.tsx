@@ -376,8 +376,8 @@ export const YouTubePlayer: FC<SoundProps> = ({
                 position: 'fixed',
                 inset: 0,
                 zIndex: 9999,
-                width: '100vw',
-                height: '100vh',
+                width: '100dvw',
+                height: '100dvh',
                 backgroundColor: '#000',
                 display: 'flex',
                 alignItems: 'center',
@@ -414,10 +414,14 @@ export const YouTubePlayer: FC<SoundProps> = ({
       <div
         ref={containerRef}
         style={{
-          width: '100%',
-          height: '100%',
-          maxHeight: isTvFullscreen ? '100vh' : undefined,
+          width: isTvFullscreen ? 'min(100dvw, calc(100dvh * 16 / 9))' : '100%',
+          height: isTvFullscreen
+            ? 'min(100dvh, calc(100dvw * 9 / 16))'
+            : '100%',
+          maxWidth: '100%',
+          maxHeight: '100%',
           aspectRatio: isTvFullscreen ? '16/9' : undefined,
+          flexShrink: 0,
         }}
       />
       {showVideo && (

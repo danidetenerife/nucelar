@@ -156,6 +156,19 @@ public class AudioForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Notification notification = buildNotification("Nuclear Music Player", "", false);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+            } else {
+                startForeground(NOTIFICATION_ID, notification);
+            }
+        } catch (Throwable firstError) {
+            try {
+                startForeground(NOTIFICATION_ID, notification);
+            } catch (Throwable ignored) {}
+        }
+
         if (intent != null) {
             String action = intent.getAction();
             if (ACTION_UPDATE_METADATA.equals(action)) {
@@ -178,21 +191,6 @@ public class AudioForegroundService extends Service {
             }
 
             MediaButtonReceiver.handleIntent(mediaSession, intent);
-        }
-
-        Notification notification = buildNotification("Nuclear Music Player", "", false);
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-            } else {
-                startForeground(NOTIFICATION_ID, notification);
-            }
-        } catch (Throwable t) {
-            try {
-                startForeground(NOTIFICATION_ID, notification);
-            } catch (Throwable t2) {
-                // ignore
-            }
         }
         return START_STICKY;
     }
@@ -258,6 +256,7 @@ public class AudioForegroundService extends Service {
                     int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
                     int bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, audioFormat);
                     if (bufferSize < 2048) bufferSize = 2048;
+                    final int audioBufferSize = bufferSize;
 
                     AudioAttributes attributes = new AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -273,7 +272,7 @@ public class AudioForegroundService extends Service {
                     nativeAudioTrack = new AudioTrack.Builder()
                         .setAudioAttributes(attributes)
                         .setAudioFormat(format)
-                        .setBufferSizeInBytes(bufferSize)
+                        .setBufferSizeInBytes(audioBufferSize)
                         .setTransferMode(AudioTrack.MODE_STREAM)
                         .setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
                         .build();
@@ -283,7 +282,7 @@ public class AudioForegroundService extends Service {
                     isKeepAliveRunning = true;
 
                     audioKeepAliveThread = new Thread(() -> {
-                        byte[] silentBuffer = new byte[bufferSize];
+                        byte[] silentBuffer = new byte[audioBufferSize];
                         while (isKeepAliveRunning && nativeAudioTrack != null) {
                             try {
                                 if (nativeAudioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {

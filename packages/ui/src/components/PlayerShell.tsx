@@ -12,7 +12,7 @@ export const PlayerShell: FC<PlayerShellProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col h-[100dvh] w-screen overflow-hidden select-none',
+        'flex h-[100dvh] w-full flex-col overflow-hidden select-none',
         className,
       )}
       {...props}

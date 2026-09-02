@@ -1,5 +1,17 @@
 [
   {
+    "date": "2026-09-02T00:00",
+    "description": "Fixed Android playback stopping when the screen turns off or the app is backgrounded, and made the Google TV layout adapt to the visible screen size.",
+    "type": "fix",
+    "contributors": ["danidetenerife"],
+    "tags": [
+      {
+        "label": "Android",
+        "color": "green"
+      }
+    ]
+  },
+  {
     "date": "2026-08-29T00:00",
     "description": "Fixed pressing Enter in the search box searching for a hovered recent search instead of the typed text.",
     "type": "fix",
