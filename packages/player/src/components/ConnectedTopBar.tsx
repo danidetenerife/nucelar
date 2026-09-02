@@ -8,9 +8,6 @@ import {
 } from '@nuclearplayer/ui';
 
 import { useCanGoForward } from '../hooks/useCanGoForward';
-import { useCoreSetting } from '../hooks/useCoreSetting';
-import { useFramelessWindow } from '../hooks/useFramelessWindow';
-import { JamQrCodeButton } from './JamQrCodeButton';
 import { SearchBox } from './SearchBox';
 import { UpdateBadge } from './UpdateBadge';
 
@@ -18,19 +15,13 @@ export const ConnectedTopBar: FC = () => {
   const router = useRouter();
   const canGoBack = useCanGoBack();
   const canGoForward = useCanGoForward();
-  const frameless = useFramelessWindow();
-  const [isTitleBarEnabled] = useCoreSetting<boolean>(
-    'appearance.customTitleBar',
-  );
 
   return (
-    <TopBar draggable={frameless}>
+    <TopBar draggable={false}>
       <div className="flex flex-row items-center gap-4">
-        {!isTitleBarEnabled && (
-          <div className="flex items-center">
-            <TopBarLogo />
-          </div>
-        )}
+        <div className="flex items-center">
+          <TopBarLogo />
+        </div>
         <TopBarNavigation
           onBack={() => router.history.back()}
           onForward={() => router.history.forward()}
@@ -40,9 +31,7 @@ export const ConnectedTopBar: FC = () => {
         <UpdateBadge />
       </div>
       <SearchBox />
-      <div className="flex flex-row items-center justify-end gap-2">
-        <JamQrCodeButton />
-      </div>
+      <div className="flex flex-row items-center justify-end gap-2" />
     </TopBar>
   );
 };

@@ -4,17 +4,13 @@ import App, { defaultQueryClient } from './App';
 import { initLogStream } from './hooks/useLogStream';
 import { initBridgeHandler } from './services/bridge/bridgeHandler';
 import { registerBuiltInCoreSettings } from './services/coreSettings';
-import { initDiscordHandler } from './services/discordHandler';
 import { initDiscoveryService } from './services/discoveryService';
 import { initHistoryService } from './services/history';
-import { initHttpApiHandler } from './services/httpApi';
 import {
   applyLanguageFromSettings,
   initLanguageWatcher,
 } from './services/languageService';
-import { initMcpHandler } from './services/mcp';
 import { initMediaSessionService } from './services/mediaSessionService';
-import { initMpdHandler } from './services/mpd';
 import { p2pSyncService } from './services/p2pSyncService';
 import { initPlaybackEventBridge } from './services/playbackEventBridge';
 import { hydratePluginsFromRegistry } from './services/plugins/pluginBootstrap';
@@ -88,19 +84,7 @@ export const initPlayerApp = async (
 
     if (isTauriEnvironment()) {
       try {
-        await initMcpHandler();
-      } catch {}
-      try {
-        await initMpdHandler();
-      } catch {}
-      try {
-        await initHttpApiHandler();
-      } catch {}
-      try {
         await initBridgeHandler();
-      } catch {}
-      try {
-        await initDiscordHandler();
       } catch {}
       try {
         await initPlaybackEventBridge();
