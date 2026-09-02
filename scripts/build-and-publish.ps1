@@ -27,7 +27,7 @@ if ($CustomVersion -ne "") {
 
 $Tag = "v$NextVer"
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host " [Nuclear CI] Subiendo de versión: $CurrentVer -> $NextVer ($Tag)" -ForegroundColor Green
+Write-Host " [Aurora CI] Subiendo de versión: $CurrentVer -> $NextVer ($Tag)" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 # 1. Update packages/player/package.json
@@ -85,11 +85,14 @@ if ($LASTEXITCODE -ne 0) {
 Set-Location $Root
 
 # Copy setup exe to executables
-$GeneratedExe = "$Root\packages\player\src-tauri\target\release\bundle\nsis\Nuclear_${NextVer}_x64-setup.exe"
-$DestExe = "$Root\ejecutables\Nuclear_${NextVer}_x64-setup.exe"
+$GeneratedExe = "$Root\packages\player\src-tauri\target\release\bundle\nsis\Aurora_${NextVer}_x64-setup.exe"
+if (-not (Test-Path $GeneratedExe)) {
+    $GeneratedExe = "$Root\packages\player\src-tauri\target\release\bundle\nsis\Nuclear_${NextVer}_x64-setup.exe"
+}
+$DestExe = "$Root\ejecutables\Aurora_${NextVer}_x64-setup.exe"
 if (Test-Path $GeneratedExe) {
     Copy-Item $GeneratedExe $DestExe -Force
-    Copy-Item $GeneratedExe "C:\Users\Danid\Desktop\Nuclear_${NextVer}_x64-setup.exe" -Force -ErrorAction SilentlyContinue
+    Copy-Item $GeneratedExe "C:\Users\Danid\Desktop\Aurora_${NextVer}_x64-setup.exe" -Force -ErrorAction SilentlyContinue
 }
 
 $GeneratedSignature = "$GeneratedExe.sig"

@@ -22,9 +22,11 @@ export interface UniversalStore {
 
 class LocalStorageStore implements UniversalStore {
   private prefix: string;
+  private legacyPrefix: string;
 
   constructor(filename: string) {
-    this.prefix = `nuclear_${filename}_`;
+    this.prefix = `aurora_${filename}_`;
+    this.legacyPrefix = `nuclear_${filename}_`;
   }
 
   async entries<T = unknown>(): Promise<[string, T][]> {
@@ -33,13 +35,23 @@ class LocalStorageStore implements UniversalStore {
       return result;
     }
 
+    const seen = new Set<string>();
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith(this.prefix)) {
         const rawKey = key.slice(this.prefix.length);
+        seen.add(rawKey);
         const value = this.deserialize<T>(localStorage.getItem(key));
         if (value !== null) {
           result.push([rawKey, value]);
+        }
+      } else if (key && key.startsWith(this.legacyPrefix)) {
+        const rawKey = key.slice(this.legacyPrefix.length);
+        if (!seen.has(rawKey)) {
+          const value = this.deserialize<T>(localStorage.getItem(key));
+          if (value !== null) {
+            result.push([rawKey, value]);
+          }
         }
       }
     }
@@ -50,7 +62,9 @@ class LocalStorageStore implements UniversalStore {
     if (typeof localStorage === 'undefined') {
       return null;
     }
-    const raw = localStorage.getItem(`${this.prefix}${key}`);
+    const raw =
+      localStorage.getItem(`${this.prefix}${key}`) ??
+      localStorage.getItem(`${this.legacyPrefix}${key}`);
     return this.deserialize<T>(raw);
   }
 

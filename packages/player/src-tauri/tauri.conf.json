@@ -1,8 +1,8 @@
 {
     "$schema":  "https://schema.tauri.app/config/2",
-    "productName":  "Nuclear",
-    "mainBinaryName":  "nuclear-music-player",
-    "version":  "1.47.21",
+    "productName":  "Aurora",
+    "mainBinaryName":  "aurora-music-player",
+    "version":  "1.47.22",
     "identifier":  "com.nuclearplayer",
     "build":  {
                   "frontendDist":  "../dist",
@@ -13,7 +13,7 @@
     "app":  {
                 "windows":  [
                                 {
-                                    "title":  "Nuclear Music Player",
+                                    "title":  "Aurora Music Player",
                                     "width":  1280,
                                     "height":  720,
                                     "maximized":  true,
@@ -29,10 +29,10 @@
     "bundle":  {
                    "active":  true,
                    "category":  "Music",
-                   "shortDescription":  "Music streaming app for your desktop",
-                   "longDescription":  "Nuclear is a free, open-source music player without ads or tracking. Search for any song or artist, build playlists, and start listening.",
-                   "copyright":  "Copyright 2025-2026 nukeop",
-                   "homepage":  "https://nuclearplayer.com",
+                   "shortDescription":  "Aurora Music Player",
+                   "longDescription":  "Aurora is a free, modern music player without ads or tracking. Search for any song or artist, build playlists, and start listening.",
+                   "copyright":  "Copyright 2026 Aurora",
+                   "homepage":  "https://github.com/danidetenerife/nucelar",
                    "createUpdaterArtifacts":  true,
                    "targets":  "all",
                    "icon":  [

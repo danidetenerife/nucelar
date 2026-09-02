@@ -1,8 +1,8 @@
 {
   "common": {
     "app": {
-      "name": "Nuclear",
-      "description": "Aplicación de streaming de música gratis"
+      "name": "Aurora",
+      "description": "Reproductor de música Aurora"
     },
     "actions": {
       "save": "Guardar",
@@ -588,7 +588,7 @@
     }
   },
   "titleBar": {
-    "title": "Nuclear Music Player",
+    "title": "Aurora Music Player",
     "minimize": "Minimizar",
     "maximize": "Maximizar",
     "close": "Cerrar"

@@ -140,25 +140,25 @@ html[data-platform='tv'] {
 }
 
 [data-theme='dark'] {
-  --background: oklch(0.22 0.03 5);
-  --background-secondary: oklch(0.27 0.035 5);
-  --background-input: oklch(0.15 0.02 5);
+  --background: oklch(0.16 0.025 240);
+  --background-secondary: oklch(0.20 0.03 235);
+  --background-input: oklch(0.13 0.02 245);
 
-  --foreground: oklch(0.9 0.008 5);
-  --foreground-secondary: oklch(0.78 0.1 5);
-  --foreground-input: oklch(0.93 0 0);
+  --foreground: oklch(0.96 0.015 180);
+  --foreground-secondary: oklch(0.72 0.04 200);
+  --foreground-input: oklch(0.96 0.015 180);
 
-  --primary: oklch(0.5 0.1 5);
+  --primary: oklch(0.76 0.175 162);
 
-  --border: oklch(0.48 0.04 5);
+  --border: oklch(0.30 0.035 230);
 
-  --accent-green: oklch(0.72 0.14 145);
-  --accent-yellow: oklch(0.78 0.14 95);
-  --accent-purple: oklch(0.7 0.13 300);
-  --accent-blue: oklch(0.72 0.12 250);
-  --accent-orange: oklch(0.75 0.12 65);
-  --accent-cyan: oklch(0.75 0.11 200);
-  --accent-red: oklch(0.68 0.14 18);
+  --accent-green: oklch(0.78 0.18 150);
+  --accent-yellow: oklch(0.84 0.15 95);
+  --accent-purple: oklch(0.72 0.18 310);
+  --accent-blue: oklch(0.72 0.14 250);
+  --accent-orange: oklch(0.78 0.16 55);
+  --accent-cyan: oklch(0.80 0.16 195);
+  --accent-red: oklch(0.70 0.19 22);
 
   --border-width: 1px;
 
