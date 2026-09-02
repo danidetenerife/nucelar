@@ -26,6 +26,10 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
+import android.os.PowerManager;
+
 public class AudioForegroundService extends Service {
     public static final String CHANNEL_ID = "nuclear_audio_channel";
     public static final String ACTION_UPDATE_METADATA = "com.nuclearplayer.UPDATE_METADATA";
@@ -35,6 +39,8 @@ public class AudioForegroundService extends Service {
 
     private final IBinder binder = new LocalBinder();
     private MediaSessionCompat mediaSession;
+    private PowerManager.WakeLock serviceWakeLock;
+    private WifiManager.WifiLock serviceWifiLock;
     private String currentArtworkUrl = "";
     private Bitmap currentArtworkBitmap = null;
     private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
@@ -55,8 +61,34 @@ public class AudioForegroundService extends Service {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        acquireLocks();
         createNotificationChannel();
         initMediaSession();
+    }
+
+    private void acquireLocks() {
+        try {
+            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (powerManager != null && serviceWakeLock == null) {
+                serviceWakeLock = powerManager.newWakeLock(
+                    PowerManager.PARTIAL_WAKE_LOCK,
+                    "Nuclear::ServiceAudioWakeLock"
+                );
+                serviceWakeLock.setReferenceCounted(false);
+                serviceWakeLock.acquire();
+            }
+
+            WifiManager wifiManager = (WifiManager) getApplicationContext()
+                .getSystemService(Context.WIFI_SERVICE);
+            if (wifiManager != null && serviceWifiLock == null) {
+                serviceWifiLock = wifiManager.createWifiLock(
+                    WifiManager.WIFI_MODE_FULL_HIGH_PERF,
+                    "Nuclear::ServiceAudioWifiLock"
+                );
+                serviceWifiLock.setReferenceCounted(false);
+                serviceWifiLock.acquire();
+            }
+        } catch (Throwable t) {}
     }
 
     private void initMediaSession() {
@@ -374,6 +406,14 @@ public class AudioForegroundService extends Service {
             mediaSession.release();
         }
         artworkExecutor.shutdownNow();
+        try {
+            if (serviceWakeLock != null && serviceWakeLock.isHeld()) {
+                serviceWakeLock.release();
+            }
+            if (serviceWifiLock != null && serviceWifiLock.isHeld()) {
+                serviceWifiLock.release();
+            }
+        } catch (Throwable t) {}
         instance = null;
         stopForeground(true);
         super.onDestroy();

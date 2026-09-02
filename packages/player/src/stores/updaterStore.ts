@@ -1,4 +1,4 @@
-import { relaunch } from '@tauri-apps/plugin-process';
+﻿import { relaunch } from '@tauri-apps/plugin-process';
 import { check, type Update } from '@tauri-apps/plugin-updater';
 import semver from 'semver';
 import { create } from 'zustand';
@@ -10,7 +10,7 @@ import { errorMessage } from '../utils/errorMessage';
 import { reportError } from '../utils/logging';
 import { getSetting } from './settingsStore';
 
-const CURRENT_VERSION = '1.47.2';
+const CURRENT_VERSION = '1.47.3';
 const GITHUB_REPO = 'danidetenerife/nucelar';
 const GITHUB_LATEST_RELEASE_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
 

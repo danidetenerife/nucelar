@@ -1,7 +1,9 @@
 package com.nuclearplayer.app;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
@@ -10,13 +12,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.os.PowerManager;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
+    private static MainActivity instance;
+
     private PowerManager.WakeLock wakeLock;
     private WifiManager.WifiLock wifiLock;
     private AudioManager audioManager;
@@ -24,9 +27,29 @@ public class MainActivity extends BridgeActivity {
     private boolean audioFocusGranted = false;
     private final Handler keepAliveHandler = new Handler(Looper.getMainLooper());
     private Runnable keepAliveRunnable;
+    private BroadcastReceiver screenStateReceiver;
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
+    public static void ensureActiveWebView() {
+        if (instance != null) {
+            instance.runOnUiThread(() -> {
+                try {
+                    WebView wv = instance.getBridge() != null ? instance.getBridge().getWebView() : null;
+                    if (wv != null) {
+                        wv.resumeTimers();
+                        wv.onResume();
+                    }
+                } catch (Throwable t) {}
+            });
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        instance = this;
         registerPlugin(MediaRouterPlugin.class);
         registerPlugin(NativeMediaSessionPlugin.class);
         registerPlugin(ApkUpdaterPlugin.class);
@@ -35,6 +58,7 @@ public class MainActivity extends BridgeActivity {
         setupWakeLocks();
         setupAudioFocus();
         setupWebView();
+        setupScreenStateReceiver();
         startAudioService();
         startKeepAliveLoop();
     }
@@ -121,6 +145,26 @@ public class MainActivity extends BridgeActivity {
         }
     }
 
+    private void setupScreenStateReceiver() {
+        try {
+            screenStateReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent == null) return;
+                    String action = intent.getAction();
+                    if (Intent.ACTION_SCREEN_OFF.equals(action) || Intent.ACTION_SCREEN_ON.equals(action) || Intent.ACTION_USER_PRESENT.equals(action)) {
+                        ensureActiveWebView();
+                    }
+                }
+            };
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            filter.addAction(Intent.ACTION_SCREEN_ON);
+            filter.addAction(Intent.ACTION_USER_PRESENT);
+            registerReceiver(screenStateReceiver, filter);
+        } catch (Throwable t) {}
+    }
+
     private void startAudioService() {
         try {
             Intent serviceIntent = new Intent(this, AudioForegroundService.class);
@@ -134,78 +178,51 @@ public class MainActivity extends BridgeActivity {
         }
     }
 
-    /**
-     * Periodically ensures WebView JavaScript timers stay active in background.
-     */
     private void startKeepAliveLoop() {
         keepAliveRunnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    WebView wv = getBridge() != null ? getBridge().getWebView() : null;
-                    if (wv != null) {
-                        wv.resumeTimers();
-                    }
-                } catch (Throwable t) {
-                    // ignore
-                }
-                keepAliveHandler.postDelayed(this, 10000); // every 10 seconds
+                ensureActiveWebView();
+                keepAliveHandler.postDelayed(this, 3000); // every 3 seconds
             }
         };
-        keepAliveHandler.postDelayed(keepAliveRunnable, 10000);
+        keepAliveHandler.postDelayed(keepAliveRunnable, 3000);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        try {
-            WebView wv = getBridge() != null ? getBridge().getWebView() : null;
-            if (wv != null) {
-                wv.resumeTimers();
-                wv.onResume();
-            }
-        } catch (Throwable t) {}
+        ensureActiveWebView();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        try {
-            WebView wv = getBridge() != null ? getBridge().getWebView() : null;
-            if (wv != null) {
-                wv.resumeTimers();
-                wv.onResume();
-            }
-        } catch (Throwable t) {}
+        ensureActiveWebView();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        try {
-            WebView wv = getBridge() != null ? getBridge().getWebView() : null;
-            if (wv != null) {
-                wv.resumeTimers();
-            }
-            if (!audioFocusGranted) {
-                setupAudioFocus();
-            }
-        } catch (Throwable t) {}
+        ensureActiveWebView();
+        if (!audioFocusGranted) {
+            setupAudioFocus();
+        }
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        try {
-            WebView wv = getBridge() != null ? getBridge().getWebView() : null;
-            if (wv != null) {
-                wv.resumeTimers();
-            }
-        } catch (Throwable t) {}
+        ensureActiveWebView();
     }
 
     @Override
     public void onDestroy() {
+        try {
+            if (screenStateReceiver != null) {
+                unregisterReceiver(screenStateReceiver);
+            }
+        } catch (Throwable t) {}
         try {
             keepAliveHandler.removeCallbacks(keepAliveRunnable);
         } catch (Throwable t) {}
@@ -226,6 +243,7 @@ public class MainActivity extends BridgeActivity {
                 wifiLock.release();
             }
         } catch (Throwable t) {}
+        instance = null;
         super.onDestroy();
     }
 }

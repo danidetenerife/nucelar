@@ -93,16 +93,15 @@ export const YouTubePlayer: FC<SoundProps> = ({
     }
   }, []);
 
-  // Resume playback only if unintentionally paused when app comes back to foreground
+  // Keep playback running through screen off, backgrounding, and foregrounding
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && statusRef.current === 'playing') {
+    const handleKeepPlaying = () => {
+      if (statusRef.current === 'playing') {
         try {
           const player = playerRef.current;
           if (player) {
             const playerState = player.getPlayerState?.();
-            // Only resume if it was actually paused (state 2), avoiding audio buffer resets when already playing (state 1)
-            if (playerState === 2) {
+            if (playerState !== 1) {
               player.playVideo();
             }
           }
@@ -110,12 +109,14 @@ export const YouTubePlayer: FC<SoundProps> = ({
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleKeepPlaying);
+    window.addEventListener('blur', handleKeepPlaying);
+    window.addEventListener('focus', handleKeepPlaying);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleKeepPlaying);
+      window.removeEventListener('blur', handleKeepPlaying);
+      window.removeEventListener('focus', handleKeepPlaying);
     };
   }, []);
 
@@ -201,14 +202,17 @@ export const YouTubePlayer: FC<SoundProps> = ({
                 event.data === window.YT?.PlayerState.PAUSED &&
                 statusRef.current === 'playing'
               ) {
-                // Auto resume on background/screen-off unintended pause
+                // Auto resume immediately on background/screen-off unintended pause
+                try {
+                  event.target.playVideo();
+                } catch {}
                 setTimeout(() => {
                   if (isMounted && statusRef.current === 'playing') {
                     try {
                       playerRef.current?.playVideo();
                     } catch {}
                   }
-                }, 100);
+                }, 50);
               }
             },
             onError: () => {

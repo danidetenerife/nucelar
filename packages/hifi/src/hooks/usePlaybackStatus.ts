@@ -60,24 +60,33 @@ export const usePlaybackStatus = (
     }
   }, [status, srcUrl, audioRef, onError]);
 
-  // Resume playback on visibility restored only if unintentionally paused
+  // Keep playback running through screen off, backgrounding, and foregrounding
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      const audio = audioRef.current;
-      if (!audio) return;
-      if (document.visibilityState === 'visible' && status === 'playing') {
-        // Only trigger play if audio was actually paused, avoiding buffer interruption
-        if (audio.paused && isReadyToPlay(audio)) {
-          audio.play().catch(() => {});
-        }
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleUnintendedPause = () => {
+      if (status === 'playing' && audio.paused) {
+        audio.play().catch(() => {});
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleVisibilityChange);
+    const handleKeepPlaying = () => {
+      if (status === 'playing' && audio.paused && isReadyToPlay(audio)) {
+        audio.play().catch(() => {});
+      }
+    };
+
+    audio.addEventListener('pause', handleUnintendedPause);
+    document.addEventListener('visibilitychange', handleKeepPlaying);
+    window.addEventListener('blur', handleKeepPlaying);
+    window.addEventListener('focus', handleKeepPlaying);
+
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleVisibilityChange);
+      audio.removeEventListener('pause', handleUnintendedPause);
+      document.removeEventListener('visibilitychange', handleKeepPlaying);
+      window.removeEventListener('blur', handleKeepPlaying);
+      window.removeEventListener('focus', handleKeepPlaying);
     };
   }, [audioRef, status]);
 };
