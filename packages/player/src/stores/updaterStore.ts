@@ -1,4 +1,4 @@
-﻿import { relaunch } from '@tauri-apps/plugin-process';
+import { relaunch } from '@tauri-apps/plugin-process';
 import { check, type Update } from '@tauri-apps/plugin-updater';
 import semver from 'semver';
 import { create } from 'zustand';

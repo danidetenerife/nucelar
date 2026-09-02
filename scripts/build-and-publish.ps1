@@ -6,9 +6,12 @@ $ErrorActionPreference = "Stop"
 $Root = Resolve-Path "$PSScriptRoot\.."
 Set-Location $Root
 
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+
 # Read current version from packages/player/package.json
 $PackageJsonPath = "$Root\packages\player\package.json"
-$PackageJson = Get-Content $PackageJsonPath -Raw | ConvertFrom-Json
+$rawPkg = [System.IO.File]::ReadAllText($PackageJsonPath, [System.Text.Encoding]::UTF8).TrimStart([char]0xFEFF)
+$PackageJson = $rawPkg | ConvertFrom-Json
 $CurrentVer = $PackageJson.version
 
 # Compute next version
@@ -24,28 +27,35 @@ if ($CustomVersion -ne "") {
 
 $Tag = "v$NextVer"
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host " [Nuclear CI] Subiendo de versiÃ³n: $CurrentVer -> $NextVer ($Tag)" -ForegroundColor Green
+Write-Host " [Nuclear CI] Subiendo de versión: $CurrentVer -> $NextVer ($Tag)" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 # 1. Update packages/player/package.json
 $PackageJson.version = $NextVer
-$PackageJson | ConvertTo-Json -Depth 10 | Set-Content $PackageJsonPath -Encoding UTF8
+$pkgStr = ($PackageJson | ConvertTo-Json -Depth 10)
+[System.IO.File]::WriteAllText($PackageJsonPath, $pkgStr, $utf8NoBom)
 
 # 2. Update packages/player/src-tauri/tauri.conf.json
 $TauriConfPath = "$Root\packages\player\src-tauri\tauri.conf.json"
-$TauriConf = Get-Content $TauriConfPath -Raw | ConvertFrom-Json
+$rawTauri = [System.IO.File]::ReadAllText($TauriConfPath, [System.Text.Encoding]::UTF8).TrimStart([char]0xFEFF)
+$TauriConf = $rawTauri | ConvertFrom-Json
 $TauriConf.version = $NextVer
-$TauriConf | ConvertTo-Json -Depth 10 | Set-Content $TauriConfPath -Encoding UTF8
+$tauriStr = ($TauriConf | ConvertTo-Json -Depth 10)
+[System.IO.File]::WriteAllText($TauriConfPath, $tauriStr, $utf8NoBom)
 
 # 3. Update packages/player/src/stores/updaterStore.ts
 $UpdaterStorePath = "$Root\packages\player\src\stores\updaterStore.ts"
-(Get-Content $UpdaterStorePath) -replace "const CURRENT_VERSION = '.*?';", "const CURRENT_VERSION = '$NextVer';" | Set-Content $UpdaterStorePath -Encoding UTF8
+$rawUpdater = [System.IO.File]::ReadAllText($UpdaterStorePath, [System.Text.Encoding]::UTF8).TrimStart([char]0xFEFF)
+$updaterStr = $rawUpdater -replace "const CURRENT_VERSION = '.*?';", "const CURRENT_VERSION = '$NextVer';"
+[System.IO.File]::WriteAllText($UpdaterStorePath, $updaterStr, $utf8NoBom)
 
 # 4. Update packages/player/android/app/build.gradle
 $BuildGradlePath = "$Root\packages\player\android\app\build.gradle"
+$rawGradle = [System.IO.File]::ReadAllText($BuildGradlePath, [System.Text.Encoding]::UTF8).TrimStart([char]0xFEFF)
 $partsVer = $NextVer.Split('.')
 $code = [int]$partsVer[0]*10000 + [int]$partsVer[1]*100 + [int]$partsVer[2]
-(Get-Content $BuildGradlePath) -replace 'versionName ".*?"', "versionName `"$NextVer`"" -replace 'versionCode \d+', "versionCode $code" | Set-Content $BuildGradlePath -Encoding UTF8
+$gradleStr = $rawGradle -replace 'versionName ".*?"', "versionName `"$NextVer`"" -replace 'versionCode \d+', "versionCode $code"
+[System.IO.File]::WriteAllText($BuildGradlePath, $gradleStr, $utf8NoBom)
 
 # 5. Build frontend
 Write-Host "[1/4] Compilando Frontend..." -ForegroundColor Yellow
@@ -62,7 +72,7 @@ Set-Location "$Root\packages\player"
 try {
     npx pnpm tauri build
 } catch {
-    Write-Host "Tauri build terminÃ³ con advertencia de firma (esperado)" -ForegroundColor Gray
+    Write-Host "Tauri build terminó con advertencia de firma (esperado)" -ForegroundColor Gray
 }
 Set-Location $Root
 
@@ -80,5 +90,5 @@ powershell.exe -ExecutionPolicy Bypass -File "$Root\scripts\auto-sync-github.ps1
 powershell.exe -ExecutionPolicy Bypass -File "$Root\scripts\publish-release.ps1" -Version $NextVer
 
 Write-Host "==========================================================" -ForegroundColor Green
-Write-Host " Â¡VersiÃ³n $NextVer ($Tag) compilada y publicada con Ã©xito!" -ForegroundColor Green
+Write-Host " ¡Versión $NextVer ($Tag) compilada y publicada con éxito!" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
