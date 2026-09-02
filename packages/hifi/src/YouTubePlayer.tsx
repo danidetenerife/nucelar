@@ -155,6 +155,7 @@ export const YouTubePlayer: FC<SoundProps> = ({
             enablejsapi: 1,
             iv_load_policy: 3,
             modestbranding: 1,
+            origin: typeof window !== 'undefined' ? window.location.origin : undefined,
           },
           events: {
             onReady: (event) => {

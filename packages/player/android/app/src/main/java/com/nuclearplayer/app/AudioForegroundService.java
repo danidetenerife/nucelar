@@ -341,6 +341,17 @@ public class AudioForegroundService extends Service {
             .build();
 
         mediaSession.setPlaybackState(playbackState);
+
+        MediaMetadataCompat metadata = mediaSession.getController().getMetadata();
+        String title = "";
+        String artist = "";
+        if (metadata != null) {
+            CharSequence t = metadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE);
+            CharSequence a = metadata.getText(MediaMetadataCompat.METADATA_KEY_ARTIST);
+            if (t != null) title = t.toString();
+            if (a != null) artist = a.toString();
+        }
+        updateNotification(title, artist);
     }
 
     private Notification buildNotification(String title, String artist, boolean isPlaying) {

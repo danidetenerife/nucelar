@@ -46,6 +46,7 @@ public class MainActivity extends BridgeActivity {
                     WebView webView = instance.getBridge() != null ? instance.getBridge().getWebView() : null;
                     if (webView != null) {
                         webView.resumeTimers();
+                        webView.onResume();
                     }
                 } catch (Throwable t) {}
             });
