@@ -42,6 +42,27 @@ export const initPlayerApp = async (
     </React.StrictMode>,
   );
 
+  if (typeof window !== 'undefined' && !isTauriEnvironment()) {
+    try {
+      Object.defineProperty(document, 'hidden', {
+        get: () => false,
+        configurable: true,
+      });
+      Object.defineProperty(document, 'visibilityState', {
+        get: () => 'visible',
+        configurable: true,
+      });
+      Object.defineProperty(Document.prototype, 'hidden', {
+        get: () => false,
+        configurable: true,
+      });
+      Object.defineProperty(Document.prototype, 'visibilityState', {
+        get: () => 'visible',
+        configurable: true,
+      });
+    } catch {}
+  }
+
   try {
     if (isTauriEnvironment()) {
       initLogStream();

@@ -213,7 +213,21 @@ export const YouTubePlayer: FC<SoundProps> = ({
                       playerRef.current?.playVideo();
                     } catch {}
                   }
-                }, 50);
+                }, 100);
+                setTimeout(() => {
+                  if (isMounted && statusRef.current === 'playing') {
+                    try {
+                      playerRef.current?.playVideo();
+                    } catch {}
+                  }
+                }, 300);
+                setTimeout(() => {
+                  if (isMounted && statusRef.current === 'playing') {
+                    try {
+                      playerRef.current?.playVideo();
+                    } catch {}
+                  }
+                }, 600);
               }
             },
             onError: () => {
@@ -306,6 +320,12 @@ export const YouTubePlayer: FC<SoundProps> = ({
         const player = playerRef.current;
         if (player) {
           try {
+            if (statusRef.current === 'playing') {
+              const state = player.getPlayerState?.();
+              if (state === 2 /* PAUSED */ || state === -1 /* UNSTARTED */ || state === 5 /* CUED */) {
+                player.playVideo();
+              }
+            }
             const position = player.getCurrentTime() || 0;
             const duration = player.getDuration() || 0;
             onTimeUpdateRef.current?.({ position, duration });
