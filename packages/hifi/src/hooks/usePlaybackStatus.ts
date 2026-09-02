@@ -59,17 +59,30 @@ export const usePlaybackStatus = (
     const audio = audioRef.current;
     if (!audio) return;
 
+    const handleUnintendedPause = () => {
+      if (status === 'playing') {
+        audio.play().catch(() => {});
+        setTimeout(() => {
+          if (status === 'playing' && audio.paused) {
+            audio.play().catch(() => {});
+          }
+        }, 50);
+      }
+    };
+
     const handleKeepPlaying = () => {
       if (status === 'playing' && audio.paused) {
         audio.play().catch(() => {});
       }
     };
 
+    audio.addEventListener('pause', handleUnintendedPause);
     document.addEventListener('visibilitychange', handleKeepPlaying);
     window.addEventListener('blur', handleKeepPlaying);
     window.addEventListener('focus', handleKeepPlaying);
 
     return () => {
+      audio.removeEventListener('pause', handleUnintendedPause);
       document.removeEventListener('visibilitychange', handleKeepPlaying);
       window.removeEventListener('blur', handleKeepPlaying);
       window.removeEventListener('focus', handleKeepPlaying);

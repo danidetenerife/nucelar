@@ -1,5 +1,23 @@
 [
   {
+    "date": "2026-09-02T22:15",
+    "description": "Fixed audio stopping when screen is turned off or exiting app on Android by re-attaching the unintended pause recovery handler and immediately resuming WebView processing and timers in MainActivity onPause and onStop.",
+    "type": "fix",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Android",
+        "color": "green"
+      },
+      {
+        "label": "Background Playback",
+        "color": "cyan"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T21:55",
     "description": "Resolved mobile playback stall by removing crossOrigin enforcement on HTML5 audio elements, eliminating slow watch-page roundtrips, and triggering audio.play() synchronously within the user gesture window.",
     "type": "fix",

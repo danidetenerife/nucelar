@@ -10,7 +10,7 @@ import { errorMessage } from '../utils/errorMessage';
 import { reportError } from '../utils/logging';
 import { getSetting } from './settingsStore';
 
-const CURRENT_VERSION = '1.47.24';
+const CURRENT_VERSION = '1.47.25';
 const GITHUB_REPO = 'danidetenerife/nucelar';
 const GITHUB_LATEST_RELEASE_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
 
