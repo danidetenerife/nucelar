@@ -1,5 +1,23 @@
 [
   {
+    "date": "2026-09-02T16:35",
+    "description": "Permanently solved background playback on Android screen off/lock using direct native stream extraction and notification permissions.",
+    "type": "fix",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Android",
+        "color": "green"
+      },
+      {
+        "label": "Audio",
+        "color": "cyan"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T15:09",
     "description": "Implemented direct stream extraction for Android to bypass Chromium WebView limitations and permanently fix background playback.",
     "type": "fix",

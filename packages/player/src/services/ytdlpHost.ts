@@ -9,50 +9,76 @@ import type {
 
 import { isTauriEnvironment } from './universalStore';
 
-const PIPED_INSTANCES = [
-  'https://pipedapi.kavin.rocks',
-  'https://pipedapi.smnz.de',
-  'https://pipedapi.lunar.icu',
-  'https://pipedapi.moomoo.me',
-];
-
-async function extractAudioStreamViaPiped(videoId: string): Promise<string | null> {
-  for (const instance of PIPED_INSTANCES) {
-    try {
-      const response = await fetch(`${instance}/streams/${videoId}`);
-      if (!response.ok) continue;
-      const data = await response.json();
-      const audioStreams = data.audioStreams || [];
-      const stream = audioStreams.find((s: any) => s.mimeType?.includes('audio/mp4') || s.mimeType?.includes('audio/webm')) || audioStreams[0];
-      if (stream && stream.url) {
-        return stream.url;
-      }
-    } catch (e) {
-      console.warn(`[ytdlpHost] Failed to fetch from ${instance}:`, e);
-    }
-  }
-  return null;
-}
-
-async function extractAudioStreamViaCobalt(url: string): Promise<string | null> {
+async function extractAudioStreamDirect(videoId: string): Promise<string | null> {
   try {
-    const response = await fetch('https://api.cobalt.tools/api/json', {
-      method: 'POST',
+    const htmlRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
       },
-      body: JSON.stringify({
-        url,
-        isAudioOnly: true
-      })
     });
-    if (response.ok) {
-      const data = await response.json();
-      return data.url;
+    const html = await htmlRes.text();
+    const visitorMatch = html.match(/"VISITOR_DATA":"([^"]+)"/);
+    const visitorId = visitorMatch ? visitorMatch[1] : '';
+
+    const body = {
+      context: {
+        client: {
+          clientName: 'ANDROID_VR',
+          clientVersion: '1.65.10',
+          deviceMake: 'Oculus',
+          deviceModel: 'Quest 3',
+          androidSdkVersion: 32,
+          userAgent:
+            'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
+          osName: 'Android',
+          osVersion: '12L',
+          hl: 'en',
+          gl: 'US',
+          ...(visitorId ? { visitorData: visitorId } : {}),
+        },
+      },
+      videoId,
+    };
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'User-Agent':
+        'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
+      'X-YouTube-Client-Name': '28',
+      'X-YouTube-Client-Version': '1.65.10',
+      Origin: 'https://www.youtube.com',
+      ...(visitorId ? { 'X-Goog-Visitor-Id': visitorId } : {}),
+    };
+
+    const res = await fetch('https://www.youtube.com/youtubei/v1/player', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      return null;
     }
-  } catch (e) {
-    console.warn('[ytdlpHost] Cobalt API failed:', e);
+
+    const data = await res.json();
+    const formats = data.streamingData?.adaptiveFormats || [];
+    const audioFormats = formats.filter(
+      (format: any) => format.mimeType && format.mimeType.includes('audio'),
+    );
+
+    audioFormats.sort(
+      (a: any, b: any) => (b.bitrate || 0) - (a.bitrate || 0),
+    );
+
+    for (const format of audioFormats) {
+      if (format.url) {
+        return format.url;
+      }
+    }
+  } catch (error) {
+    console.warn('[ytdlpHost] Direct Android VR extraction failed:', error);
   }
   return null;
 }
@@ -81,17 +107,14 @@ export const ytdlpHost: YtdlpHost = {
         videoId = match[1];
       }
 
-      let directAudioUrl = await extractAudioStreamViaPiped(videoId);
-      if (!directAudioUrl) {
-        directAudioUrl = await extractAudioStreamViaCobalt(`https://www.youtube.com/watch?v=${videoId}`);
-      }
+      const directAudioUrl = await extractAudioStreamDirect(videoId);
 
       return {
         stream_url: directAudioUrl || `https://www.youtube.com/watch?v=${videoId}`,
         duration: null,
         title: null,
-        container: 'webm',
-        codec: 'opus',
+        container: 'mp4',
+        codec: 'aac',
         album: null,
         artists: [],
         album_artists: [],

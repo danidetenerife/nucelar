@@ -74,7 +74,16 @@ public class MainActivity extends BridgeActivity {
         setupWebView();
         setupTelevisionDisplay();
         setupScreenStateReceiver();
+        requestNotificationPermission();
         startAudioService();
+    }
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
     }
 
     private boolean isTelevisionDevice() {
