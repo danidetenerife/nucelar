@@ -1,5 +1,23 @@
 [
   {
+    "date": "2026-09-02T20:30",
+    "description": "Completed surgical cleanup removing over 45 obsolete files, dead views, unused theme & remoteControl systems, and heavy unused backend crates (rmcp, schemars, discord-rich-presence) for maximum speed, lightweight footprint, and robustness.",
+    "type": "improvement",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Performance",
+        "color": "green"
+      },
+      {
+        "label": "Architecture",
+        "color": "cyan"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T19:43",
     "description": "Streamlined player by removing unused integrations (Nuclear Jam, MCP server, MPD server, Discord RPC) and appearance customizations (custom title bar and frameless window options) for peak performance and lighter footprint.",
     "type": "improvement",

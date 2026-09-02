@@ -3,7 +3,6 @@ import { create } from 'zustand';
 export type SettingsTab =
   | 'general'
   | 'sync'
-  | 'themes'
   | 'plugins'
   | 'shortcuts'
   | 'logs'

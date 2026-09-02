@@ -14,18 +14,8 @@ export const commands = {
 	ytdlpGetStream: (url: string | null, videoId: string | null) => typedError<YtdlpStreamInfo, string>(__TAURI_INVOKE("ytdlp_get_stream", { url, videoId })),
 	ytdlpGetPlaylist: (url: string) => typedError<YtdlpPlaylistInfo, string>(__TAURI_INVOKE("ytdlp_get_playlist", { url })),
 	getStartupLogs: () => __TAURI_INVOKE<StartupLogEntry[]>("get_startup_logs"),
-	mcpStart: () => typedError<number, string>(__TAURI_INVOKE("mcp_start")),
-	mcpStop: () => typedError<null, string>(__TAURI_INVOKE("mcp_stop")),
-	httpApiStart: () => typedError<HttpApiStartResult, string>(__TAURI_INVOKE("http_api_start")),
-	httpApiStop: () => typedError<null, string>(__TAURI_INVOKE("http_api_stop")),
-	mpdStart: () => typedError<number, string>(__TAURI_INVOKE("mpd_start")),
-	mpdStop: () => typedError<null, string>(__TAURI_INVOKE("mpd_stop")),
 	streamServerPort: () => __TAURI_INVOKE<number>("stream_server_port"),
 	ytdlpEnsureInstalled: () => typedError<boolean, string>(__TAURI_INVOKE("ytdlp_ensure_installed")),
-	discordConnect: () => typedError<null, string>(__TAURI_INVOKE("discord_connect")),
-	discordDisconnect: () => typedError<null, string>(__TAURI_INVOKE("discord_disconnect")),
-	discordSetActivity: (track: TrackPresence) => typedError<boolean, string>(__TAURI_INVOKE("discord_set_activity", { track })),
-	discordClearActivity: () => typedError<boolean, string>(__TAURI_INVOKE("discord_clear_activity")),
 	bridgeRespond: (response: BridgeResponse) => typedError<null, string>(__TAURI_INVOKE("bridge_respond", { response })),
 	bridgeNotify: (notification: BridgeNotification) => typedError<null, string>(__TAURI_INVOKE("bridge_notify", { notification })),
 	historyRecordEvent: (event: PlayEvent) => typedError<null, string>(__TAURI_INVOKE("history_record_event", { event })),
@@ -78,11 +68,6 @@ export type HistoryEntry = {
 
 export type HourlyListeningTime = {
 	values: number[],
-};
-
-export type HttpApiStartResult = {
-	port: number,
-	lan_address: string | null,
 };
 
 export type HttpRequest = {
@@ -153,15 +138,6 @@ export type TopTrack = {
 	artworkUrl: string | null,
 	msPlayed: number,
 	plays: number,
-};
-
-export type TrackPresence = {
-	title: string,
-	artist: string,
-	album: string | null,
-	artworkUrl: string | null,
-	startTimestamp: number | null,
-	endTimestamp: number | null,
 };
 
 export type TrackSnapshot = {

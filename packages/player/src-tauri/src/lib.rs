@@ -1,13 +1,9 @@
 pub mod bridge;
 pub mod commands;
 pub mod db;
-pub mod discord;
 pub mod history;
 pub mod http;
-pub mod http_api;
 pub mod logging;
-pub mod mcp;
-pub mod mpd;
 pub mod net;
 pub mod pagination;
 mod setup;
@@ -45,18 +41,8 @@ fn specta_builder() -> tauri_specta::Builder<tauri::Wry> {
         ytdlp::ytdlp_get_stream,
         ytdlp::ytdlp_get_playlist,
         logging::get_startup_logs,
-        mcp::mcp_start,
-        mcp::mcp_stop,
-        http_api::http_api_start,
-        http_api::http_api_stop,
-        mpd::mpd_start,
-        mpd::mpd_stop,
         stream_server::stream_server_port,
         ytdlp_setup::ytdlp_ensure_installed,
-        discord::discord_connect,
-        discord::discord_disconnect,
-        discord::discord_set_activity,
-        discord::discord_clear_activity,
         bridge::bridge_respond,
         bridge::bridge_notify,
         history::commands::history_record_event,
@@ -109,11 +95,7 @@ pub fn run() {
         .setup(|app| {
             logging::mark_startup_complete();
             bridge::init_bridge(app.handle().clone());
-            mcp::init_mcp(app.handle().clone());
-            mpd::init_mpd(app.handle().clone());
-            http_api::init_http_api(app.handle().clone());
             stream_server::init_stream_server(app.handle().clone());
-            discord::init_discord(app.handle().clone());
             history::init_history(app.handle().clone());
 
             #[cfg(target_os = "linux")]
