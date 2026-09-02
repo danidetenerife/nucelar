@@ -119,7 +119,7 @@ export const CarModeOverlay: FC = () => {
       )}
 
       {/* Top Header Bar */}
-      <div className="relative z-10 flex items-center justify-between px-6 pt-6 pb-2">
+      <div className="relative z-10 flex items-center justify-between px-6 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-zinc-800/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-zinc-700/60 shadow-lg">
             <Car size={18} className="text-emerald-400 animate-pulse" />
@@ -173,7 +173,7 @@ export const CarModeOverlay: FC = () => {
       </div>
 
       {/* Bottom Controls Area */}
-      <div className="relative z-10 bg-zinc-900/90 backdrop-blur-xl border-t border-zinc-800/80 px-6 pt-4 pb-8 flex flex-col gap-4 max-w-2xl mx-auto w-full">
+      <div className="relative z-10 bg-zinc-900/90 backdrop-blur-xl border-t border-zinc-800/80 px-6 pt-4 pb-[calc(env(safe-area-inset-bottom)+2rem)] flex flex-col gap-4 max-w-2xl mx-auto w-full">
         {/* Scrubber / Progress Bar */}
         <div className="w-full space-y-1">
           <div className="relative flex items-center">
