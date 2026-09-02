@@ -60,13 +60,48 @@ public class AudioForegroundService extends Service {
         return instance;
     }
 
+    private AudioManager audioManager;
+    private AudioFocusRequest audioFocusRequest;
+
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
         acquireLocks();
+        requestServiceAudioFocus();
         createNotificationChannel();
         initMediaSession();
+    }
+
+    private void requestServiceAudioFocus() {
+        try {
+            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager == null) return;
+
+            AudioManager.OnAudioFocusChangeListener focusChangeListener = focusChange -> {};
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+
+                audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                    .setAudioAttributes(audioAttributes)
+                    .setOnAudioFocusChangeListener(focusChangeListener)
+                    .setWillPauseWhenDucked(false)
+                    .setAcceptsDelayedFocusGain(true)
+                    .build();
+
+                audioManager.requestAudioFocus(audioFocusRequest);
+            } else {
+                audioManager.requestAudioFocus(
+                    focusChangeListener,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN
+                );
+            }
+        } catch (Throwable t) {}
     }
 
     private void acquireLocks() {

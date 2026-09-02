@@ -29,9 +29,6 @@ public class MainActivity extends BridgeActivity {
 
     private PowerManager.WakeLock wakeLock;
     private WifiManager.WifiLock wifiLock;
-    private AudioManager audioManager;
-    private AudioFocusRequest audioFocusRequest;
-    private boolean audioFocusGranted = false;
     private BroadcastReceiver screenStateReceiver;
     private boolean isTelevision;
 
@@ -74,7 +71,6 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
 
         setupWakeLocks();
-        setupAudioFocus();
         setupWebView();
         setupTelevisionDisplay();
         setupScreenStateReceiver();
@@ -125,45 +121,6 @@ public class MainActivity extends BridgeActivity {
                 );
                 wifiLock.setReferenceCounted(false);
                 wifiLock.acquire();
-            }
-        } catch (Throwable t) {
-            // ignore
-        }
-    }
-
-    private void setupAudioFocus() {
-        try {
-            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            if (audioManager == null) return;
-
-            AudioManager.OnAudioFocusChangeListener focusChangeListener = focusChange -> {
-                // Keep playing on all focus changes - we are a music player
-            };
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setFlags(AudioAttributes.FLAG_AUDIBILITY_ENFORCED)
-                    .build();
-
-                audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                    .setAudioAttributes(audioAttributes)
-                    .setOnAudioFocusChangeListener(focusChangeListener)
-                    .setWillPauseWhenDucked(false)
-                    .setAcceptsDelayedFocusGain(true)
-                    .build();
-
-                int result = audioManager.requestAudioFocus(audioFocusRequest);
-                audioFocusGranted = (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
-            } else {
-                //noinspection deprecation
-                int result = audioManager.requestAudioFocus(
-                    focusChangeListener,
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN
-                );
-                audioFocusGranted = (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
             }
         } catch (Throwable t) {
             // ignore
@@ -236,9 +193,6 @@ public class MainActivity extends BridgeActivity {
     public void onResume() {
         super.onResume();
         ensureActiveWebView();
-        if (!audioFocusGranted) {
-            setupAudioFocus();
-        }
     }
 
     @Override
@@ -271,11 +225,6 @@ public class MainActivity extends BridgeActivity {
         try {
             Intent serviceIntent = new Intent(this, AudioForegroundService.class);
             stopService(serviceIntent);
-        } catch (Throwable t) {}
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && audioFocusRequest != null && audioManager != null) {
-                audioManager.abandonAudioFocusRequest(audioFocusRequest);
-            }
         } catch (Throwable t) {}
         try {
             if (wakeLock != null && wakeLock.isHeld()) {
