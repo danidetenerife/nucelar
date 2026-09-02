@@ -10,6 +10,7 @@ import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.media.AudioFocusRequest;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
