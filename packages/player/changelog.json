@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-02T23:05",
+    "description": "Upgraded notification channel to v5 with IMPORTANCE_HIGH and PRIORITY_HIGH, persistent non-empty titles/artists, and prioritized M4A/AAC hardware decoding for universal zero-glitch lockscreen widget rendering on Xiaomi HyperOS 3.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Xiaomi HyperOS",
+        "color": "orange"
+      },
+      {
+        "label": "Lockscreen Widget",
+        "color": "purple"
+      },
+      {
+        "label": "Hardware Codec",
+        "color": "green"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T22:45",
     "description": "Full Xiaomi HyperOS & MIUI lockscreen compatibility: added dedicated public playback channel with default importance, display metadata keys, restored reactive Sound synchronization, and added visitor session token caching to eliminate YouTube bot challenges.",
     "type": "feature",

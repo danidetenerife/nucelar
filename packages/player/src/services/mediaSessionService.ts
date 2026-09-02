@@ -106,6 +106,12 @@ export const initMediaSessionService = () => {
       const currentUrl = state.src?.url || '';
       if (currentUrl && currentUrl !== lastStreamUrl && isPlaying) {
         lastStreamUrl = currentUrl;
+        const currentItem = useQueueStore.getState().getCurrentItem();
+        if (currentItem) {
+          useQueueStore
+            .getState()
+            .updateItemState(currentItem.id, { status: 'success' });
+        }
         NativeMediaSessionPlugin.playStream({
           url: currentUrl,
           positionMs: secondsToMs(state.seek),

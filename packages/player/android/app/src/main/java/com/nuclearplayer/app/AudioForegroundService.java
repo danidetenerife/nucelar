@@ -34,7 +34,7 @@ import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 
 public class AudioForegroundService extends Service {
-    public static final String CHANNEL_ID = "aurora_media_playback_v4";
+    public static final String CHANNEL_ID = "aurora_media_playback_v5";
     public static final String ACTION_UPDATE_METADATA = "com.nuclearplayer.UPDATE_METADATA";
     public static final String ACTION_UPDATE_PLAYBACK_STATE = "com.nuclearplayer.UPDATE_PLAYBACK_STATE";
 
@@ -44,6 +44,9 @@ public class AudioForegroundService extends Service {
     private MediaSessionCompat mediaSession;
     private PowerManager.WakeLock serviceWakeLock;
     private WifiManager.WifiLock serviceWifiLock;
+    private String currentTitle = "Aurora";
+    private String currentArtist = "Reproductor de música";
+    private String currentAlbum = "";
     private String currentArtworkUrl = "";
     private Bitmap currentArtworkBitmap = null;
     private long currentDurationMs = 0;
@@ -306,17 +309,17 @@ public class AudioForegroundService extends Service {
             currentDurationMs = durationMs;
         }
 
-        if (title == null) title = "";
-        if (artist == null) artist = "";
-        if (album == null) album = "";
+        if (title != null && !title.trim().isEmpty()) currentTitle = title.trim();
+        if (artist != null && !artist.trim().isEmpty()) currentArtist = artist.trim();
+        if (album != null && !album.trim().isEmpty()) currentAlbum = album.trim();
 
         MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder()
-            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, title)
-            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, artist)
-            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
-            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, album);
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentTitle)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, currentTitle)
+            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, currentArtist)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, currentArtist)
+            .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, currentAlbum)
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, currentAlbum);
 
         if (currentDurationMs > 0) {
             metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, currentDurationMs);
@@ -532,13 +535,13 @@ public class AudioForegroundService extends Service {
             PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0));
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(title.isEmpty() ? "Aurora" : title)
-            .setContentText(artist)
+            .setContentTitle(title != null && !title.isEmpty() ? title : currentTitle)
+            .setContentText(artist != null && !artist.isEmpty() ? artist : currentArtist)
+            .setSubText(!currentAlbum.isEmpty() ? currentAlbum : "Aurora")
             .setSmallIcon(R.drawable.ic_stat_aurora)
             .setContentIntent(contentIntent)
-            .setOngoing(true)
-            .setSilent(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(isPlaying)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
             .addAction(android.R.drawable.ic_media_previous, "Previous", prevPending)
@@ -565,20 +568,19 @@ public class AudioForegroundService extends Service {
         PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
         boolean isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
 
-        String t = title;
-        String a = artist;
-        if ((t == null || t.isEmpty()) && metadata != null) {
+        if (title != null && !title.trim().isEmpty()) currentTitle = title.trim();
+        if (artist != null && !artist.trim().isEmpty()) currentArtist = artist.trim();
+
+        if (metadata != null) {
             CharSequence metaTitle = metadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE);
-            if (metaTitle != null && metaTitle.length() > 0) t = metaTitle.toString();
-        }
-        if ((a == null || a.isEmpty()) && metadata != null) {
+            if (metaTitle != null && metaTitle.length() > 0) currentTitle = metaTitle.toString();
             CharSequence metaArtist = metadata.getText(MediaMetadataCompat.METADATA_KEY_ARTIST);
-            if (metaArtist != null && metaArtist.length() > 0) a = metaArtist.toString();
+            if (metaArtist != null && metaArtist.length() > 0) currentArtist = metaArtist.toString();
         }
 
         Notification notification = buildNotification(
-            t != null && !t.isEmpty() ? t : "Aurora",
-            a != null ? a : "",
+            currentTitle,
+            currentArtist,
             isPlaying
         );
 
@@ -632,7 +634,7 @@ public class AudioForegroundService extends Service {
             NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID,
                 "Aurora Music Player",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             );
             channel.setDescription("Controles de música en la pantalla de bloqueo y barra de estado");
             channel.setShowBadge(true);

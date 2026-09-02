@@ -100,7 +100,14 @@ async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInf
     );
 
     audioFormats.sort(
-      (a: { bitrate?: number }, b: { bitrate?: number }) => (b.bitrate || 0) - (a.bitrate || 0),
+      (a: { bitrate?: number; mimeType?: string }, b: { bitrate?: number; mimeType?: string }) => {
+        const aIsM4a = a.mimeType?.includes('mp4') ? 1 : 0;
+        const bIsM4a = b.mimeType?.includes('mp4') ? 1 : 0;
+        if (aIsM4a !== bIsM4a) {
+          return bIsM4a - aIsM4a;
+        }
+        return (b.bitrate || 0) - (a.bitrate || 0);
+      },
     );
 
     for (const format of audioFormats) {
