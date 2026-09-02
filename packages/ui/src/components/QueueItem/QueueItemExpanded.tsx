@@ -1,5 +1,5 @@
 import { AlertCircle, CassetteTape, X } from 'lucide-react';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { pickArtwork } from '@nuclearplayer/model';
 
@@ -26,6 +26,12 @@ export const QueueItemExpanded: FC<QueueItemProps> = ({
   const candidateUrl = fallbackCandidateThumbnail?.thumbnail;
   const albumArtwork = pickArtwork(track.album?.artwork, 'thumbnail', 64);
   const artworkUrl = thumbnail?.url ?? candidateUrl ?? albumArtwork?.url;
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [artworkUrl]);
+
   const duration = formatTimeMillis(track.durationMs);
   const primaryArtist = track.artists[0]?.name;
 
@@ -54,10 +60,11 @@ export const QueueItemExpanded: FC<QueueItemProps> = ({
           classes?.thumbnail,
         )}
       >
-        {artworkUrl ? (
+        {artworkUrl && !imgError ? (
           <img
             src={artworkUrl}
             alt={track.title}
+            onError={() => setImgError(true)}
             className="h-full w-full object-cover"
           />
         ) : (

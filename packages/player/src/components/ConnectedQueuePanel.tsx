@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { EllipsisIcon, Trash2Icon } from 'lucide-react';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { useTranslation } from '@nuclearplayer/i18n';
 import { Button, Dialog, Input, Popover, QueuePanel } from '@nuclearplayer/ui';
@@ -8,6 +8,7 @@ import { Button, Dialog, Input, Popover, QueuePanel } from '@nuclearplayer/ui';
 import { useCurrentQueueItem } from '../hooks/useCurrentQueueItem';
 import { useQueue } from '../hooks/useQueue';
 import { useQueueActions } from '../hooks/useQueueActions';
+import { enrichTracksInQueue } from '../services/artworkEnricher';
 import { usePlaylistStore } from '../stores/playlistStore';
 
 type ConnectedQueuePanelProps = {
@@ -21,6 +22,10 @@ export const ConnectedQueuePanel: FC<ConnectedQueuePanelProps> = ({
   const queue = useQueue();
   const currentItem = useCurrentQueueItem();
   const actions = useQueueActions();
+
+  useEffect(() => {
+    enrichTracksInQueue();
+  }, [queue.items]);
 
   const handleReorder = (fromIndex: number, toIndex: number) => {
     actions.reorder(fromIndex, toIndex);

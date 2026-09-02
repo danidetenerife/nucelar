@@ -1,12 +1,23 @@
 import type { ArtworkSet, QueueItem } from '@nuclearplayer/model';
 
+import {
+  createArtworkSetFromUrl,
+  isYouTubeOrGenericArtwork,
+  resolveTrackCoverUrl,
+} from './coverArtResolver';
 import { metadataHost } from './metadataHost';
 import { useQueueStore } from '../stores/queueStore';
 
 const artworkCache = new Map<string, ArtworkSet>();
 
 export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
-  if (item.track.artwork && item.track.artwork.items?.length > 0) {
+  const currentFirstUrl = item.track.artwork?.items?.[0]?.url;
+  const hasValidArtwork =
+    item.track.artwork &&
+    item.track.artwork.items?.length > 0 &&
+    !isYouTubeOrGenericArtwork(currentFirstUrl);
+
+  if (hasValidArtwork) {
     return;
   }
 
@@ -25,6 +36,20 @@ export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
     return;
   }
 
+  // 1. Try iTunes instant high-res resolver (600x600)
+  try {
+    const itunesUrl = await resolveTrackCoverUrl(primaryArtist, title);
+    if (itunesUrl) {
+      const artworkSet = createArtworkSetFromUrl(itunesUrl);
+      artworkCache.set(cacheKey, artworkSet);
+      useQueueStore.getState().updateItemState(item.id, {
+        track: { ...item.track, artwork: artworkSet },
+      });
+      return;
+    }
+  } catch {}
+
+  // 2. Try Spotify / metadataHost search
   try {
     const searchRes = await metadataHost.search({
       query: `${primaryArtist} ${title}`,
@@ -47,7 +72,12 @@ export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
 export const enrichTracksInQueue = (): void => {
   const items = useQueueStore.getState().items;
   for (const item of items) {
-    if (!item.track.artwork || !item.track.artwork.items?.length) {
+    const currentFirstUrl = item.track.artwork?.items?.[0]?.url;
+    if (
+      !item.track.artwork ||
+      !item.track.artwork.items?.length ||
+      isYouTubeOrGenericArtwork(currentFirstUrl)
+    ) {
       void enrichTrackArtwork(item);
     }
   }

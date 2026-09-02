@@ -1,5 +1,5 @@
 import { CassetteTape } from 'lucide-react';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { pickArtwork } from '@nuclearplayer/model';
 
@@ -22,6 +22,11 @@ export const QueueItemCollapsed: FC<QueueItemProps> = ({
   const candidateUrl = fallbackCandidateThumbnail?.thumbnail;
   const albumArtwork = pickArtwork(track.album?.artwork, 'thumbnail', 64);
   const artworkUrl = thumbnail?.url ?? candidateUrl ?? albumArtwork?.url;
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [artworkUrl]);
 
   return (
     <div className="relative" data-testid="queue-item">
@@ -42,10 +47,11 @@ export const QueueItemCollapsed: FC<QueueItemProps> = ({
         onClick={onSelect}
         role={onSelect ? 'button' : undefined}
       >
-        {artworkUrl ? (
+        {artworkUrl && !imgError ? (
           <img
             src={artworkUrl}
             alt={track.title}
+            onError={() => setImgError(true)}
             className={cn('h-full w-full object-cover', classes?.thumbnail)}
           />
         ) : (
