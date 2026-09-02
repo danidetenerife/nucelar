@@ -10,7 +10,6 @@ import {
 import { useCanGoForward } from '../hooks/useCanGoForward';
 import { useCoreSetting } from '../hooks/useCoreSetting';
 import { useFramelessWindow } from '../hooks/useFramelessWindow';
-import { ConnectedThemeController } from './ConnectedThemeController';
 import { JamQrCodeButton } from './JamQrCodeButton';
 import { SearchBox } from './SearchBox';
 import { UpdateBadge } from './UpdateBadge';
@@ -43,7 +42,6 @@ export const ConnectedTopBar: FC = () => {
       <SearchBox />
       <div className="flex flex-row items-center justify-end gap-2">
         <JamQrCodeButton />
-        <ConnectedThemeController />
       </div>
     </TopBar>
   );

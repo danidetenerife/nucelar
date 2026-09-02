@@ -7,7 +7,7 @@ import {
   setThemeId,
 } from '@nuclearplayer/themes';
 
-import { setSetting, useSettingsStore } from './settingsStore';
+import { setSetting } from './settingsStore';
 
 export type AdvancedThemeFile = {
   id?: string;
@@ -102,21 +102,9 @@ export const useThemeStore = create<ThemeStoreState>((set, get) => ({
   },
 
   hydrate: () => {
-    const type = useSettingsStore
-      .getState()
-      .getValue('core.theme.active.type') as string;
-    const id = useSettingsStore
-      .getState()
-      .getValue('core.theme.active.id') as string;
-
-    if (type === 'basic' && id) {
-      set({ activeTheme: { type: 'basic', id } });
-      setThemeId(id);
-    } else if (type === 'advanced' && id) {
-      set({ activeTheme: { type: 'advanced', path: id } });
-    } else if (type === 'marketplace' && id) {
-      set({ activeTheme: { type: 'marketplace', id } });
-    }
+    clearAdvancedTheme();
+    setThemeId(DEFAULT_THEME_ID);
+    set({ activeTheme: { type: 'basic', id: DEFAULT_THEME_ID } });
   },
 }));
 

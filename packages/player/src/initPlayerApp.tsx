@@ -2,8 +2,6 @@ import React from 'react';
 
 import App, { defaultQueryClient } from './App';
 import { initLogStream } from './hooks/useLogStream';
-import { applyThemeFromSettingsIfAny } from './services/advancedThemeService';
-import { startAdvancedThemeWatcher } from './services/advancedThemeWatcher';
 import { initBridgeHandler } from './services/bridge/bridgeHandler';
 import { registerBuiltInCoreSettings } from './services/coreSettings';
 import { initDiscordHandler } from './services/discordHandler';
@@ -14,7 +12,6 @@ import {
   applyLanguageFromSettings,
   initLanguageWatcher,
 } from './services/languageService';
-import { loadMarketplaceThemes } from './services/marketplaceThemeDirService';
 import { initMcpHandler } from './services/mcp';
 import { initMediaSessionService } from './services/mediaSessionService';
 import { initMpdHandler } from './services/mpd';
@@ -115,21 +112,13 @@ export const initPlayerApp = async (
       initLanguageWatcher();
     } catch {}
 
-    try {
-      startAdvancedThemeWatcher();
-    } catch {}
-
-    if (isTauriEnvironment()) {
-      try {
-        await loadMarketplaceThemes();
-      } catch {}
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.setAttribute('data-theme-id', 'nuclear:default');
     }
 
     try {
       await hydrateThemeStore();
-    } catch {}
-    try {
-      await applyThemeFromSettingsIfAny();
     } catch {}
 
     try {

@@ -1,7 +1,6 @@
 import {
   BlocksIcon,
   LaptopIcon,
-  PaletteIcon,
   Settings2Icon,
 } from 'lucide-react';
 import { FC } from 'react';
@@ -16,7 +15,6 @@ import {
 import { Plugins } from '../views/Plugins/Plugins';
 import { Settings } from '../views/Settings/Settings';
 import { SyncSettingsView } from '../views/Sync/SyncSettingsView';
-import { Themes } from '../views/Themes/Themes';
 import { SocialLinks } from './SocialLinks';
 import { VersionString } from './VersionString';
 
@@ -32,12 +30,6 @@ const SETTINGS_TABS = [
     icon: <LaptopIcon />,
     label: 'Vincular con PC',
     content: () => <SyncSettingsView />,
-  },
-  {
-    id: 'themes' as SettingsTab,
-    icon: <PaletteIcon />,
-    label: 'Temas',
-    content: () => <Themes />,
   },
   {
     id: 'plugins' as SettingsTab,
