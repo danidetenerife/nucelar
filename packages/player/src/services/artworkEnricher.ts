@@ -1,4 +1,4 @@
-import type { ArtworkSet, QueueItem } from '@nuclearplayer/model';
+import type { ArtworkSet, QueueItem, Track } from '@nuclearplayer/model';
 
 import {
   createArtworkSetFromUrl,
@@ -6,34 +6,33 @@ import {
   resolveTrackCoverUrl,
 } from './coverArtResolver';
 import { metadataHost } from './metadataHost';
+import { useFavoritesStore } from '../stores/favoritesStore';
 import { useQueueStore } from '../stores/queueStore';
 
 const artworkCache = new Map<string, ArtworkSet>();
 
-export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
-  const currentFirstUrl = item.track.artwork?.items?.[0]?.url;
+export const resolveArtworkForTrack = async (
+  track: Track,
+): Promise<ArtworkSet | null> => {
+  const currentFirstUrl = track.artwork?.items?.[0]?.url;
   const hasValidArtwork =
-    item.track.artwork &&
-    item.track.artwork.items?.length > 0 &&
+    track.artwork &&
+    track.artwork.items?.length > 0 &&
     !isYouTubeOrGenericArtwork(currentFirstUrl);
 
-  if (hasValidArtwork) {
-    return;
+  if (hasValidArtwork && track.artwork) {
+    return track.artwork;
   }
 
-  const primaryArtist = item.track.artists?.[0]?.name;
-  const title = item.track.title;
+  const primaryArtist = track.artists?.[0]?.name;
+  const title = track.title;
   if (!primaryArtist || !title) {
-    return;
+    return null;
   }
 
   const cacheKey = `${primaryArtist.toLowerCase().trim()}___${title.toLowerCase().trim()}`;
   if (artworkCache.has(cacheKey)) {
-    const cached = artworkCache.get(cacheKey)!;
-    useQueueStore.getState().updateItemState(item.id, {
-      track: { ...item.track, artwork: cached },
-    });
-    return;
+    return artworkCache.get(cacheKey)!;
   }
 
   // 1. Try iTunes instant high-res resolver (600x600)
@@ -42,10 +41,7 @@ export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
     if (itunesUrl) {
       const artworkSet = createArtworkSetFromUrl(itunesUrl);
       artworkCache.set(cacheKey, artworkSet);
-      useQueueStore.getState().updateItemState(item.id, {
-        track: { ...item.track, artwork: artworkSet },
-      });
-      return;
+      return artworkSet;
     }
   } catch {}
 
@@ -60,12 +56,19 @@ export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
     const match = searchRes?.tracks?.[0];
     if (match?.artwork && match.artwork.items?.length > 0) {
       artworkCache.set(cacheKey, match.artwork);
-      useQueueStore.getState().updateItemState(item.id, {
-        track: { ...item.track, artwork: match.artwork },
-      });
+      return match.artwork;
     }
-  } catch {
-    // Ignore metadata lookup failures
+  } catch {}
+
+  return null;
+};
+
+export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
+  const artwork = await resolveArtworkForTrack(item.track);
+  if (artwork) {
+    useQueueStore.getState().updateItemState(item.id, {
+      track: { ...item.track, artwork },
+    });
   }
 };
 
@@ -80,5 +83,38 @@ export const enrichTracksInQueue = (): void => {
     ) {
       void enrichTrackArtwork(item);
     }
+  }
+};
+
+export const enrichFavoriteTracks = async (): Promise<void> => {
+  const favorites = useFavoritesStore.getState().tracks;
+  let hasUpdates = false;
+
+  const updatedFavorites = await Promise.all(
+    favorites.map(async (entry) => {
+      const currentFirstUrl = entry.ref.artwork?.items?.[0]?.url;
+      if (
+        !entry.ref.artwork ||
+        !entry.ref.artwork.items?.length ||
+        isYouTubeOrGenericArtwork(currentFirstUrl)
+      ) {
+        const enrichedArtwork = await resolveArtworkForTrack(entry.ref);
+        if (enrichedArtwork) {
+          hasUpdates = true;
+          return {
+            ...entry,
+            ref: {
+              ...entry.ref,
+              artwork: enrichedArtwork,
+            },
+          };
+        }
+      }
+      return entry;
+    }),
+  );
+
+  if (hasUpdates) {
+    useFavoritesStore.setState({ tracks: updatedFavorites });
   }
 };

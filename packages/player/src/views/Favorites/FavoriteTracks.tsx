@@ -1,16 +1,21 @@
 import { Music } from 'lucide-react';
-import { useMemo, type FC } from 'react';
+import { useEffect, useMemo, type FC } from 'react';
 
 import { useTranslation } from '@nuclearplayer/i18n';
 import { EmptyState, ViewShell } from '@nuclearplayer/ui';
 
 import { ConnectedTrackTable } from '../../components/ConnectedTrackTable';
+import { enrichFavoriteTracks } from '../../services/artworkEnricher';
 import { useFavoritesStore } from '../../stores/favoritesStore';
 import { sortByAddedAtDesc } from '../../utils/sort';
 
 export const FavoriteTracks: FC = () => {
   const { t } = useTranslation('favorites');
   const favorites = useFavoritesStore((state) => state.tracks);
+
+  useEffect(() => {
+    void enrichFavoriteTracks();
+  }, [favorites]);
 
   const sortedTracks = useMemo(
     () => sortByAddedAtDesc(favorites).map((entry) => entry.ref),
