@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioManager;
-import android.media.AudioFocusRequest;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -28,9 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.AudioFormat;
-import android.media.AudioTrack;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
 
@@ -61,48 +56,13 @@ public class AudioForegroundService extends Service {
         return instance;
     }
 
-    private AudioManager audioManager;
-    private AudioFocusRequest audioFocusRequest;
-
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
         acquireLocks();
-        requestServiceAudioFocus();
         createNotificationChannel();
         initMediaSession();
-    }
-
-    private void requestServiceAudioFocus() {
-        try {
-            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            if (audioManager == null) return;
-
-            AudioManager.OnAudioFocusChangeListener focusChangeListener = focusChange -> {};
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build();
-
-                audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                    .setAudioAttributes(audioAttributes)
-                    .setOnAudioFocusChangeListener(focusChangeListener)
-                    .setWillPauseWhenDucked(false)
-                    .setAcceptsDelayedFocusGain(true)
-                    .build();
-
-                audioManager.requestAudioFocus(audioFocusRequest);
-            } else {
-                audioManager.requestAudioFocus(
-                    focusChangeListener,
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN
-                );
-            }
-        } catch (Throwable t) {}
     }
 
     private void acquireLocks() {
@@ -279,87 +239,9 @@ public class AudioForegroundService extends Service {
         }
     }
 
-    private AudioTrack nativeAudioTrack;
-    private Thread audioKeepAliveThread;
-    private volatile boolean isKeepAliveRunning = false;
-
-    private synchronized void ensureNativeAudioTrack(boolean enable) {
-        if (enable) {
-            if (nativeAudioTrack == null) {
-                try {
-                    int sampleRate = 44100;
-                    int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
-                    int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-                    int bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, audioFormat);
-                    if (bufferSize < 2048) bufferSize = 2048;
-                    final int audioBufferSize = bufferSize;
-
-                    AudioAttributes attributes = new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build();
-
-                    AudioFormat format = new AudioFormat.Builder()
-                        .setSampleRate(sampleRate)
-                        .setEncoding(audioFormat)
-                        .setChannelMask(channelConfig)
-                        .build();
-
-                    nativeAudioTrack = new AudioTrack.Builder()
-                        .setAudioAttributes(attributes)
-                        .setAudioFormat(format)
-                        .setBufferSizeInBytes(audioBufferSize)
-                        .setTransferMode(AudioTrack.MODE_STREAM)
-                        .setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
-                        .build();
-
-                    nativeAudioTrack.setVolume(0.0001f);
-                    nativeAudioTrack.play();
-                    isKeepAliveRunning = true;
-
-                    audioKeepAliveThread = new Thread(() -> {
-                        byte[] silentBuffer = new byte[audioBufferSize];
-                        while (isKeepAliveRunning && nativeAudioTrack != null) {
-                            try {
-                                if (nativeAudioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
-                                    nativeAudioTrack.write(silentBuffer, 0, silentBuffer.length);
-                                } else {
-                                    Thread.sleep(50);
-                                }
-                            } catch (Throwable t) {
-                                break;
-                            }
-                        }
-                    }, "NuclearAudioKeepAlive");
-                    audioKeepAliveThread.setDaemon(true);
-                    audioKeepAliveThread.start();
-                } catch (Throwable t) {
-                    // ignore
-                }
-            }
-        } else {
-            isKeepAliveRunning = false;
-            if (audioKeepAliveThread != null) {
-                try {
-                    audioKeepAliveThread.interrupt();
-                } catch (Throwable t) {}
-                audioKeepAliveThread = null;
-            }
-            if (nativeAudioTrack != null) {
-                try {
-                    nativeAudioTrack.stop();
-                    nativeAudioTrack.release();
-                } catch (Throwable t) {}
-                nativeAudioTrack = null;
-            }
-        }
-    }
-
     private void handlePlaybackStateUpdate(Intent intent) {
         boolean isPlaying = intent.getBooleanExtra("isPlaying", false);
         long positionMs = intent.getLongExtra("positionMs", 0);
-
-        ensureNativeAudioTrack(isPlaying);
 
         int state = isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
 

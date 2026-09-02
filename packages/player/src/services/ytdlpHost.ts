@@ -10,7 +10,73 @@ import type {
 import { isTauriEnvironment } from './universalStore';
 
 async function extractAudioStreamDirect(videoId: string): Promise<string | null> {
+  const tryPlayer = async (visitorId?: string): Promise<string | null> => {
+    try {
+      const body = {
+        context: {
+          client: {
+            clientName: 'ANDROID_VR',
+            clientVersion: '1.65.10',
+            deviceMake: 'Oculus',
+            deviceModel: 'Quest 3',
+            androidSdkVersion: 32,
+            userAgent:
+              'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
+            osName: 'Android',
+            osVersion: '12L',
+            hl: 'en',
+            gl: 'US',
+            ...(visitorId ? { visitorData: visitorId } : {}),
+          },
+        },
+        videoId,
+      };
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'User-Agent':
+          'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
+        'X-YouTube-Client-Name': '28',
+        'X-YouTube-Client-Version': '1.65.10',
+        Origin: 'https://www.youtube.com',
+        ...(visitorId ? { 'X-Goog-Visitor-Id': visitorId } : {}),
+      };
+
+      const res = await fetch('https://www.youtube.com/youtubei/v1/player', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        return null;
+      }
+
+      const data = await res.json();
+      const formats = data.streamingData?.adaptiveFormats || [];
+      const audioFormats = formats.filter(
+        (format: any) => format.mimeType && format.mimeType.includes('audio') && format.url,
+      );
+
+      audioFormats.sort(
+        (a: any, b: any) => (b.bitrate || 0) - (a.bitrate || 0),
+      );
+
+      if (audioFormats.length > 0 && audioFormats[0].url) {
+        return audioFormats[0].url;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  };
+
   try {
+    const directUrl = await tryPlayer();
+    if (directUrl) {
+      return directUrl;
+    }
+
     const htmlRes = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
         'User-Agent':
@@ -22,61 +88,7 @@ async function extractAudioStreamDirect(videoId: string): Promise<string | null>
     const visitorMatch = html.match(/"VISITOR_DATA":"([^"]+)"/);
     const visitorId = visitorMatch ? visitorMatch[1] : '';
 
-    const body = {
-      context: {
-        client: {
-          clientName: 'ANDROID_VR',
-          clientVersion: '1.65.10',
-          deviceMake: 'Oculus',
-          deviceModel: 'Quest 3',
-          androidSdkVersion: 32,
-          userAgent:
-            'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
-          osName: 'Android',
-          osVersion: '12L',
-          hl: 'en',
-          gl: 'US',
-          ...(visitorId ? { visitorData: visitorId } : {}),
-        },
-      },
-      videoId,
-    };
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'User-Agent':
-        'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
-      'X-YouTube-Client-Name': '28',
-      'X-YouTube-Client-Version': '1.65.10',
-      Origin: 'https://www.youtube.com',
-      ...(visitorId ? { 'X-Goog-Visitor-Id': visitorId } : {}),
-    };
-
-    const res = await fetch('https://www.youtube.com/youtubei/v1/player', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      return null;
-    }
-
-    const data = await res.json();
-    const formats = data.streamingData?.adaptiveFormats || [];
-    const audioFormats = formats.filter(
-      (format: any) => format.mimeType && format.mimeType.includes('audio'),
-    );
-
-    audioFormats.sort(
-      (a: any, b: any) => (b.bitrate || 0) - (a.bitrate || 0),
-    );
-
-    for (const format of audioFormats) {
-      if (format.url) {
-        return format.url;
-      }
-    }
+    return await tryPlayer(visitorId);
   } catch (error) {
     console.warn('[ytdlpHost] Direct Android VR extraction failed:', error);
   }

@@ -99,7 +99,7 @@ export const initMediaSessionService = () => {
 
     if (
       isCapacitorEnvironment() &&
-      (statusChanged || seekDelta > 3 || timeDelta > 5000)
+      (statusChanged || seekDelta > 3 || timeDelta > 15000)
     ) {
       lastStatus = state.status;
       lastReportedSeek = state.seek;
