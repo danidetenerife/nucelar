@@ -12,8 +12,6 @@ import android.media.AudioManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
@@ -34,8 +32,6 @@ public class MainActivity extends BridgeActivity {
     private AudioManager audioManager;
     private AudioFocusRequest audioFocusRequest;
     private boolean audioFocusGranted = false;
-    private final Handler keepAliveHandler = new Handler(Looper.getMainLooper());
-    private Runnable keepAliveRunnable;
     private BroadcastReceiver screenStateReceiver;
     private boolean isTelevision;
 
@@ -48,8 +44,8 @@ public class MainActivity extends BridgeActivity {
             instance.runOnUiThread(() -> {
                 try {
                     WebView webView = instance.getBridge() != null ? instance.getBridge().getWebView() : null;
-                    if (webView instanceof NuclearWebView nuclearWebView) {
-                        nuclearWebView.keepPlaybackActive();
+                    if (webView != null) {
+                        webView.resumeTimers();
                     }
                 } catch (Throwable t) {}
             });
@@ -82,7 +78,6 @@ public class MainActivity extends BridgeActivity {
         setupTelevisionDisplay();
         setupScreenStateReceiver();
         startAudioService();
-        startKeepAliveLoop();
     }
 
     private boolean isTelevisionDevice() {
@@ -224,17 +219,6 @@ public class MainActivity extends BridgeActivity {
         }
     }
 
-    private void startKeepAliveLoop() {
-        keepAliveRunnable = new Runnable() {
-            @Override
-            public void run() {
-                ensureActiveWebView();
-                keepAliveHandler.postDelayed(this, 3000); // every 3 seconds
-            }
-        };
-        keepAliveHandler.postDelayed(keepAliveRunnable, 3000);
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -282,9 +266,6 @@ public class MainActivity extends BridgeActivity {
             if (screenStateReceiver != null) {
                 unregisterReceiver(screenStateReceiver);
             }
-        } catch (Throwable t) {}
-        try {
-            keepAliveHandler.removeCallbacks(keepAliveRunnable);
         } catch (Throwable t) {}
         try {
             Intent serviceIntent = new Intent(this, AudioForegroundService.class);
