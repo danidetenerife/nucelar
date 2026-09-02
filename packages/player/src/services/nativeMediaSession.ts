@@ -11,6 +11,7 @@ type NativeMediaSessionPluginInterface = {
     artist: string;
     album: string;
     artworkUrl: string;
+    durationMs?: number;
   }): Promise<void>;
   updatePlaybackState(options: {
     isPlaying: boolean;

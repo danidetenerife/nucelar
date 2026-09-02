@@ -157,6 +157,8 @@ public class NativeMediaSessionPlugin extends Plugin {
         String artist = call.getString("artist", "");
         String album = call.getString("album", "");
         String artworkUrl = call.getString("artworkUrl", "");
+        Double durationDouble = call.getDouble("durationMs");
+        long durationMs = durationDouble != null ? durationDouble.longValue() : 0;
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
         intent.setAction(AudioForegroundService.ACTION_UPDATE_METADATA);
@@ -164,6 +166,7 @@ public class NativeMediaSessionPlugin extends Plugin {
         intent.putExtra("artist", artist);
         intent.putExtra("album", album);
         intent.putExtra("artworkUrl", artworkUrl);
+        intent.putExtra("durationMs", durationMs);
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

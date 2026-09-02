@@ -70,12 +70,15 @@ export const initMediaSessionService = () => {
       // ignore
     }
 
+    const durationMs = track.durationMs;
+
     if (isCapacitorEnvironment()) {
       NativeMediaSessionPlugin.updateMetadata({
         title: track.title,
         artist,
         album: albumTitle,
         artworkUrl,
+        durationMs,
       }).catch(() => {});
     }
   });

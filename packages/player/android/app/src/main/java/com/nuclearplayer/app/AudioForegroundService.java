@@ -45,6 +45,7 @@ public class AudioForegroundService extends Service {
     private WifiManager.WifiLock serviceWifiLock;
     private String currentArtworkUrl = "";
     private Bitmap currentArtworkBitmap = null;
+    private long currentDurationMs = 0;
     private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
 
     private static AudioForegroundService instance;
@@ -104,11 +105,13 @@ public class AudioForegroundService extends Service {
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onPlay() {
+                setOptimisticPlaybackState(true);
                 notifyJsMediaAction("play");
             }
 
             @Override
             public void onPause() {
+                setOptimisticPlaybackState(false);
                 notifyJsMediaAction("pause");
             }
 
@@ -124,11 +127,29 @@ public class AudioForegroundService extends Service {
 
             @Override
             public void onStop() {
+                setOptimisticPlaybackState(false);
                 notifyJsMediaAction("stop");
             }
 
             @Override
             public void onSeekTo(long pos) {
+                PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
+                boolean isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
+                PlaybackStateCompat seekState = new PlaybackStateCompat.Builder()
+                    .setActions(
+                        PlaybackStateCompat.ACTION_PLAY |
+                        PlaybackStateCompat.ACTION_PAUSE |
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                        PlaybackStateCompat.ACTION_SEEK_TO |
+                        PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                        PlaybackStateCompat.ACTION_STOP
+                    )
+                    .setState(isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
+                              pos,
+                              isPlaying ? 1.0f : 0f)
+                    .build();
+                mediaSession.setPlaybackState(seekState);
                 NativeMediaSessionPlugin pluginInstance = NativeMediaSessionPlugin.getInstance();
                 if (pluginInstance != null) {
                     pluginInstance.notifyMediaAction("seekto", pos);
@@ -182,7 +203,9 @@ public class AudioForegroundService extends Service {
             } else if ("com.nuclearplayer.ACTION_PLAY_PAUSE".equals(action)) {
                 PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
                 boolean isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
-                notifyJsMediaAction(isPlaying ? "pause" : "play");
+                boolean targetPlaying = !isPlaying;
+                setOptimisticPlaybackState(targetPlaying);
+                notifyJsMediaAction(targetPlaying ? "play" : "pause");
                 return START_STICKY;
             } else if ("com.nuclearplayer.ACTION_NEXT".equals(action)) {
                 notifyJsMediaAction("nexttrack");
@@ -199,6 +222,10 @@ public class AudioForegroundService extends Service {
         String artist = intent.getStringExtra("artist");
         String album = intent.getStringExtra("album");
         String artworkUrl = intent.getStringExtra("artworkUrl");
+        long durationMs = intent.getLongExtra("durationMs", 0);
+        if (durationMs > 0) {
+            currentDurationMs = durationMs;
+        }
 
         if (title == null) title = "";
         if (artist == null) artist = "";
@@ -209,8 +236,13 @@ public class AudioForegroundService extends Service {
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album);
 
+        if (currentDurationMs > 0) {
+            metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, currentDurationMs);
+        }
+
         if (currentArtworkBitmap != null) {
             metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, currentArtworkBitmap);
+            metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, currentArtworkBitmap);
         }
 
         mediaSession.setMetadata(metadataBuilder.build());
@@ -228,13 +260,18 @@ public class AudioForegroundService extends Service {
                 if (bitmap != null && artworkUrl.equals(currentArtworkUrl)) {
                     currentArtworkBitmap = bitmap;
 
-                    MediaMetadataCompat updatedMetadata = new MediaMetadataCompat.Builder()
+                    MediaMetadataCompat.Builder updatedMetadataBuilder = new MediaMetadataCompat.Builder()
                         .putString(MediaMetadataCompat.METADATA_KEY_TITLE, finalTitle)
                         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, finalArtist)
                         .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, finalAlbum)
                         .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
-                        .build();
-                    mediaSession.setMetadata(updatedMetadata);
+                        .putBitmap(MediaMetadataCompat.METADATA_KEY_ART, bitmap);
+
+                    if (currentDurationMs > 0) {
+                        updatedMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, currentDurationMs);
+                    }
+
+                    mediaSession.setMetadata(updatedMetadataBuilder.build());
 
                     updateNotification(finalTitle, finalArtist);
                 }
@@ -353,6 +390,28 @@ public class AudioForegroundService extends Service {
         updateNotification(title, artist);
     }
 
+    private void setOptimisticPlaybackState(boolean isPlaying) {
+        PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
+        long pos = state != null ? state.getPosition() : 0;
+        PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
+            .setActions(
+                PlaybackStateCompat.ACTION_PLAY |
+                PlaybackStateCompat.ACTION_PAUSE |
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                PlaybackStateCompat.ACTION_SEEK_TO |
+                PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                PlaybackStateCompat.ACTION_STOP
+            )
+            .setState(isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
+                      pos,
+                      isPlaying ? 1.0f : 0f)
+            .build();
+        mediaSession.setPlaybackState(playbackState);
+        ensureNativeAudioTrack(isPlaying);
+        updateNotification(null, null);
+    }
+
     private Notification buildNotification(String title, String artist, boolean isPlaying) {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -378,9 +437,9 @@ public class AudioForegroundService extends Service {
             PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0));
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(title.isEmpty() ? "Nuclear Music Player" : title)
+            .setContentTitle(title.isEmpty() ? "Aurora" : title)
             .setContentText(artist)
-            .setSmallIcon(android.R.drawable.ic_media_play)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(contentIntent)
             .setOngoing(true)
             .setSilent(true)

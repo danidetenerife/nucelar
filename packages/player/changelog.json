@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-02T22:20",
+    "description": "Implemented Spotify-style interactive lockscreen and notification media controls: enabled native Android seekbar by broadcasting track duration, added zero-latency optimistic playback toggling, lockscreen album artwork, and full transport controls.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Android",
+        "color": "green"
+      },
+      {
+        "label": "Lockscreen",
+        "color": "purple"
+      },
+      {
+        "label": "MediaSession",
+        "color": "cyan"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T22:15",
     "description": "Fixed audio stopping when screen is turned off or exiting app on Android by re-attaching the unintended pause recovery handler and immediately resuming WebView processing and timers in MainActivity onPause and onStop.",
     "type": "fix",
