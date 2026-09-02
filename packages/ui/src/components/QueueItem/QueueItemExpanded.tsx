@@ -20,6 +20,12 @@ export const QueueItemExpanded: FC<QueueItemProps> = ({
   classes,
 }) => {
   const thumbnail = pickArtwork(track.artwork, 'thumbnail', 64);
+  const fallbackCandidateThumbnail = track.streamCandidates?.find(
+    (c) => c.thumbnail,
+  );
+  const candidateUrl = fallbackCandidateThumbnail?.thumbnail;
+  const albumArtwork = pickArtwork(track.album?.artwork, 'thumbnail', 64);
+  const artworkUrl = thumbnail?.url ?? candidateUrl ?? albumArtwork?.url;
   const duration = formatTimeMillis(track.durationMs);
   const primaryArtist = track.artists[0]?.name;
 
@@ -48,9 +54,9 @@ export const QueueItemExpanded: FC<QueueItemProps> = ({
           classes?.thumbnail,
         )}
       >
-        {thumbnail?.url ? (
+        {artworkUrl ? (
           <img
-            src={thumbnail.url}
+            src={artworkUrl}
             alt={track.title}
             className="h-full w-full object-cover"
           />

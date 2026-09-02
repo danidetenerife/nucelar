@@ -9,6 +9,7 @@ import { playbackManager } from '../playback';
 import { hasActiveStreamingProvider, streamingHost } from '../streamingHost';
 import { AudioSourceFactory } from './audioSource';
 import { candidatesForTrack } from './candidateSource';
+import { enrichTrackArtwork } from '../artworkEnricher';
 
 export type ResolveOptions = {
   autoPlay: boolean;
@@ -55,6 +56,7 @@ export class StreamResolution {
     updateItemState(item.id, {
       track: { ...item.track, streamCandidates: candidates },
     });
+    void enrichTrackArtwork(item);
     await this.tryCandidatesInOrder(item, candidates, signal, options);
   }
 

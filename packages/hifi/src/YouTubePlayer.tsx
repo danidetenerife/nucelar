@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import { SoundProps } from './types';
 
@@ -325,25 +325,69 @@ export const YouTubePlayer: FC<SoundProps> = ({
     };
   }, [status]);
 
+  const [isTvFullscreen, setIsTvFullscreen] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+  const hideTimerRef = useRef<number | null>(null);
+
+  const resetHideTimer = useCallback(() => {
+    setShowControls(true);
+    if (hideTimerRef.current) {
+      window.clearTimeout(hideTimerRef.current);
+    }
+    hideTimerRef.current = window.setTimeout(() => {
+      setShowControls(false);
+    }, 3500);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!showVideo) return;
+
+      if (event.key === 'Escape' && isTvFullscreen) {
+        setIsTvFullscreen(false);
+      } else if (event.key.toLowerCase() === 'f') {
+        setIsTvFullscreen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showVideo, isTvFullscreen]);
+
   return (
     <div
       id="nuclear-youtube-player-container"
+      onMouseMove={resetHideTimer}
+      onTouchStart={resetHideTimer}
       style={
         showVideo
-          ? {
-              position: 'fixed',
-              bottom: '160px',
-              right: '16px',
-              zIndex: 60,
-              width: 'calc(100vw - 32px)',
-              maxWidth: '420px',
-              aspectRatio: '16/9',
-              borderRadius: '16px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.75)',
-              border: '2px solid rgba(255, 255, 255, 0.2)',
-              backgroundColor: '#000',
-              overflow: 'hidden',
-            }
+          ? isTvFullscreen
+            ? {
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: '#000',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+              }
+            : {
+                position: 'fixed',
+                bottom: '160px',
+                right: '16px',
+                zIndex: 60,
+                width: 'calc(100vw - 32px)',
+                maxWidth: '420px',
+                aspectRatio: '16/9',
+                borderRadius: '16px',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.75)',
+                border: '2px solid rgba(255, 255, 255, 0.2)',
+                backgroundColor: '#000',
+                overflow: 'hidden',
+              }
           : {
               position: 'fixed',
               width: 0,
@@ -357,75 +401,87 @@ export const YouTubePlayer: FC<SoundProps> = ({
             }
       }
     >
-      <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      <div
+        ref={containerRef}
+        style={{
+          width: '100%',
+          height: '100%',
+          maxHeight: isTvFullscreen ? '100vh' : undefined,
+          aspectRatio: isTvFullscreen ? '16/9' : undefined,
+        }}
+      />
       {showVideo && (
         <div
           style={{
             position: 'absolute',
-            top: '8px',
-            left: '8px',
-            right: '8px',
+            top: '12px',
+            left: '12px',
+            right: '12px',
             zIndex: 70,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             pointerEvents: 'auto',
+            opacity: !isTvFullscreen || showControls ? 1 : 0,
+            transition: 'opacity 0.3s ease-in-out',
           }}
         >
           <span
             style={{
-              padding: '3px 8px',
-              borderRadius: '6px',
-              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              padding: '4px 10px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
               color: '#fff',
-              fontSize: '11px',
-              fontWeight: 600,
-              backdropFilter: 'blur(4px)',
+              fontSize: '12px',
+              fontWeight: 700,
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
             }}
           >
-            🎬 Videoclip
+            🎬 {isTvFullscreen ? 'Modo TV Videoclip' : 'Videoclip'}
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                const el = document.getElementById('nuclear-youtube-player-container');
-                if (document.fullscreenElement) {
-                  document.exitFullscreen?.();
-                } else if (el) {
-                  el.requestFullscreen?.();
-                }
+                setIsTvFullscreen((prev) => !prev);
               }}
               style={{
-                padding: '4px 8px',
-                borderRadius: '6px',
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
                 color: '#fff',
-                fontSize: '11px',
-                fontWeight: 600,
+                fontSize: '12px',
+                fontWeight: 700,
                 border: '1px solid rgba(255, 255, 255, 0.25)',
                 cursor: 'pointer',
-                backdropFilter: 'blur(4px)',
+                backdropFilter: 'blur(8px)',
               }}
-              title="Pantalla Completa (TV / Monitor)"
+              title="Pantalla Completa TV"
             >
-              ⛶ Pantalla Completa
+              {isTvFullscreen ? '🗗 Minimizar' : '⛶ Modo TV'}
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                if (isTvFullscreen) {
+                  setIsTvFullscreen(false);
+                }
                 onCloseVideo?.();
               }}
               style={{
-                padding: '4px 10px',
-                borderRadius: '6px',
-                backgroundColor: 'rgba(220, 38, 38, 0.85)',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(220, 38, 38, 0.9)',
                 color: '#fff',
                 fontSize: '12px',
                 fontWeight: 700,
                 border: '1px solid rgba(255, 255, 255, 0.3)',
                 cursor: 'pointer',
-                backdropFilter: 'blur(4px)',
+                backdropFilter: 'blur(8px)',
               }}
               title="Cerrar Videoclip"
             >

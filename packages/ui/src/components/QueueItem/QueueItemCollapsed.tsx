@@ -16,6 +16,12 @@ export const QueueItemCollapsed: FC<QueueItemProps> = ({
   classes,
 }) => {
   const thumbnail = pickArtwork(track.artwork, 'thumbnail', 64);
+  const fallbackCandidateThumbnail = track.streamCandidates?.find(
+    (c) => c.thumbnail,
+  );
+  const candidateUrl = fallbackCandidateThumbnail?.thumbnail;
+  const albumArtwork = pickArtwork(track.album?.artwork, 'thumbnail', 64);
+  const artworkUrl = thumbnail?.url ?? candidateUrl ?? albumArtwork?.url;
 
   return (
     <div className="relative" data-testid="queue-item">
@@ -36,9 +42,9 @@ export const QueueItemCollapsed: FC<QueueItemProps> = ({
         onClick={onSelect}
         role={onSelect ? 'button' : undefined}
       >
-        {thumbnail?.url ? (
+        {artworkUrl ? (
           <img
-            src={thumbnail.url}
+            src={artworkUrl}
             alt={track.title}
             className={cn('h-full w-full object-cover', classes?.thumbnail)}
           />
