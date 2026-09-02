@@ -2,11 +2,6 @@ import { RefObject, useEffect, useRef } from 'react';
 
 import { SoundStatus } from '../types';
 
-const HAVE_CURRENT_DATA = 2;
-
-const isReadyToPlay = (audio: HTMLAudioElement): boolean =>
-  audio.readyState >= HAVE_CURRENT_DATA;
-
 export const usePlaybackStatus = (
   audioRef: RefObject<HTMLAudioElement | null>,
   status: SoundStatus,
@@ -20,8 +15,6 @@ export const usePlaybackStatus = (
     if (!audio) {
       return;
     }
-
-    const srcChanged = srcUrl !== activeSrcRef.current;
 
     const tryPlay = () => {
       if (!audio.paused) {
@@ -38,9 +31,7 @@ export const usePlaybackStatus = (
 
     switch (status) {
       case 'playing': {
-        if (!srcChanged || isReadyToPlay(audio)) {
-          tryPlay();
-        }
+        tryPlay();
         const onCanPlay = () => tryPlay();
         audio.addEventListener('canplay', onCanPlay);
         audio.addEventListener('canplaythrough', onCanPlay);

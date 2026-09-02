@@ -83,12 +83,6 @@ describe('Sound', () => {
 
     rerender(<Sound src={sourceB} status="playing" />);
 
-    expect(playMock).not.toHaveBeenCalled();
-
-    act(() => {
-      fireMediaCanPlay(audio);
-    });
-
     expect(playMock).toHaveBeenCalled();
     restore();
   });

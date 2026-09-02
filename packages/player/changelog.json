@@ -1,5 +1,23 @@
 [
   {
+    "date": "2026-09-02T21:55",
+    "description": "Resolved mobile playback stall by removing crossOrigin enforcement on HTML5 audio elements, eliminating slow watch-page roundtrips, and triggering audio.play() synchronously within the user gesture window.",
+    "type": "fix",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Playback",
+        "color": "green"
+      },
+      {
+        "label": "Audio Engine",
+        "color": "cyan"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T21:30",
     "description": "Fixed song playback across Android and Desktop by resolving mobile audio buffer deadlock in usePlaybackStatus, bypassing CORS using native httpHost for direct InnerTube audio streams, auto-healing active streaming providers, and spawning yt-dlp setup on desktop launch.",
     "type": "fix",

@@ -33,7 +33,7 @@ const NativeAudioPlayer: React.FC<SoundProps> = ({
   seek,
   volume,
   preload = 'auto',
-  crossOrigin = '',
+  crossOrigin,
   onTimeUpdate,
   onEnd,
   onLoadStart,
@@ -76,7 +76,7 @@ const NativeAudioPlayer: React.FC<SoundProps> = ({
       ref={audioRef}
       hidden
       preload={preload}
-      crossOrigin={crossOrigin}
+      crossOrigin={crossOrigin || undefined}
       onTimeUpdate={handleTimeUpdate}
       onEnded={onEnd}
       onLoadStart={handleLoadStart}

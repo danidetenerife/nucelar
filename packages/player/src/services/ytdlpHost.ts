@@ -11,55 +11,42 @@ import { httpHost } from './httpHost';
 import { isTauriEnvironment } from './universalStore';
 
 async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInfo | null> {
+  const body = {
+    context: {
+      client: {
+        clientName: 'ANDROID_VR',
+        clientVersion: '1.65.10',
+        deviceMake: 'Oculus',
+        deviceModel: 'Quest 3',
+        androidSdkVersion: 32,
+        userAgent:
+          'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
+        osName: 'Android',
+        osVersion: '12L',
+        hl: 'en',
+        gl: 'US',
+      },
+    },
+    videoId,
+  };
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'User-Agent':
+      'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
+    'X-YouTube-Client-Name': '28',
+    'X-YouTube-Client-Version': '1.65.10',
+    Origin: 'https://www.youtube.com',
+  };
+
   try {
-    const htmlRes = await httpHost.fetch(`https://www.youtube.com/watch?v=${videoId}`, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-    });
-    const html = htmlRes.body;
-    const visitorMatch = html.match(/"VISITOR_DATA":"([^"]+)"/);
-    const visitorId = visitorMatch ? visitorMatch[1] : '';
-
-    const body = {
-      context: {
-        client: {
-          clientName: 'ANDROID_VR',
-          clientVersion: '1.65.10',
-          deviceMake: 'Oculus',
-          deviceModel: 'Quest 3',
-          androidSdkVersion: 32,
-          userAgent:
-            'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
-          osName: 'Android',
-          osVersion: '12L',
-          hl: 'en',
-          gl: 'US',
-          ...(visitorId ? { visitorData: visitorId } : {}),
-        },
-      },
-      videoId,
-    };
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'User-Agent':
-        'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
-      'X-YouTube-Client-Name': '28',
-      'X-YouTube-Client-Version': '1.65.10',
-      Origin: 'https://www.youtube.com',
-      ...(visitorId ? { 'X-Goog-Visitor-Id': visitorId } : {}),
-    };
-
     const res = await httpHost.fetch('https://www.youtube.com/youtubei/v1/player', {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
     });
 
-    if (res.status < 200 || res.status >= 300) {
+    if (res.status < 200 || res.status >= 300 || !res.body) {
       return null;
     }
 

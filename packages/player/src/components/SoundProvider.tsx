@@ -9,7 +9,6 @@ import { useCoreSetting } from '../hooks/useCoreSetting';
 import { eventBus } from '../services/eventBus';
 import { Logger } from '../services/logger';
 import { playbackManager } from '../services/playback';
-import { isTauriEnvironment } from '../services/universalStore';
 import { useQueueStore } from '../stores/queueStore';
 import { useSoundStore } from '../stores/soundStore';
 import { errorMessage } from '../utils/errorMessage';
@@ -28,7 +27,7 @@ export const SoundProvider: FC<PropsWithChildren> = ({ children }) => {
   const [showVideo, setShowVideo] =
     useCoreSetting<boolean>('playback.showVideo');
   const preload: HTMLAudioElement['preload'] = 'auto';
-  const crossOrigin = isTauriEnvironment() ? ('' as const) : undefined;
+  const crossOrigin = undefined;
   const [volume01] = useCoreSetting<number>('playback.volume');
   const [muted] = useCoreSetting<boolean>('playback.muted');
   const volumePercent = muted ? 0 : Math.round((volume01 ?? 1) * 100);
