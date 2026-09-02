@@ -400,14 +400,14 @@ export const YouTubePlayer: FC<SoundProps> = ({
               }
           : {
               position: 'fixed',
-              width: 0,
-              height: 0,
+              top: '-9999px',
+              left: '-9999px',
+              width: '320px',
+              height: '180px',
               overflow: 'hidden',
               pointerEvents: 'none',
-              opacity: 0,
-              top: 0,
-              left: 0,
-              zIndex: -1,
+              opacity: 0.001,
+              zIndex: -999,
             }
       }
     >

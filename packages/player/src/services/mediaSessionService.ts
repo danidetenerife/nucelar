@@ -80,17 +80,33 @@ export const initMediaSessionService = () => {
     }
   });
 
+  let lastStatus = '';
+  let lastReportedSeek = 0;
+  let lastReportedTime = 0;
+
   useSoundStore.subscribe((state) => {
+    const isPlaying = state.status === 'playing';
+    const statusChanged = state.status !== lastStatus;
+    const now = Date.now();
+    const seekDelta = Math.abs(state.seek - lastReportedSeek);
+    const timeDelta = now - lastReportedTime;
+
     try {
-      navigator.mediaSession.playbackState =
-        state.status === 'playing' ? 'playing' : 'paused';
+      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
     } catch {
       // ignore
     }
 
-    if (isCapacitorEnvironment()) {
+    if (
+      isCapacitorEnvironment() &&
+      (statusChanged || seekDelta > 3 || timeDelta > 5000)
+    ) {
+      lastStatus = state.status;
+      lastReportedSeek = state.seek;
+      lastReportedTime = now;
+
       NativeMediaSessionPlugin.updatePlaybackState({
-        isPlaying: state.status === 'playing',
+        isPlaying,
         positionMs: secondsToMs(state.seek),
       }).catch(() => {});
     }

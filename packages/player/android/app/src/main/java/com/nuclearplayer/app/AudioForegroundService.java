@@ -287,8 +287,9 @@ public class AudioForegroundService extends Service {
                             try {
                                 if (nativeAudioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
                                     nativeAudioTrack.write(silentBuffer, 0, silentBuffer.length);
+                                } else {
+                                    Thread.sleep(50);
                                 }
-                                Thread.sleep(500);
                             } catch (Throwable t) {
                                 break;
                             }
