@@ -98,6 +98,11 @@ pub fn run() {
             stream_server::init_stream_server(app.handle().clone());
             history::init_history(app.handle().clone());
 
+            let ytdlp_app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                let _ = ytdlp_setup::ytdlp_ensure_installed(ytdlp_app_handle).await;
+            });
+
             #[cfg(target_os = "linux")]
             maximize_for_gamescope(app);
 

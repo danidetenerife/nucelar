@@ -9,11 +9,22 @@ import { errorMessage } from '../utils/errorMessage';
 import { Logger } from './logger';
 import { providersHost } from './providersHost';
 
-const getActiveStreamingProvider = (): StreamingProvider | undefined =>
-  providersHost.get<StreamingProvider>(
-    providersHost.getActive('streaming'),
+const getActiveStreamingProvider = (): StreamingProvider | undefined => {
+  const activeId = providersHost.getActive('streaming');
+  const provider = providersHost.get<StreamingProvider>(
+    activeId,
     'streaming',
   );
+  if (provider) {
+    return provider;
+  }
+  const available = providersHost.list('streaming') as StreamingProvider[];
+  if (available.length > 0) {
+    providersHost.setActive('streaming', available[0].id);
+    return available[0];
+  }
+  return undefined;
+};
 
 export const hasActiveStreamingProvider = (): boolean =>
   Boolean(getActiveStreamingProvider());

@@ -24,15 +24,12 @@ export const usePlaybackStatus = (
     const srcChanged = srcUrl !== activeSrcRef.current;
 
     const tryPlay = () => {
-      if (!isReadyToPlay(audio)) {
-        return;
-      }
       if (!audio.paused) {
         return;
       }
       activeSrcRef.current = srcUrl;
-      audio.play().then(undefined, (err: DOMException) => {
-        if (err.name === 'AbortError') {
+      audio.play().catch((err: DOMException) => {
+        if (err.name === 'AbortError' || err.name === 'NotAllowedError') {
           return;
         }
         onError?.(err);
@@ -71,25 +68,17 @@ export const usePlaybackStatus = (
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handleUnintendedPause = () => {
-      if (status === 'playing' && audio.paused && isReadyToPlay(audio)) {
-        audio.play().catch(() => {});
-      }
-    };
-
     const handleKeepPlaying = () => {
       if (status === 'playing' && audio.paused) {
         audio.play().catch(() => {});
       }
     };
 
-    audio.addEventListener('pause', handleUnintendedPause);
     document.addEventListener('visibilitychange', handleKeepPlaying);
     window.addEventListener('blur', handleKeepPlaying);
     window.addEventListener('focus', handleKeepPlaying);
 
     return () => {
-      audio.removeEventListener('pause', handleUnintendedPause);
       document.removeEventListener('visibilitychange', handleKeepPlaying);
       window.removeEventListener('blur', handleKeepPlaying);
       window.removeEventListener('focus', handleKeepPlaying);

@@ -1,5 +1,23 @@
 [
   {
+    "date": "2026-09-02T21:30",
+    "description": "Fixed song playback across Android and Desktop by resolving mobile audio buffer deadlock in usePlaybackStatus, bypassing CORS using native httpHost for direct InnerTube audio streams, auto-healing active streaming providers, and spawning yt-dlp setup on desktop launch.",
+    "type": "fix",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Playback",
+        "color": "green"
+      },
+      {
+        "label": "Streaming",
+        "color": "cyan"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T21:12",
     "description": "Rebranded to Aurora Music Player with a new northern lights celestial visual identity, modern vector emblem, refreshed polar color palette, and complete departure from legacy branding.",
     "type": "feature",

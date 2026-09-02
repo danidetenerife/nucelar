@@ -14,6 +14,7 @@ import { initMediaSessionService } from './services/mediaSessionService';
 import { p2pSyncService } from './services/p2pSyncService';
 import { initPlaybackEventBridge } from './services/playbackEventBridge';
 import { hydratePluginsFromRegistry } from './services/plugins/pluginBootstrap';
+import { providersHost } from './services/providersHost';
 import { ytdlpEnsureInstalled } from './services/tauri/commands';
 import { isTauriEnvironment } from './services/universalStore';
 import { initCarModeService } from './stores/carModeStore';
@@ -98,7 +99,7 @@ export const initPlayerApp = async (
 
     if (typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-theme', 'dark');
-      document.documentElement.setAttribute('data-theme-id', 'nuclear:default');
+      document.documentElement.setAttribute('data-theme-id', 'aurora:default');
     }
 
     try {
@@ -106,7 +107,8 @@ export const initPlayerApp = async (
     } catch {}
 
     try {
-      void hydratePluginsFromRegistry();
+      await hydratePluginsFromRegistry();
+      providersHost.resolveActiveOnBootstrap();
     } catch {}
 
     try {
