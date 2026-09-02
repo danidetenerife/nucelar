@@ -7,9 +7,17 @@ $Root = Resolve-Path "$PSScriptRoot\.."
 Set-Location $Root
 
 $Tag = if ($Version.StartsWith("v")) { $Version } else { "v$Version" }
+$cleanVer = $Version.Replace("v", "")
 $ExecutablesDir = "$Root\ejecutables"
 $ApkPath = "$ExecutablesDir\nuclear-music-player.apk"
-$ExePath = "$ExecutablesDir\Nuclear_1.47.1_x64-setup.exe"
+$ExePath = "$ExecutablesDir\Nuclear_${cleanVer}_x64-setup.exe"
+
+if (-not (Test-Path $ExePath)) {
+    $fallbackExe = Get-ChildItem -Path $ExecutablesDir -Filter "*setup.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    if ($fallbackExe) {
+        $ExePath = $fallbackExe.FullName
+    }
+}
 
 if (-not (Test-Path $ApkPath)) {
     Write-Error "No se encontró el APK en: $ApkPath"
@@ -21,8 +29,9 @@ if (-not (Test-Path $ExePath)) {
     exit 1
 }
 
+$exeFileName = [System.IO.Path]::GetFileName($ExePath)
+
 # Create latest.json for Tauri updater
-$cleanVer = $Version.Replace("v", "")
 $latestJsonContent = @"
 {
   "version": "$cleanVer",
@@ -31,7 +40,7 @@ $latestJsonContent = @"
   "platforms": {
     "windows-x86_64": {
       "signature": "",
-      "url": "https://github.com/danidetenerife/nucelar/releases/download/$Tag/Nuclear_1.47.1_x64-setup.exe"
+      "url": "https://github.com/danidetenerife/nucelar/releases/download/$Tag/$exeFileName"
     }
   }
 }
