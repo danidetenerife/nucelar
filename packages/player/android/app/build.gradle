@@ -7,8 +7,8 @@ android {
         applicationId "com.nuclearplayer.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 14717
-        versionName "1.47.17"
+        versionCode 14718
+        versionName "1.47.18"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

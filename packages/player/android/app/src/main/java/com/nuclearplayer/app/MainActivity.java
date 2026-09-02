@@ -41,9 +41,7 @@ public class MainActivity extends BridgeActivity {
             instance.runOnUiThread(() -> {
                 try {
                     WebView webView = instance.getBridge() != null ? instance.getBridge().getWebView() : null;
-                    if (webView instanceof NuclearWebView) {
-                        ((NuclearWebView) webView).keepPlaybackActive();
-                    } else if (webView != null) {
+                    if (webView != null) {
                         webView.resumeTimers();
                         webView.onResume();
                     }
@@ -77,23 +75,7 @@ public class MainActivity extends BridgeActivity {
         setupTelevisionDisplay();
         setupScreenStateReceiver();
         requestNotificationPermission();
-        requestBatteryOptimizationExemption();
         startAudioService();
-    }
-
-    private void requestBatteryOptimizationExemption() {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
-                    Intent intent = new Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                    intent.setData(android.net.Uri.parse("package:" + getPackageName()));
-                    startActivity(intent);
-                }
-            }
-        } catch (Throwable t) {
-            // ignore
-        }
     }
 
     private void requestNotificationPermission() {
