@@ -41,6 +41,7 @@ public class MainActivity extends BridgeActivity {
                     if (wv != null) {
                         wv.resumeTimers();
                         wv.onResume();
+                        wv.dispatchWindowVisibilityChanged(android.view.View.VISIBLE);
                     }
                 } catch (Throwable t) {}
             });
