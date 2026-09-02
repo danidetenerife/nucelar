@@ -1,6 +1,18 @@
 [
   {
     "date": "2026-09-02T00:00",
+    "description": "Fixed automatic update checks on Android and added signed desktop update packages.",
+    "type": "fix",
+    "contributors": ["danidetenerife"],
+    "tags": [
+      {
+        "label": "Updates",
+        "color": "green"
+      }
+    ]
+  },
+  {
+    "date": "2026-09-02T00:00",
     "description": "Fixed Android playback stopping when the screen turns off or the app is backgrounded, and made the Google TV layout adapt to the visible screen size.",
     "type": "fix",
     "contributors": ["danidetenerife"],

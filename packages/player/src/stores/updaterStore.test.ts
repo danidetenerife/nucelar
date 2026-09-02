@@ -1,5 +1,5 @@
 import { check, Update } from '@tauri-apps/plugin-updater';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useUpdaterStore } from './updaterStore';
 
@@ -10,7 +10,10 @@ vi.mock('@tauri-apps/plugin-updater', () => ({
 describe('useUpdaterStore', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (window as unknown as { __TAURI_INTERNALS__: unknown }).__TAURI_INTERNALS__ = {};
+    (
+      window as unknown as { __TAURI_INTERNALS__: unknown }
+    ).__TAURI_INTERNALS__ = {};
+    delete (window as Window & { Capacitor?: unknown }).Capacitor;
     useUpdaterStore.setState({
       isUpdateAvailable: false,
       updateInfo: null,
@@ -18,6 +21,12 @@ describe('useUpdaterStore', () => {
       isChecking: false,
       error: null,
     });
+  });
+
+  afterEach(() => {
+    (
+      window as unknown as { __TAURI_INTERNALS__: unknown }
+    ).__TAURI_INTERNALS__ = {};
   });
 
   describe('initial state', () => {
@@ -102,7 +111,8 @@ describe('useUpdaterStore', () => {
     });
 
     it('checks GitHub releases on non-Tauri / Android platform', async () => {
-      delete (window as unknown as { __TAURI_INTERNALS__?: unknown }).__TAURI_INTERNALS__;
+      delete (window as unknown as { __TAURI_INTERNALS__?: unknown })
+        .__TAURI_INTERNALS__;
 
       const mockRelease = {
         tag_name: 'v1.48.0',
@@ -111,7 +121,8 @@ describe('useUpdaterStore', () => {
         assets: [
           {
             name: 'nuclear-music-player.apk',
-            browser_download_url: 'https://github.com/danidetenerife/nucelar/releases/download/v1.48.0/nuclear-music-player.apk',
+            browser_download_url:
+              'https://github.com/danidetenerife/nucelar/releases/download/v1.48.0/nuclear-music-player.apk',
             size: 13000000,
           },
         ],

@@ -10,14 +10,20 @@ import { initDiscordHandler } from './services/discordHandler';
 import { initDiscoveryService } from './services/discoveryService';
 import { initHistoryService } from './services/history';
 import { initHttpApiHandler } from './services/httpApi';
-import { initLanguageWatcher, applyLanguageFromSettings } from './services/languageService';
+import {
+  applyLanguageFromSettings,
+  initLanguageWatcher,
+} from './services/languageService';
 import { loadMarketplaceThemes } from './services/marketplaceThemeDirService';
 import { initMcpHandler } from './services/mcp';
 import { initMediaSessionService } from './services/mediaSessionService';
 import { initMpdHandler } from './services/mpd';
+import { p2pSyncService } from './services/p2pSyncService';
 import { initPlaybackEventBridge } from './services/playbackEventBridge';
 import { hydratePluginsFromRegistry } from './services/plugins/pluginBootstrap';
 import { ytdlpEnsureInstalled } from './services/tauri/commands';
+import { isTauriEnvironment } from './services/universalStore';
+import { initCarModeService } from './stores/carModeStore';
 import { initializeFavoritesStore } from './stores/favoritesStore';
 import { initializePlaylistStore } from './stores/playlistStore';
 import { initializeProvidersStore } from './stores/providersStore';
@@ -26,10 +32,6 @@ import { initializeSettingsStore } from './stores/settingsStore';
 import { initializeShortcutsStore } from './stores/shortcutsStore';
 import { hydrateThemeStore } from './stores/themeStore';
 import { useUpdaterStore } from './stores/updaterStore';
-import { initCarModeService } from './stores/carModeStore';
-
-import { p2pSyncService } from './services/p2pSyncService';
-import { isTauriEnvironment } from './services/universalStore';
 
 export const initPlayerApp = async (
   root: ReturnType<typeof import('react-dom/client').createRoot>,
@@ -122,10 +124,11 @@ export const initPlayerApp = async (
       });
     } catch {}
 
+    try {
+      void useUpdaterStore.getState().checkForUpdate();
+    } catch {}
+
     if (isTauriEnvironment()) {
-      try {
-        void useUpdaterStore.getState().checkForUpdate();
-      } catch {}
       try {
         void ytdlpEnsureInstalled();
       } catch {}

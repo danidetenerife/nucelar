@@ -68,11 +68,19 @@ cmd.exe /c "cd packages\player && npx cap sync android && android\build-apk.bat"
 # 7. Build Tauri Desktop EXE
 Write-Host "[3/4] Compilando instalador Windows..." -ForegroundColor Yellow
 $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+$SigningKeyPath = Join-Path $env:USERPROFILE ".tauri\nuclear-updater.key"
+$SigningPasswordPath = Join-Path $env:USERPROFILE ".tauri\nuclear-updater.password"
+
+if (-not (Test-Path -LiteralPath $SigningKeyPath) -or -not (Test-Path -LiteralPath $SigningPasswordPath)) {
+    throw "No se encontró la clave de firma del actualizador en $SigningKeyPath"
+}
+
+$env:TAURI_SIGNING_PRIVATE_KEY = [System.IO.File]::ReadAllText($SigningKeyPath).Trim()
+$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = [System.IO.File]::ReadAllText($SigningPasswordPath).Trim()
 Set-Location "$Root\packages\player"
-try {
-    npx pnpm tauri build
-} catch {
-    Write-Host "Tauri build terminó con advertencia de firma (esperado)" -ForegroundColor Gray
+npx pnpm tauri build
+if ($LASTEXITCODE -ne 0) {
+    throw "La compilación firmada de escritorio ha fallado."
 }
 Set-Location $Root
 
@@ -82,6 +90,11 @@ $DestExe = "$Root\ejecutables\Nuclear_${NextVer}_x64-setup.exe"
 if (Test-Path $GeneratedExe) {
     Copy-Item $GeneratedExe $DestExe -Force
     Copy-Item $GeneratedExe "C:\Users\Danid\Desktop\Nuclear_${NextVer}_x64-setup.exe" -Force -ErrorAction SilentlyContinue
+}
+
+$GeneratedSignature = "$GeneratedExe.sig"
+if (-not (Test-Path -LiteralPath $GeneratedSignature)) {
+    throw "No se generó la firma del actualizador de escritorio."
 }
 
 # 8. Sync Git and Publish Release

@@ -10,7 +10,7 @@ import { errorMessage } from '../utils/errorMessage';
 import { reportError } from '../utils/logging';
 import { getSetting } from './settingsStore';
 
-const CURRENT_VERSION = '1.47.5';
+const CURRENT_VERSION = '1.47.6';
 const GITHUB_REPO = 'danidetenerife/nucelar';
 const GITHUB_LATEST_RELEASE_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
 
@@ -111,9 +111,10 @@ export const useUpdaterStore = create<UpdaterState>((set, get) => ({
       const latestTag = release.tag_name.replace(/^v/, '');
       const currentClean = CURRENT_VERSION.replace(/^v/, '');
 
-      const isNewer = semver.valid(latestTag) && semver.valid(currentClean)
-        ? semver.gt(latestTag, currentClean)
-        : latestTag !== currentClean;
+      const isNewer =
+        semver.valid(latestTag) && semver.valid(currentClean)
+          ? semver.gt(latestTag, currentClean)
+          : latestTag !== currentClean;
 
       const apkAsset = release.assets?.find((asset) =>
         asset.name.toLowerCase().endsWith('.apk'),

@@ -11,6 +11,7 @@ $cleanVer = $Version.Replace("v", "")
 $ExecutablesDir = "$Root\ejecutables"
 $ApkPath = "$ExecutablesDir\nuclear-music-player.apk"
 $ExePath = "$ExecutablesDir\Nuclear_${cleanVer}_x64-setup.exe"
+$SignaturePath = "$Root\packages\player\src-tauri\target\release\bundle\nsis\Nuclear_${cleanVer}_x64-setup.exe.sig"
 
 if (-not (Test-Path $ExePath)) {
     $fallbackExe = Get-ChildItem -Path $ExecutablesDir -Filter "*setup.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
@@ -29,7 +30,17 @@ if (-not (Test-Path $ExePath)) {
     exit 1
 }
 
+if (-not (Test-Path -LiteralPath $SignaturePath)) {
+    Write-Error "No se encontró la firma del actualizador para $cleanVer"
+    exit 1
+}
+
 $exeFileName = [System.IO.Path]::GetFileName($ExePath)
+$signature = [System.IO.File]::ReadAllText($SignaturePath).Trim()
+if ([string]::IsNullOrWhiteSpace($signature)) {
+    Write-Error "La firma del actualizador está vacía"
+    exit 1
+}
 
 # Create latest.json for Tauri updater
 $latestJsonContent = @"
@@ -39,7 +50,7 @@ $latestJsonContent = @"
   "pub_date": "$((Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"))",
   "platforms": {
     "windows-x86_64": {
-      "signature": "",
+      "signature": "$signature",
       "url": "https://github.com/danidetenerife/nucelar/releases/download/$Tag/$exeFileName"
     }
   }
@@ -47,24 +58,25 @@ $latestJsonContent = @"
 "@
 
 $LatestJsonPath = "$ExecutablesDir\latest.json"
-Set-Content -Path $LatestJsonPath -Value $latestJsonContent -Encoding UTF8
+[System.IO.File]::WriteAllText($LatestJsonPath, $latestJsonContent, (New-Object System.Text.UTF8Encoding($false)))
 
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host " Publicando Release $Tag en GitHub..." -ForegroundColor Green
 Write-Host " Archivos a subir:" -ForegroundColor Cyan
 Write-Host " - APK: $ApkPath"
 Write-Host " - Windows EXE: $ExePath"
+Write-Host " - Firma del actualizador: $SignaturePath"
 Write-Host " - Tauri JSON: $LatestJsonPath"
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 # Create release
-gh release create $Tag "$ApkPath" "$ExePath" "$LatestJsonPath" --title "Nuclear Player $Tag" --notes "$Notes"
+gh release create $Tag "$ApkPath" "$ExePath" "$SignaturePath" "$LatestJsonPath" --title "Nuclear Player $Tag" --notes "$Notes"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "¡Release $Tag publicado exitosamente en GitHub!" -ForegroundColor Green
     Write-Host "URL: https://github.com/danidetenerife/nucelar/releases/tag/$Tag" -ForegroundColor Cyan
 } else {
     Write-Host "Subiendo assets al release existente $Tag..." -ForegroundColor Yellow
-    gh release upload $Tag "$ApkPath" "$ExePath" "$LatestJsonPath" --clobber
+    gh release upload $Tag "$ApkPath" "$ExePath" "$SignaturePath" "$LatestJsonPath" --clobber
     Write-Host "¡Assets actualizados en el release $Tag!" -ForegroundColor Green
 }
