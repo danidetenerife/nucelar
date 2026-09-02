@@ -3,7 +3,6 @@ param(
     [string]$Notes = "Nuclear Music Player con auto-actualización universal e integración GitHub Releases"
 )
 
-$ErrorActionPreference = "Stop"
 $Root = Resolve-Path "$PSScriptRoot\.."
 Set-Location $Root
 
@@ -14,24 +13,29 @@ $ExePath = "$ExecutablesDir\Nuclear_1.47.1_x64-setup.exe"
 
 if (-not (Test-Path $ApkPath)) {
     Write-Error "No se encontró el APK en: $ApkPath"
+    exit 1
 }
 
 if (-not (Test-Path $ExePath)) {
     Write-Error "No se encontró el instalador de Windows en: $ExePath"
+    exit 1
 }
 
 # Create latest.json for Tauri updater
-$latestJsonContent = @{
-    version = $Version.Replace("v", "")
-    notes = $Notes
-    pub_date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-    platforms = @{
-        "windows-x86_64" = @{
-            signature = ""
-            url = "https://github.com/danidetenerife/nucelar/releases/download/$Tag/Nuclear_1.47.1_x64-setup.exe"
-        }
+$cleanVer = $Version.Replace("v", "")
+$latestJsonContent = @"
+{
+  "version": "$cleanVer",
+  "notes": "$Notes",
+  "pub_date": "$((Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"))",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "",
+      "url": "https://github.com/danidetenerife/nucelar/releases/download/$Tag/Nuclear_1.47.1_x64-setup.exe"
     }
-} | ConvertTo-Json -Depth 5
+  }
+}
+"@
 
 $LatestJsonPath = "$ExecutablesDir\latest.json"
 Set-Content -Path $LatestJsonPath -Value $latestJsonContent -Encoding UTF8
@@ -44,14 +48,14 @@ Write-Host " - Windows EXE: $ExePath"
 Write-Host " - Tauri JSON: $LatestJsonPath"
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-# Check if release already exists
-$releaseExists = gh release view $Tag 2>$null
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "El release $Tag ya existe. Actualizando assets..." -ForegroundColor Yellow
-    gh release upload $Tag $ApkPath $ExePath $LatestJsonPath --clobber
-} else {
-    gh release create $Tag $ApkPath $ExePath $LatestJsonPath --title "Nuclear Player $Tag" --notes $Notes
-}
+# Create release
+gh release create $Tag "$ApkPath" "$ExePath" "$LatestJsonPath" --title "Nuclear Player $Tag" --notes "$Notes"
 
-Write-Host "¡Release $Tag publicado exitosamente en GitHub!" -ForegroundColor Green
-Write-Host "URL: https://github.com/danidetenerife/nucelar/releases/tag/$Tag" -ForegroundColor Cyan
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "¡Release $Tag publicado exitosamente en GitHub!" -ForegroundColor Green
+    Write-Host "URL: https://github.com/danidetenerife/nucelar/releases/tag/$Tag" -ForegroundColor Cyan
+} else {
+    Write-Host "Subiendo assets al release existente $Tag..." -ForegroundColor Yellow
+    gh release upload $Tag "$ApkPath" "$ExePath" "$LatestJsonPath" --clobber
+    Write-Host "¡Assets actualizados en el release $Tag!" -ForegroundColor Green
+}
