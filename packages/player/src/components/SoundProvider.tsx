@@ -11,6 +11,7 @@ import { Logger } from '../services/logger';
 import { playbackManager } from '../services/playback';
 import { useQueueStore } from '../stores/queueStore';
 import { useSoundStore } from '../stores/soundStore';
+import { isCapacitorEnvironment } from '../services/universalStore';
 import { errorMessage } from '../utils/errorMessage';
 
 
@@ -87,7 +88,7 @@ export const SoundProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <>
-      {src && status !== 'stopped' && (
+      {src && status !== 'stopped' && !isCapacitorEnvironment() && (
         <Sound
           src={src}
           status={status}

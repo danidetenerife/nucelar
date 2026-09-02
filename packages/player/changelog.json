@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-02T23:20",
+    "description": "Fixed stream extraction using official YouTube visitor_id endpoint, decoupled native Android playback from WebView sleep, and added custom CDN headers and automatic error recovery to guarantee uninterrupted screen-off playback and instant lockscreen widget interaction.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Playback Fix",
+        "color": "green"
+      },
+      {
+        "label": "Screen-Off Audio",
+        "color": "blue"
+      },
+      {
+        "label": "HyperOS Widget",
+        "color": "orange"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T23:05",
     "description": "Upgraded notification channel to v5 with IMPORTANCE_HIGH and PRIORITY_HIGH, persistent non-empty titles/artists, and prioritized M4A/AAC hardware decoding for universal zero-glitch lockscreen widget rendering on Xiaomi HyperOS 3.",
     "type": "feature",

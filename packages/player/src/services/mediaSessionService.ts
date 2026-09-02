@@ -156,7 +156,7 @@ export const initMediaSessionService = () => {
           })
           .catch(() => {});
       }
-    }, 1000);
+    }, 500);
 
     NativeMediaSessionPlugin.addListener('mediaAction', (data) => {
       switch (data.action) {

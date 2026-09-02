@@ -30,8 +30,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.content.Context;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AudioForegroundService extends Service {
     public static final String CHANNEL_ID = "aurora_media_playback_v5";
@@ -111,11 +114,19 @@ public class AudioForegroundService extends Service {
             });
 
             mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                try {
+                    mp.reset();
+                } catch (Throwable t) {}
+                setOptimisticPlaybackState(false);
                 notifyJsMediaAction("error");
                 return true;
             });
 
-            mediaPlayer.setDataSource(url);
+            Map<String, String> headers = new HashMap<>();
+            headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36");
+            headers.put("Origin", "https://www.youtube.com");
+            headers.put("Referer", "https://www.youtube.com/");
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(url), headers);
             mediaPlayer.prepareAsync();
         } catch (Throwable t) {
             // ignore

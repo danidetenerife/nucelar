@@ -10,42 +10,51 @@ import type {
 import { httpHost } from './httpHost';
 import { isTauriEnvironment } from './universalStore';
 
-let cachedVisitorId = '';
-let cachedCookies = '';
+let cachedVisitorData = '';
 
-async function ensureVisitorSession(videoId: string): Promise<void> {
-  if (cachedVisitorId && cachedCookies) {
-    return;
+async function getVisitorData(): Promise<string> {
+  if (cachedVisitorData) {
+    return cachedVisitorData;
   }
   try {
-    const pageRes = await httpHost.fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+    const res = await httpHost.fetch('https://www.youtube.com/youtubei/v1/visitor_id', {
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
+        'X-YouTube-Client-Name': '1',
+        'X-YouTube-Client-Version': '2.20240901.01.00',
+        Origin: 'https://www.youtube.com',
       },
+      body: JSON.stringify({
+        context: {
+          client: {
+            clientName: 'WEB',
+            clientVersion: '2.20240901.01.00',
+            hl: 'en',
+            gl: 'US',
+          },
+        },
+      }),
     });
-    if (pageRes.body) {
-      const match = pageRes.body.match(/"VISITOR_DATA":"([^"]+)"/);
-      if (match && match[1]) {
-        cachedVisitorId = match[1];
+
+    if (res.status === 200 && res.body) {
+      const data = JSON.parse(res.body);
+      const visitor = data.responseContext?.visitorData;
+      if (typeof visitor === 'string' && visitor.length > 5) {
+        cachedVisitorData = visitor;
+        return cachedVisitorData;
       }
-    }
-    const setCookie = (pageRes.headers as Record<string, string>)?.['set-cookie'] || '';
-    if (setCookie) {
-      cachedCookies = setCookie
-        .split(',')
-        .map((part) => part.split(';')[0].trim())
-        .filter(Boolean)
-        .join('; ');
     }
   } catch {
     // ignore
   }
+  return '';
 }
 
 async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInfo | null> {
-  await ensureVisitorSession(videoId);
+  const visitorData = await getVisitorData();
 
   const body = {
     context: {
@@ -61,6 +70,7 @@ async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInf
         osVersion: '12L',
         hl: 'en',
         gl: 'US',
+        ...(visitorData ? { visitorData } : {}),
       },
     },
     videoId,
@@ -73,14 +83,8 @@ async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInf
     'X-YouTube-Client-Name': '28',
     'X-YouTube-Client-Version': '1.65.10',
     Origin: 'https://www.youtube.com',
+    ...(visitorData ? { 'X-Goog-Visitor-Id': visitorData } : {}),
   };
-
-  if (cachedCookies) {
-    headers.Cookie = cachedCookies;
-  }
-  if (cachedVisitorId) {
-    headers['X-Goog-Visitor-Id'] = cachedVisitorId;
-  }
 
   try {
     const res = await httpHost.fetch('https://www.youtube.com/youtubei/v1/player', {
