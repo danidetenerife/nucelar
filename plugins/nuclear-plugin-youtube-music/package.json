@@ -1,0 +1,27 @@
+{
+  "name": "nuclear-plugin-youtube-music",
+  "version": "0.1.0",
+  "description": "YouTube Music streaming and metadata provider for Nuclear music player",
+  "author": "NuclearPlayer",
+  "license": "AGPL-3.0-only",
+  "main": "src/index.ts",
+  "type": "module",
+  "nuclear": {
+    "displayName": "YouTube Music",
+    "category": "streaming",
+    "categories": [
+      "streaming",
+      "metadata",
+      "dashboard",
+      "playlists",
+      "discovery"
+    ],
+    "icon": {
+      "type": "link",
+      "link": "https://music.youtube.com/img/favicon_144.png"
+    }
+  },
+  "dependencies": {
+    "@nuclearplayer/plugin-sdk": "^1.1.0"
+  }
+}

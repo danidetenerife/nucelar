@@ -1,0 +1,125 @@
+import { pickArtwork } from '@nuclearplayer/model';
+
+import { useQueueStore } from '../stores/queueStore';
+import { useSoundStore } from '../stores/soundStore';
+import { NativeMediaSessionPlugin } from './nativeMediaSession';
+import { playbackManager } from './playback';
+import { isCapacitorEnvironment } from './universalStore';
+
+const secondsToMs = (seconds: number): number => Math.round(seconds * 1000);
+
+export const initMediaSessionService = () => {
+  if (typeof window === 'undefined' || !('mediaSession' in navigator)) {
+    return;
+  }
+
+  try {
+    navigator.mediaSession.setActionHandler('play', () => {
+      playbackManager.play();
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+      playbackManager.pause();
+    });
+
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      useQueueStore.getState().goToPrevious();
+    });
+
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+      useQueueStore.getState().goToNext();
+    });
+
+    navigator.mediaSession.setActionHandler('seekto', (details) => {
+      if (details.seekTime != null) {
+        useSoundStore.getState().seekTo(details.seekTime);
+      }
+    });
+  } catch {
+    // Some browsers or WebViews might ignore specific actions
+  }
+
+  useQueueStore.subscribe((state) => {
+    const currentItem = state.getCurrentItem();
+    if (!currentItem) {
+      return;
+    }
+
+    const track = currentItem.track;
+    const artwork = pickArtwork(track.artwork, 'thumbnail', 512);
+    const artist = track.artists?.map((artistCredit) => artistCredit.name).join(', ') || '';
+    const albumTitle = track.album?.title || '';
+    const artworkUrl = artwork?.url || '';
+
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: track.title,
+        artist,
+        album: albumTitle,
+        artwork: artworkUrl
+          ? [
+              {
+                src: artworkUrl,
+                sizes: '512x512',
+                type: 'image/png',
+              },
+            ]
+          : [],
+      });
+    } catch {
+      // ignore
+    }
+
+    if (isCapacitorEnvironment()) {
+      NativeMediaSessionPlugin.updateMetadata({
+        title: track.title,
+        artist,
+        album: albumTitle,
+        artworkUrl,
+      }).catch(() => {});
+    }
+  });
+
+  useSoundStore.subscribe((state) => {
+    try {
+      navigator.mediaSession.playbackState =
+        state.status === 'playing' ? 'playing' : 'paused';
+    } catch {
+      // ignore
+    }
+
+    if (isCapacitorEnvironment()) {
+      NativeMediaSessionPlugin.updatePlaybackState({
+        isPlaying: state.status === 'playing',
+        positionMs: secondsToMs(state.seek),
+      }).catch(() => {});
+    }
+  });
+
+  if (isCapacitorEnvironment()) {
+    NativeMediaSessionPlugin.addListener('mediaAction', (data) => {
+      switch (data.action) {
+        case 'play':
+          playbackManager.play();
+          break;
+        case 'pause':
+          playbackManager.pause();
+          break;
+        case 'nexttrack':
+          useQueueStore.getState().goToNext();
+          break;
+        case 'previoustrack':
+          useQueueStore.getState().goToPrevious();
+          break;
+        case 'seekto':
+          if (data.seekPositionMs != null && data.seekPositionMs >= 0) {
+            useSoundStore.getState().seekTo(data.seekPositionMs / 1000);
+          }
+          break;
+        case 'stop':
+          playbackManager.pause();
+          break;
+      }
+    }).catch(() => {});
+  }
+};

@@ -1,0 +1,17 @@
+{
+  "appId": "com.nuclearplayer.app",
+  "appName": "Nuclear",
+  "webDir": "dist",
+  "server": {
+    "cleartext": true,
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

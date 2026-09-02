@@ -1,0 +1,32 @@
+{
+  "name": "nuclear-plugin-youtube",
+  "version": "0.1.2",
+  "description": "YouTube streaming provider for Nuclear music player",
+  "author": "nukeop",
+  "license": "AGPL-3.0-only",
+  "main": "src/index.ts",
+  "type": "module",
+  "nuclear": {
+    "displayName": "YouTube",
+    "category": "streaming",
+    "icon": {
+      "type": "link",
+      "link": "https://www.youtube.com/s/desktop/26a583e4/img/favicon_144x144.png"
+    },
+    "permissions": []
+  },
+  "keywords": [
+    "nuclear",
+    "plugin",
+    "youtube",
+    "streaming"
+  ],
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+    "@nuclearplayer/plugin-sdk": "^0.0.14"
+  },
+  "packageManager": "pnpm@10.16.1"
+}

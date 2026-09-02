@@ -1,0 +1,42 @@
+{
+  "name": "nuclear-plugin-something",
+  "version": "0.2.2",
+  "description": "Spotify metadata provider for Nuclear music player",
+  "author": "nukeop",
+  "license": "AGPL-3.0-only",
+  "main": "src/index.ts",
+  "type": "module",
+  "nuclear": {
+    "displayName": "Spotify",
+    "category": "metadata",
+    "icon": {
+      "type": "link",
+      "link": "https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png"
+    },
+    "permissions": []
+  },
+  "keywords": [
+    "nuclear",
+    "plugin",
+    "spotify",
+    "metadata"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NuclearPlayer/nuclear-plugin-something.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NuclearPlayer/nuclear-plugin-something/issues"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+    "@nuclearplayer/plugin-sdk": "^2.7.0"
+  },
+  "packageManager": "pnpm@10.16.1",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
