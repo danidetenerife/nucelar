@@ -8,7 +8,8 @@ import type {
 } from '@nuclearplayer/plugin-sdk';
 
 import { httpHost } from './httpHost';
-import { isTauriEnvironment } from './universalStore';
+import { isCapacitorEnvironment, isTauriEnvironment } from './universalStore';
+import { YtStreamExtractor } from './ytStreamExtractor';
 
 const DEFAULT_VISITOR_ID =
   'CgtYZnFWT1lsZHNsOCj3wOLUBjIoCgJFUxIiEh4SHAsMDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicgLA%3D%3D';
@@ -177,17 +178,31 @@ export const ytdlpHost: YtdlpHost = {
       return invoke<YtdlpStreamInfo>('ytdlp_get_stream', { url });
     }
 
-    return {
-      stream_url: `https://www.youtube.com/watch?v=${videoId}`,
-      duration: null,
-      title: null,
-      container: 'mp4',
-      codec: 'aac',
-      album: null,
-      artists: [],
-      album_artists: [],
-      upload_date: null,
-    };
+    if (isCapacitorEnvironment()) {
+      try {
+        const { streamUrl } = await YtStreamExtractor.extractAudioUrl({ videoId });
+        if (streamUrl) {
+          return {
+            stream_url: streamUrl,
+            duration: null,
+            title: null,
+            container: streamUrl.includes('webm') ? 'webm' : 'm4a',
+            codec: streamUrl.includes('webm') ? 'opus' : 'aac',
+            album: null,
+            artists: [],
+            album_artists: [],
+            upload_date: null,
+          };
+        }
+      } catch (error) {
+        console.warn('[ytdlpHost] WebView extraction fallback failed:', error);
+        throw new Error(
+          `No se pudo resolver un stream de audio reproducible para ${videoId}`,
+        );
+      }
+    }
+
+    throw new Error(`No se pudo resolver un stream de audio reproducible para ${videoId}`);
   },
 
   getPlaylist: async (url: string): Promise<YtdlpPlaylistInfo> => {

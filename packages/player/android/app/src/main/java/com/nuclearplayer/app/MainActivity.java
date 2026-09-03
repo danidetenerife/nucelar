@@ -68,6 +68,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(MediaRouterPlugin.class);
         registerPlugin(NativeMediaSessionPlugin.class);
         registerPlugin(ApkUpdaterPlugin.class);
+        registerPlugin(YtStreamExtractorPlugin.class);
         super.onCreate(savedInstanceState);
 
         setupWakeLocks();
@@ -146,6 +147,7 @@ public class MainActivity extends BridgeActivity {
                 settings.setDatabaseEnabled(true);
                 settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
                 settings.setJavaScriptEnabled(true);
+                settings.setUserAgentString(YtStreamExtractorPlugin.MOBILE_UA);
                 settings.setOffscreenPreRaster(true);
             }
         } catch (Throwable t) {
