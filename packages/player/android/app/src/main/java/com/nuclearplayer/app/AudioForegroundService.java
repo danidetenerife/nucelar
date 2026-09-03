@@ -54,8 +54,6 @@ public class AudioForegroundService extends Service {
     private Bitmap currentArtworkBitmap = null;
     private long currentDurationMs = 0;
     private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
-    private MediaPlayer mediaPlayer;
-    private String currentStreamUrl = "";
 
     private static AudioForegroundService instance;
 
@@ -70,88 +68,23 @@ public class AudioForegroundService extends Service {
     }
 
     public MediaPlayer getMediaPlayer() {
-        return mediaPlayer;
+        return null;
     }
 
     public synchronized void playStream(String url, long positionMs) {
-        if (url == null || url.isEmpty()) return;
-        try {
-            if (mediaPlayer != null && url.equals(currentStreamUrl)) {
-                if (!mediaPlayer.isPlaying()) {
-                    if (positionMs > 0 && Math.abs(mediaPlayer.getCurrentPosition() - positionMs) > 2000) {
-                        mediaPlayer.seekTo((int) positionMs);
-                    }
-                    mediaPlayer.start();
-                    setOptimisticPlaybackState(true);
-                }
-                return;
-            }
-
-            currentStreamUrl = url;
-            if (mediaPlayer == null) {
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build());
-                mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-            } else {
-                mediaPlayer.reset();
-            }
-
-            mediaPlayer.setOnPreparedListener(mp -> {
-                if (positionMs > 0) {
-                    mp.seekTo((int) positionMs);
-                }
-                mp.start();
-                setOptimisticPlaybackState(true);
-                notifyJsMediaAction("playing");
-            });
-
-            mediaPlayer.setOnCompletionListener(mp -> {
-                setOptimisticPlaybackState(false);
-                notifyJsMediaAction("nexttrack");
-            });
-
-            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                try {
-                    mp.reset();
-                } catch (Throwable t) {}
-                setOptimisticPlaybackState(false);
-                notifyJsMediaAction("error");
-                return true;
-            });
-
-            Map<String, String> headers = new HashMap<>();
-            headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36");
-            headers.put("Origin", "https://www.youtube.com");
-            headers.put("Referer", "https://www.youtube.com/");
-            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(url), headers);
-            mediaPlayer.prepareAsync();
-        } catch (Throwable t) {
-            // ignore
-        }
+        setOptimisticPlaybackState(true);
     }
 
     public synchronized void pauseStream() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            setOptimisticPlaybackState(false);
-        }
+        setOptimisticPlaybackState(false);
     }
 
     public synchronized void resumeStream() {
-        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
-            mediaPlayer.start();
-            setOptimisticPlaybackState(true);
-        }
+        setOptimisticPlaybackState(true);
     }
 
     public synchronized void seekStream(long positionMs) {
-        if (mediaPlayer != null) {
-            mediaPlayer.seekTo((int) positionMs);
-            setOptimisticPlaybackState(mediaPlayer.isPlaying());
-        }
+        // Handled via JS
     }
 
     @Override
@@ -282,21 +215,9 @@ public class AudioForegroundService extends Service {
                 notifyJsMediaAction("previoustrack");
                 return START_STICKY;
             } else if ("com.nuclearplayer.ACTION_PLAY_PAUSE".equals(action)) {
-                boolean isPlaying = false;
-                if (mediaPlayer != null) {
-                    try {
-                        isPlaying = mediaPlayer.isPlaying();
-                    } catch (Throwable t) {}
-                } else {
-                    PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
-                    isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
-                }
+                PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
+                boolean isPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
                 boolean targetPlaying = !isPlaying;
-                if (targetPlaying) {
-                    resumeStream();
-                } else {
-                    pauseStream();
-                }
                 setOptimisticPlaybackState(targetPlaying);
                 notifyJsMediaAction(targetPlaying ? "play" : "pause");
                 return START_STICKY;
@@ -492,15 +413,10 @@ public class AudioForegroundService extends Service {
     }
 
     public void setOptimisticPlaybackState(boolean isPlaying) {
-        long pos = 0;
-        if (mediaPlayer != null) {
-            try {
-                pos = mediaPlayer.getCurrentPosition();
-            } catch (Throwable t) {}
-        } else {
-            PlaybackStateCompat state = mediaSession.getController().getPlaybackState();
-            pos = state != null ? state.getPosition() : 0;
-        }
+        PlaybackStateCompat state = mediaSession != null && mediaSession.getController() != null
+            ? mediaSession.getController().getPlaybackState()
+            : null;
+        long pos = state != null ? state.getPosition() : 0;
 
         PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
             .setActions(
@@ -665,13 +581,6 @@ public class AudioForegroundService extends Service {
 
     @Override
     public void onDestroy() {
-        if (mediaPlayer != null) {
-            try {
-                mediaPlayer.stop();
-                mediaPlayer.release();
-            } catch (Throwable t) {}
-            mediaPlayer = null;
-        }
         if (mediaSession != null) {
             mediaSession.setActive(false);
             mediaSession.release();

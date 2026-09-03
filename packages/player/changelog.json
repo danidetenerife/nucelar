@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-03T06:18",
+    "description": "Restored universal HTML5 audio playback across all platforms, enabled reliable static visitor ID fallback for instant YouTube stream extraction, and bound native low-latency silent AudioTrack keep-alive to ensure uninterrupted screen-off background playback and instant lockscreen widget response on Xiaomi HyperOS 3.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Audio Restored",
+        "color": "green"
+      },
+      {
+        "label": "Background Audio",
+        "color": "blue"
+      },
+      {
+        "label": "HyperOS Lockscreen",
+        "color": "orange"
+      }
+    ]
+  },
+  {
     "date": "2026-09-02T23:20",
     "description": "Fixed stream extraction using official YouTube visitor_id endpoint, decoupled native Android playback from WebView sleep, and added custom CDN headers and automatic error recovery to guarantee uninterrupted screen-off playback and instant lockscreen widget interaction.",
     "type": "feature",

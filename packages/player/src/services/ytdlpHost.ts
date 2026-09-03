@@ -10,12 +10,11 @@ import type {
 import { httpHost } from './httpHost';
 import { isTauriEnvironment } from './universalStore';
 
-let cachedVisitorData = '';
+const DEFAULT_VISITOR_ID =
+  'CgtYZnFWT1lsZHNsOCj3wOLUBjIoCgJFUxIiEh4SHAsMDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicgLA%3D%3D';
+let cachedVisitorData = DEFAULT_VISITOR_ID;
 
 async function getVisitorData(): Promise<string> {
-  if (cachedVisitorData) {
-    return cachedVisitorData;
-  }
   try {
     const res = await httpHost.fetch('https://www.youtube.com/youtubei/v1/visitor_id', {
       method: 'POST',
@@ -50,11 +49,12 @@ async function getVisitorData(): Promise<string> {
   } catch {
     // ignore
   }
-  return '';
+  return cachedVisitorData;
 }
 
 async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInfo | null> {
-  const visitorData = await getVisitorData();
+  const visitorData = cachedVisitorData || DEFAULT_VISITOR_ID;
+  void getVisitorData();
 
   const body = {
     context: {
