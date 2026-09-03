@@ -81,9 +81,13 @@ export const createStreamingProvider = (
       : `https://www.youtube.com/watch?v=${candidateId}`;
     const streamInfo = await api.Ytdlp.getStream(streamTarget);
 
+    const isHls =
+      streamInfo.stream_url.includes('.m3u8') ||
+      streamInfo.stream_url.includes('manifest.googlevideo.com');
+
     return {
       url: streamInfo.stream_url,
-      protocol: 'https',
+      protocol: isHls ? 'hls' : 'https',
       durationMs: streamInfo.duration
         ? streamInfo.duration * MILLISECONDS_PER_SECOND
         : undefined,

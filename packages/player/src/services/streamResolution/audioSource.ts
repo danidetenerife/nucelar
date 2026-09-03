@@ -14,7 +14,11 @@ export class AudioSourceFactory {
       return { url: candidate.id, protocol: 'http' };
     }
 
-    if (stream.protocol === 'hls') {
+    if (
+      stream.protocol === 'hls' ||
+      stream.url.includes('.m3u8') ||
+      stream.url.includes('manifest.googlevideo.com')
+    ) {
       return { url: stream.url, protocol: 'hls' };
     }
 

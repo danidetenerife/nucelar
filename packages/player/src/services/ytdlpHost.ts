@@ -59,35 +59,38 @@ async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInf
   const body = {
     context: {
       client: {
-        clientName: 'ANDROID_VR',
-        clientVersion: '1.65.10',
-        deviceMake: 'Oculus',
-        deviceModel: 'Quest 3',
-        androidSdkVersion: 32,
+        clientName: 'VISIONOS',
+        clientVersion: '1.02',
+        deviceMake: 'Apple',
+        deviceModel: 'RealityDevice17,1',
         userAgent:
-          'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
-        osName: 'Android',
-        osVersion: '12L',
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',
+        osName: 'visionOS',
+        osVersion: '26.5.23O471',
         hl: 'en',
-        gl: 'US',
-        ...(visitorData ? { visitorData } : {}),
       },
     },
     videoId,
+    playbackContext: {
+      contentPlaybackContext: {
+        html5Preference: 'HTML5_PREF_WANTS',
+        signatureTimestamp: 20696,
+      },
+    },
   };
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'User-Agent':
-      'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
-    'X-YouTube-Client-Name': '28',
-    'X-YouTube-Client-Version': '1.65.10',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15',
+    'X-YouTube-Client-Name': '101',
+    'X-YouTube-Client-Version': '1.02',
     Origin: 'https://www.youtube.com',
     ...(visitorData ? { 'X-Goog-Visitor-Id': visitorData } : {}),
   };
 
   try {
-    const res = await httpHost.fetch('https://www.youtube.com/youtubei/v1/player', {
+    const res = await httpHost.fetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
@@ -98,47 +101,46 @@ async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInf
     }
 
     const data = JSON.parse(res.body);
-    const formats = data.streamingData?.adaptiveFormats || [];
-    const audioFormats = formats.filter(
-      (format: { mimeType?: string }) => format.mimeType && format.mimeType.includes('audio'),
-    );
+    const hlsManifestUrl = data.streamingData?.hlsManifestUrl;
+    let audioUrl = hlsManifestUrl;
 
-    audioFormats.sort(
-      (a: { bitrate?: number; mimeType?: string }, b: { bitrate?: number; mimeType?: string }) => {
-        const aIsM4a = a.mimeType?.includes('mp4') ? 1 : 0;
-        const bIsM4a = b.mimeType?.includes('mp4') ? 1 : 0;
-        if (aIsM4a !== bIsM4a) {
-          return bIsM4a - aIsM4a;
+    if (hlsManifestUrl) {
+      try {
+        const m3u8Res = await httpHost.fetch(hlsManifestUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0' },
+        });
+        if (m3u8Res.status === 200 && m3u8Res.body) {
+          const lines = m3u8Res.body.split('\n');
+          const audioLine = lines.find((l: string) => l.includes('sgoap/clen') && l.includes('URI='));
+          const match = audioLine ? audioLine.match(/URI="([^"]+)"/) : null;
+          if (match && match[1]) {
+            audioUrl = match[1];
+          }
         }
-        return (b.bitrate || 0) - (a.bitrate || 0);
-      },
-    );
-
-    for (const format of audioFormats) {
-      if (format.url) {
-        const approxDurationMs = format.approxDurationMs
-          ? Number(format.approxDurationMs)
-          : null;
-        const durationSec = approxDurationMs ? approxDurationMs / 1000 : null;
-        const container = format.mimeType.includes('mp4') ? 'm4a' : 'webm';
-        const codecMatch = (format.mimeType as string).match(/codecs="([^"]+)"/);
-        const codec = codecMatch ? codecMatch[1] : 'aac';
-
-        return {
-          stream_url: format.url,
-          duration: durationSec,
-          title: data.videoDetails?.title ?? null,
-          container,
-          codec,
-          album: null,
-          artists: data.videoDetails?.author ? [data.videoDetails.author] : [],
-          album_artists: [],
-          upload_date: null,
-        };
+      } catch {
+        // use hlsManifestUrl
       }
     }
+
+    if (audioUrl) {
+      const durationSec = data.videoDetails?.lengthSeconds
+        ? Number(data.videoDetails.lengthSeconds)
+        : null;
+
+      return {
+        stream_url: audioUrl,
+        duration: durationSec,
+        title: data.videoDetails?.title ?? null,
+        container: 'm4a',
+        codec: 'aac',
+        album: null,
+        artists: data.videoDetails?.author ? [data.videoDetails.author] : [],
+        album_artists: [],
+        upload_date: null,
+      };
+    }
   } catch (error) {
-    console.warn('[ytdlpHost] Direct Android VR extraction failed:', error);
+    console.warn('[ytdlpHost] Direct VISIONOS HLS extraction failed:', error);
   }
   return null;
 }

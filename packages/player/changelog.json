@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-03T06:40",
+    "description": "Fixed infinite buffering by migrating YouTube direct audio stream resolution to VISIONOS HLS master manifest streams with sub-playlist parsing, eliminating 403 Forbidden errors and bot PoToken challenges across all songs.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "Infinite Buffering Fix",
+        "color": "green"
+      },
+      {
+        "label": "HLS Audio",
+        "color": "blue"
+      },
+      {
+        "label": "YouTube Extraction",
+        "color": "orange"
+      }
+    ]
+  },
+  {
     "date": "2026-09-03T06:18",
     "description": "Restored universal HTML5 audio playback across all platforms, enabled reliable static visitor ID fallback for instant YouTube stream extraction, and bound native low-latency silent AudioTrack keep-alive to ensure uninterrupted screen-off background playback and instant lockscreen widget response on Xiaomi HyperOS 3.",
     "type": "feature",

@@ -68,9 +68,13 @@ const createProvider = (api: NuclearPluginAPI): StreamingProvider => ({
   getStreamUrl: async (candidateId) => {
     const info = await api.Ytdlp.getStream(candidateId);
 
+    const isHls =
+      info.stream_url.includes('.m3u8') ||
+      info.stream_url.includes('manifest.googlevideo.com');
+
     return {
       url: info.stream_url,
-      protocol: 'https',
+      protocol: isHls ? 'hls' : 'https',
       durationMs: info.duration ? info.duration * 1000 : undefined,
       container: info.container ?? undefined,
       codec: info.codec ?? undefined,
