@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-03T11:18",
+    "description": "Enhanced MediaSession synchronization with decoupled web/native bridge initialization, non-blocking metadata subscriptions, and comprehensive Android AudioForegroundService diagnostics.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "MediaSession",
+        "color": "green"
+      },
+      {
+        "label": "Foreground Service",
+        "color": "blue"
+      },
+      {
+        "label": "Diagnostics",
+        "color": "orange"
+      }
+    ]
+  },
+  {
     "date": "2026-09-03T07:05",
     "description": "Added on-device hidden WebView YouTube stream extractor plugin with two-stage fallback (embed -> m.youtube.com), robust MIME audio filtering, leak-free lifecycle cleanup, and unified mobile User-Agent synchronization.",
     "type": "feature",

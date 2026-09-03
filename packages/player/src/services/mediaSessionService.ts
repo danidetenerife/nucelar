@@ -9,77 +9,97 @@ import { isCapacitorEnvironment } from './universalStore';
 const secondsToMs = (seconds: number): number => Math.round(seconds * 1000);
 
 export const initMediaSessionService = () => {
-  if (typeof window === 'undefined' || !('mediaSession' in navigator)) {
+  if (typeof window === 'undefined') {
     return;
   }
 
-  try {
-    navigator.mediaSession.setActionHandler('play', () => {
-      playbackManager.play();
-    });
+  const hasWebMediaSession = 'mediaSession' in navigator;
+  console.log(
+    '[mediaSessionService] init, hasWebMediaSession=',
+    hasWebMediaSession,
+    'isCapacitorEnvironment=',
+    isCapacitorEnvironment(),
+  );
 
-    navigator.mediaSession.setActionHandler('pause', () => {
-      playbackManager.pause();
-    });
+  if (hasWebMediaSession) {
+    try {
+      navigator.mediaSession.setActionHandler('play', () => {
+        playbackManager.play();
+      });
 
-    navigator.mediaSession.setActionHandler('previoustrack', () => {
-      useQueueStore.getState().goToPrevious();
-    });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        playbackManager.pause();
+      });
 
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-      useQueueStore.getState().goToNext();
-    });
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        useQueueStore.getState().goToPrevious();
+      });
 
-    navigator.mediaSession.setActionHandler('seekto', (details) => {
-      if (details.seekTime != null) {
-        useSoundStore.getState().seekTo(details.seekTime);
-      }
-    });
-  } catch {
-    // Some browsers or WebViews might ignore specific actions
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        useQueueStore.getState().goToNext();
+      });
+
+      navigator.mediaSession.setActionHandler('seekto', (details) => {
+        if (details.seekTime != null) {
+          useSoundStore.getState().seekTo(details.seekTime);
+        }
+      });
+    } catch {
+      // Some browsers or WebViews might ignore specific actions
+    }
   }
 
   useQueueStore.subscribe((state) => {
     const currentItem = state.getCurrentItem();
     if (!currentItem) {
+      console.log('[mediaSessionService] queue subscribe fired but no currentItem');
       return;
     }
 
     const track = currentItem.track;
+    console.log('[mediaSessionService] currentItem changed, track.title=', track?.title);
     const artwork = pickArtwork(track.artwork, 'thumbnail', 512);
     const artist = track.artists?.map((artistCredit) => artistCredit.name).join(', ') || '';
     const albumTitle = track.album?.title || '';
     const artworkUrl = artwork?.url || '';
 
-    try {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: track.title,
-        artist,
-        album: albumTitle,
-        artwork: artworkUrl
-          ? [
-              {
-                src: artworkUrl,
-                sizes: '512x512',
-                type: 'image/png',
-              },
-            ]
-          : [],
-      });
-    } catch {
-      // ignore
+    if (hasWebMediaSession) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: track.title,
+          artist,
+          album: albumTitle,
+          artwork: artworkUrl
+            ? [
+                {
+                  src: artworkUrl,
+                  sizes: '512x512',
+                  type: 'image/png',
+                },
+              ]
+            : [],
+        });
+      } catch {
+        // ignore
+      }
     }
 
     const durationMs = track.durationMs;
 
     if (isCapacitorEnvironment()) {
+      console.log('[mediaSessionService] calling NativeMediaSessionPlugin.updateMetadata', {
+        title: track.title,
+        artist,
+      });
       NativeMediaSessionPlugin.updateMetadata({
         title: track.title,
         artist,
         album: albumTitle,
         artworkUrl,
         durationMs,
-      }).catch(() => {});
+      })
+        .then(() => console.log('[mediaSessionService] updateMetadata resolved OK'))
+        .catch((err) => console.error('[mediaSessionService] updateMetadata FAILED', err));
     }
   });
 

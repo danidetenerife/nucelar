@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AudioForegroundService extends Service {
+    private static final String TAG = "AudioForegroundService";
     public static final String CHANNEL_ID = "aurora_media_playback_v5";
     public static final String ACTION_UPDATE_METADATA = "com.nuclearplayer.UPDATE_METADATA";
     public static final String ACTION_UPDATE_PLAYBACK_STATE = "com.nuclearplayer.UPDATE_PLAYBACK_STATE";
@@ -205,6 +207,7 @@ public class AudioForegroundService extends Service {
 
         if (intent != null) {
             String action = intent.getAction();
+            Log.i(TAG, "onStartCommand action=" + action);
             if (ACTION_UPDATE_METADATA.equals(action)) {
                 handleMetadataUpdate(intent);
                 return START_STICKY;
@@ -237,6 +240,8 @@ public class AudioForegroundService extends Service {
         String album = intent.getStringExtra("album");
         String artworkUrl = intent.getStringExtra("artworkUrl");
         long durationMs = intent.getLongExtra("durationMs", 0);
+        Log.i(TAG, "handleMetadataUpdate: title='" + title + "' artist='" + artist
+            + "' album='" + album + "' artworkUrl='" + artworkUrl + "' durationMs=" + durationMs);
         if (durationMs > 0) {
             currentDurationMs = durationMs;
         }
@@ -511,9 +516,14 @@ public class AudioForegroundService extends Service {
             isPlaying
         );
 
+        Log.i(TAG, "updateNotification posting: currentTitle='" + currentTitle
+            + "' currentArtist='" + currentArtist + "' isPlaying=" + isPlaying);
+
         NotificationManager manager = getSystemService(NotificationManager.class);
         if (manager != null) {
             manager.notify(NOTIFICATION_ID, notification);
+        } else {
+            Log.e(TAG, "NotificationManager is null, cannot post notification update");
         }
     }
 

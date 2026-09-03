@@ -11,6 +11,7 @@ import android.media.AudioDeviceCallback;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Build;
+import android.util.Log;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -20,6 +21,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 
 @CapacitorPlugin(name = "NativeMediaSessionPlugin")
 public class NativeMediaSessionPlugin extends Plugin {
+    private static final String TAG = "NativeMediaSessionPlugin";
 
     private static NativeMediaSessionPlugin instance;
     private AudioManager audioManager;
@@ -160,6 +162,9 @@ public class NativeMediaSessionPlugin extends Plugin {
         Double durationDouble = call.getDouble("durationMs");
         long durationMs = durationDouble != null ? durationDouble.longValue() : 0;
 
+        Log.i(TAG, "updateMetadata called: title='" + title + "' artist='" + artist
+            + "' album='" + album + "' durationMs=" + durationMs);
+
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
         intent.setAction(AudioForegroundService.ACTION_UPDATE_METADATA);
         intent.putExtra("title", title);
@@ -175,7 +180,7 @@ public class NativeMediaSessionPlugin extends Plugin {
                 getContext().startService(intent);
             }
         } catch (Throwable t) {
-            // ignore
+            Log.e(TAG, "Failed to start AudioForegroundService for metadata update", t);
         }
 
         call.resolve();
