@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-09-03T13:00",
+    "description": "Added TV spatial D-pad navigation service and optimized TV platform styles with 20px rem root scaling, overscan safe padding, and GPU blur filter disable.",
+    "type": "feature",
+    "contributors": [
+      "danidetenerife"
+    ],
+    "tags": [
+      {
+        "label": "TV Navigation",
+        "color": "green"
+      },
+      {
+        "label": "Android TV",
+        "color": "blue"
+      },
+      {
+        "label": "Performance",
+        "color": "orange"
+      }
+    ]
+  },
+  {
     "date": "2026-09-03T11:18",
     "description": "Enhanced MediaSession synchronization with decoupled web/native bridge initialization, non-blocking metadata subscriptions, and comprehensive Android AudioForegroundService diagnostics.",
     "type": "feature",

@@ -137,6 +137,27 @@
 html[data-platform='tv'] {
   width: 100dvw;
   height: 100dvh;
+  /*
+   * rem-based Tailwind utilities (padding, gap, icon/button sizing, text
+   * sizes without an explicit override) are relative to this root font-size,
+   * NOT to `body`'s. Scaling it here is what actually makes spacing and
+   * controls grow to a comfortable, clickable size on a TV screen instead of
+   * only the couple of properties set below.
+   */
+  font-size: 20px;
+}
+
+html[data-platform='tv'] #root {
+  /* Safe margin so content isn't clipped by TV overscan/rounded bezels. */
+  padding: 3vh 3vw;
+  box-sizing: border-box;
+}
+
+html[data-platform='tv'] * {
+  /* backdrop-filter blur sampling is one of the most expensive effects on
+     the weak GPUs common in TV boxes/dongles; drop it on TV specifically. */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 [data-theme='dark'] {
