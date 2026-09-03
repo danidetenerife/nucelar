@@ -9,7 +9,7 @@ use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-const REEXEC_GUARD: &str = "NUCLEAR_APPIMAGE_PRELOAD_DONE";
+const REEXEC_GUARD: &str = "AURORA_APPIMAGE_PRELOAD_DONE";
 const WAYLAND_CLIENT_LIB: &str = "libwayland-client";
 
 const HOST_LIB_DIRS: [&str; 5] = [

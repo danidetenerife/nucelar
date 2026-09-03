@@ -1,7 +1,7 @@
 {
   "common": {
     "app": {
-      "name": "Nuclear",
+      "name": "Aurora",
       "description": "App di streaming musicale gratuita"
     },
     "actions": {
@@ -311,7 +311,7 @@
     "clickToRestart": "Click to restart"
   },
   "flatpak": {
-    "sandboxWarning": "Stai eseguendo Nuclear in una sandbox Flatpak. Alcune funzionalità potrebbero non funzionare correttamente. Se riscontri problemi, prova invece il file .deb o Appimage.",
+    "sandboxWarning": "Stai eseguendo Aurora in una sandbox Flatpak. Alcune funzionalità potrebbero non funzionare correttamente. Se riscontri problemi, prova invece il file .deb o Appimage.",
     "dismiss": "Capito"
   },
   "preferences": {
@@ -426,12 +426,12 @@
       "title": "Integrazioni",
       "jam": {
         "enabled": {
-          "title": "Nuclear Jam",
-          "description": "Start a local web server that lets you control Nuclear from other devices on your network."
+          "title": "Aurora Jam",
+          "description": "Start a local web server that lets you control Aurora from other devices on your network."
         },
         "remoteUrl": {
           "title": "Remote URL",
-          "description": "Open this URL on another device to control Nuclear."
+          "description": "Open this URL on another device to control Aurora."
         },
         "apiUrl": {
           "title": "API URL",
@@ -441,21 +441,21 @@
       "mcp": {
         "enabled": {
           "title": "Abilita Server MCP",
-          "description": "Avvia un server MCP locale che consente agli strumenti AI di controllare Nuclear."
+          "description": "Avvia un server MCP locale che consente agli strumenti AI di controllare Aurora."
         },
         "serverUrl": {
           "title": "URL Server MCP",
-          "description": "Indirizza il tuo strumento di AI a questo URL per collegarti a Nuclear."
+          "description": "Indirizza il tuo strumento di AI a questo URL per collegarti a Aurora."
         }
       },
       "mpd": {
         "enabled": {
           "title": "Enable MPD Server",
-          "description": "Start a local MPD-compatible server so MPD clients can control Nuclear."
+          "description": "Start a local MPD-compatible server so MPD clients can control Aurora."
         },
         "serverUrl": {
           "title": "MPD Server URL",
-          "description": "Point your MPD client to this address to connect to Nuclear."
+          "description": "Point your MPD client to this address to connect to Aurora."
         }
       },
       "discord": {
@@ -557,12 +557,12 @@
   },
   "remote": {
     "connecting": {
-      "title": "Connecting to Nuclear...",
-      "subtitle": "Make sure Nuclear is running and Nuclear Jam is enabled"
+      "title": "Connecting to Aurora...",
+      "subtitle": "Make sure Aurora is running and Aurora Jam is enabled"
     },
     "error": {
-      "title": "Could not connect to Nuclear",
-      "subtitle": "Make sure Nuclear is running and Nuclear Jam is enabled in Settings"
+      "title": "Could not connect to Aurora",
+      "subtitle": "Make sure Aurora is running and Aurora Jam is enabled in Settings"
     },
     "connection": {
       "connecting": "Connecting",
@@ -573,22 +573,22 @@
     "queue": {
       "upNext": "Up next",
       "emptyTitle": "Queue is empty",
-      "emptySubtitle": "Add tracks in Nuclear to see them here"
+      "emptySubtitle": "Add tracks in Aurora to see them here"
     },
     "search": {
       "placeholder": "Search for music",
       "emptyTitle": "No results",
       "emptyDescription": "Nothing found for your search terms",
       "errorTitle": "Search failed",
-      "errorDescription": "Check the connection to Nuclear and try again"
+      "errorDescription": "Check the connection to Aurora and try again"
     },
     "qrCode": {
-      "tooltip": "Nuclear Jam remote control",
-      "instructions": "Scan the QR code or copy the address below to connect to Nuclear Jam"
+      "tooltip": "Aurora Jam remote control",
+      "instructions": "Scan the QR code or copy the address below to connect to Aurora Jam"
     }
   },
   "titleBar": {
-    "title": "Nuclear Music Player",
+    "title": "Aurora Music Player",
     "minimize": "Minimize",
     "maximize": "Maximize",
     "close": "Close"

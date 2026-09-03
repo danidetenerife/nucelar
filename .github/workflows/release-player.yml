@@ -115,7 +115,7 @@ jobs:
           TAURI_BUNDLER_DMG_IGNORE_CI: false
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: "Nuclear Player v${{ steps.version.outputs.version }}"
+          releaseName: "Aurora Player v${{ steps.version.outputs.version }}"
           releaseBody: "${{ steps.release_notes.outputs.notes }}"
           releaseDraft: false
           prerelease: false

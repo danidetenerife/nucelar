@@ -7,7 +7,7 @@ import {
   Shuffle,
   SkipBack,
   SkipForward,
-  Tv,
+  MonitorPlay,
 } from 'lucide-react';
 import { FC } from 'react';
 
@@ -144,7 +144,7 @@ export const PlayerBarControls: FC<PlayerBarControlsProps> = ({
         content={
           isVideoActive
             ? (labels?.videoOn ?? 'Ocultar videoclip')
-            : (labels?.videoOff ?? 'Ver videoclip (TV)')
+            : (labels?.videoOff ?? 'Ver videoclip')
         }
         side="top"
       >
@@ -155,7 +155,7 @@ export const PlayerBarControls: FC<PlayerBarControlsProps> = ({
           onClick={onVideoToggle}
           data-testid="player-video-button"
         >
-          <Tv size={16} />
+          <MonitorPlay size={16} />
         </Button>
       </Tooltip>
     )}

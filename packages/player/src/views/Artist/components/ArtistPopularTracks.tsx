@@ -44,7 +44,7 @@ export const ArtistPopularTracks: FC<ArtistPopularTracksProps> = ({
       <ConnectedTrackTable
         tracks={tracks ?? []}
         features={{ filterable: false, playAll: true, addAllToQueue: true }}
-        display={{ displayDuration: false }}
+        display={{ displayDuration: true }}
       />
     </div>
   );

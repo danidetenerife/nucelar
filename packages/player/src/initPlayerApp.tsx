@@ -16,7 +16,6 @@ import { initPlaybackEventBridge } from './services/playbackEventBridge';
 import { hydratePluginsFromRegistry } from './services/plugins/pluginBootstrap';
 import { providersHost } from './services/providersHost';
 import { ytdlpEnsureInstalled } from './services/tauri/commands';
-import { initTvNavigation } from './services/tvNavigation';
 import { isTauriEnvironment } from './services/universalStore';
 import { initCarModeService } from './stores/carModeStore';
 import { initializeFavoritesStore } from './stores/favoritesStore';
@@ -78,10 +77,6 @@ export const initPlayerApp = async (
 
     try {
       initMediaSessionService();
-    } catch {}
-
-    try {
-      initTvNavigation();
     } catch {}
 
     try {

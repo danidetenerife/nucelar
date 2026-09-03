@@ -1,22 +1,26 @@
 [
   {
-    "date": "2026-09-03T13:00",
-    "description": "Added TV spatial D-pad navigation service and optimized TV platform styles with 20px rem root scaling, overscan safe padding, and GPU blur filter disable.",
+    "date": "2026-09-03T22:00",
+    "description": "Complete rebranding from Nuclear to Aurora. Fixed desktop audio playback by prioritizing yt-dlp on Tauri. Added audio focus handling to pause music during phone calls. Filtered YouTube Music search to exclude live streams and long videos. Removed TV/Google TV support. Updated all Android app icons to Aurora design.",
     "type": "feature",
     "contributors": [
       "danidetenerife"
     ],
     "tags": [
       {
-        "label": "TV Navigation",
+        "label": "Aurora Rebrand",
+        "color": "purple"
+      },
+      {
+        "label": "Desktop Fix",
         "color": "green"
       },
       {
-        "label": "Android TV",
+        "label": "Audio Focus",
         "color": "blue"
       },
       {
-        "label": "Performance",
+        "label": "Search Filter",
         "color": "orange"
       }
     ]
@@ -415,7 +419,7 @@
   },
   {
     "date": "2026-09-02T00:00",
-    "description": "Fixed Android playback stopping when the screen turns off or the app is backgrounded, and made the Google TV layout adapt to the visible screen size.",
+    "description": "Fixed Android playback stopping when the screen turns off or the app is backgrounded, and made the layout adapt to the visible screen size.",
     "type": "fix",
     "contributors": [
       "danidetenerife"

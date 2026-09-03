@@ -7,6 +7,6 @@ if not exist "C:\Users\Danid\Desktop\proyectos\nuclear-master\ejecutables" mkdir
 if exist "app\build\outputs\apk\debug\app-debug.apk" (
     copy /y "app\build\outputs\apk\debug\app-debug.apk" "C:\Users\Danid\Desktop\proyectos\nuclear-master\ejecutables\aurora-music-player.apk"
     copy /y "app\build\outputs\apk\debug\app-debug.apk" "C:\Users\Danid\Desktop\proyectos\nuclear-master\aurora-music-player.apk"
-    copy /y "app\build\outputs\apk\debug\app-debug.apk" "C:\Users\Danid\Desktop\proyectos\nuclear-master\ejecutables\nuclear-music-player.apk"
-    copy /y "app\build\outputs\apk\debug\app-debug.apk" "C:\Users\Danid\Desktop\proyectos\nuclear-master\nuclear-music-player.apk"
+    copy /y "app\build\outputs\apk\debug\app-debug.apk" "C:\Users\Danid\Desktop\proyectos\nuclear-master\ejecutables\aurora-music-player.apk"
+    copy /y "app\build\outputs\apk\debug\app-debug.apk" "C:\Users\Danid\Desktop\proyectos\nuclear-master\aurora-music-player.apk"
 )

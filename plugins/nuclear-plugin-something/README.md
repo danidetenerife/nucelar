@@ -1,4 +1,4 @@
-# Spotify Metadata Plugin for Nuclear
+# Spotify Metadata Plugin for Aurora
 
 A metadata-only provider plugin that fetches artist, album, and track information from Spotify's public API. No Spotify account required.
 

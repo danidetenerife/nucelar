@@ -69,7 +69,7 @@ public class ApkUpdaterPlugin extends Plugin {
             try {
                 Context context = getContext();
                 File cacheDir = context.getExternalCacheDir() != null ? context.getExternalCacheDir() : context.getCacheDir();
-                File apkFile = new File(cacheDir, "nuclear-update.apk");
+                File apkFile = new File(cacheDir, "aurora-update.apk");
 
                 if (apkFile.exists()) {
                     apkFile.delete();
@@ -78,7 +78,7 @@ public class ApkUpdaterPlugin extends Plugin {
                 URL url = new URL(downloadUrl);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setInstanceFollowRedirects(true);
-                connection.setRequestProperty("User-Agent", "Nuclear-Music-Player-Android");
+                connection.setRequestProperty("User-Agent", "Aurora-Music-Player-Android");
                 connection.connect();
 
                 // Handle HTTP redirects (GitHub releases redirect to AWS S3)

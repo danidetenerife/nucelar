@@ -1,7 +1,7 @@
 import type { ArtworkSet } from '@nuclearplayer/model';
 
 const memoryCache = new Map<string, string>();
-const LOCAL_STORAGE_KEY_PREFIX = 'nuclear_cover_';
+const LOCAL_STORAGE_KEY_PREFIX = 'aurora_cover_';
 
 const normalizeText = (text: string): string =>
   text

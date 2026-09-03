@@ -7,7 +7,6 @@ import { ArtistBioHeader } from './components/ArtistBioHeader';
 import { ArtistPlaylistsGrid } from './components/ArtistPlaylistsGrid';
 import { ArtistPopularTracks } from './components/ArtistPopularTracks';
 import { ArtistSimilarArtists } from './components/ArtistSimilarArtists';
-import { ArtistSocialHeader } from './components/ArtistSocialHeader';
 
 export type ArtistWidgetProps = {
   providerId: string;
@@ -23,21 +22,20 @@ export type ArtistWidgetEntry = {
 
 export const ARTIST_WIDGETS: ArtistWidgetEntry[] = [
   { capability: 'artistBio', component: ArtistBioHeader },
-  { capability: 'artistSocialStats', component: ArtistSocialHeader },
-  {
-    capability: 'artistTopTracks',
-    component: ArtistPopularTracks,
-    group: 'tracks-and-related',
-    width: 'md:w-2/3',
-  },
+  { capability: 'artistTopTracks', component: ArtistPopularTracks },
+  { capability: 'artistAlbums', component: ArtistAlbumsGrid },
   {
     capability: 'artistRelatedArtists',
     component: ArtistSimilarArtists,
-    group: 'tracks-and-related',
-    width: 'md:w-1/3',
+    group: 'related-and-playlists',
+    width: 'md:w-1/2',
   },
-  { capability: 'artistAlbums', component: ArtistAlbumsGrid },
-  { capability: 'artistPlaylists', component: ArtistPlaylistsGrid },
+  {
+    capability: 'artistPlaylists',
+    component: ArtistPlaylistsGrid,
+    group: 'related-and-playlists',
+    width: 'md:w-1/2',
+  },
 ];
 
 export type WidgetGroup = {

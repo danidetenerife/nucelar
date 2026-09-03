@@ -250,13 +250,13 @@ mod tests {
         fn preserves_safe_headers() {
             let mut headers = HashMap::new();
             headers.insert("content-type".to_string(), "application/json".to_string());
-            headers.insert("user-agent".to_string(), "Nuclear/1.0".to_string());
+            headers.insert("user-agent".to_string(), "Aurora/1.0".to_string());
             headers.insert("accept".to_string(), "*/*".to_string());
 
             let redacted = redact_headers(&headers);
 
             assert_eq!(redacted.get("content-type").unwrap(), "application/json");
-            assert_eq!(redacted.get("user-agent").unwrap(), "Nuclear/1.0");
+            assert_eq!(redacted.get("user-agent").unwrap(), "Aurora/1.0");
             assert_eq!(redacted.get("accept").unwrap(), "*/*");
         }
     }

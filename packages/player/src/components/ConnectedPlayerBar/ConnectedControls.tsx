@@ -81,14 +81,14 @@ export const ConnectedControls: FC = () => {
           discoveryOn: t('discoveryOn'),
           discoveryOff: t('discoveryOff'),
           videoOn: 'Ocultar videoclip',
-          videoOff: 'Ver videoclip (TV)',
+          videoOff: 'Ver videoclip',
         }}
       />
       <Tooltip
         content={
           castState.isConnected
             ? `Cast: ${castState.connectedRouteName}`
-            : 'Enviar a altavoz o TV'
+            : 'Enviar a altavoz'
         }
         side="top"
       >

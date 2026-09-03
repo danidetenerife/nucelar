@@ -1,7 +1,7 @@
 {
   "name": "@nuclearplayer/tailwind-config",
   "version": "0.0.10",
-  "description": "Shared Tailwind CSS configuration for Nuclear",
+  "description": "Shared Tailwind CSS configuration for Aurora",
   "type": "module",
   "main": "./global.css",
   "exports": {

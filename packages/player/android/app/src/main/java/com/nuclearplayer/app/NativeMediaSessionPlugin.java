@@ -68,6 +68,9 @@ public class NativeMediaSessionPlugin extends Plugin {
                             || BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED.equals(action)
                             || AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
                         checkAndNotifyBluetoothState();
+                        if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
+                            notifyMediaAction("pause", -1);
+                        }
                     }
                 }
             };

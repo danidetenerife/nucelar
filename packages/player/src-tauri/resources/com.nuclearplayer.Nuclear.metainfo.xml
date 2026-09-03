@@ -3,11 +3,11 @@
   <id>com.nuclearplayer.Nuclear</id>
   <metadata_license>FSFAP</metadata_license>
   <project_license>AGPL-3.0-only</project_license>
-  <name>Nuclear</name>
+  <name>Aurora</name>
   <summary>Music streaming app</summary>
 
   <developer id="com.nuclearplayer">
-    <name>nukeop</name>
+    <name>danidetenerife</name>
   </developer>
 
   <!-- Migration from old Flatpak ID -->
@@ -20,7 +20,7 @@
 
   <description>
     <p>
-      Nuclear is a free, open-source music player without ads or tracking. Search for any song or artist, build playlists, and start listening.
+      Aurora is a free, open-source music player without ads or tracking. Search for any song or artist, build playlists, and start listening.
     </p>
     <ul>
       <li>Search for music across multiple sources</li>

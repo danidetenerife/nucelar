@@ -167,7 +167,7 @@ export const CarModeOverlay: FC = () => {
             {currentTrack?.title ?? 'Sin reproducción'}
           </h1>
           <p className="text-lg sm:text-2xl font-semibold text-zinc-300 truncate">
-            {currentTrack?.artists?.[0]?.name ?? 'Nuclear'}
+            {currentTrack?.artists?.[0]?.name ?? 'Aurora'}
           </p>
         </div>
       </div>

@@ -1,8 +1,8 @@
-# Nuclear Plugin SDK
+# Aurora Plugin SDK
 
-Build plugins for Nuclear music player.
+Build plugins for Aurora music player.
 
-Plugins are JavaScript/TypeScript modules that extend Nuclear's functionality. Write lifecycle hooks, register providers, distribute it through the [plugin registry](https://github.com/NuclearPlayer/plugin-registry).
+Plugins are JavaScript/TypeScript modules that extend Aurora's functionality. Write lifecycle hooks, register providers, distribute it through the [plugin registry](https://github.com/NuclearPlayer/plugin-registry).
 
 ## Quick Start
 
@@ -59,7 +59,7 @@ Add a `nuclear` object for extra metadata:
   "name": "@nuclear-plugin/lastfm",
   "version": "0.1.0",
   "description": "Scrobble tracks to Last.fm",
-  "author": "Nuclear Team",
+  "author": "Aurora Team",
   "main": "dist/index.js",
   "nuclear": {
     "displayName": "Last.fm Scrobbler",
@@ -160,7 +160,7 @@ Run `pnpm build` and you'll get `dist/index.js`.
 
 1. Create your plugin folder
 2. Build to produce the entry file
-3. Load it in Nuclear
+3. Load it in Aurora
 4. You'll need to reload the plugin after changes
 
 ## Types

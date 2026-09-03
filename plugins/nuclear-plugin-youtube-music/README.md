@@ -1,4 +1,4 @@
-# YouTube Music Plugin for Nuclear Player
+# YouTube Music Plugin for Aurora Player
 
 Official-quality streaming and rich music metadata provider for [Nuclear](https://nuclearplayer.com), powered by YouTube Music InnerTube and `yt-dlp`.
 
@@ -19,7 +19,7 @@ Official-quality streaming and rich music metadata provider for [Nuclear](https:
 
 - **Streaming Provider (`youtube-music`)**:
   - Searches YouTube Music with targeted song filtering.
-  - Resolves high-bitrate audio streams directly via Nuclear's integrated `yt-dlp`.
+  - Resolves high-bitrate audio streams directly via Aurora's integrated `yt-dlp`.
 - **Metadata Provider (`youtube-music`)**:
   - Search tracks, albums, and artists.
   - Fetch artist biographies, high-resolution artwork, top tracks, and related artists.
@@ -31,13 +31,13 @@ Official-quality streaming and rich music metadata provider for [Nuclear](https:
 
 ```
 nuclear-plugin-youtube-music/
-├── package.json              # Nuclear manifest & plugin metadata
+├── package.json              # Aurora manifest & plugin metadata
 ├── README.md                 # Documentation
 └── src/
     ├── client.ts             # YouTube Music InnerTube API client
     ├── index.test.ts         # Vitest test suite
     ├── index.ts              # Plugin entry point (exports default NuclearPlugin)
-    ├── mappers.ts            # Data converters from YTM to Nuclear models
+    ├── mappers.ts            # Data converters from YTM to Aurora models
     ├── metadata-provider.ts  # MetadataProvider implementation
     ├── streaming-provider.ts # StreamingProvider implementation
     └── types.ts              # InnerTube & YTM TypeScript types
@@ -61,10 +61,10 @@ npx esbuild src/index.ts --bundle --format=cjs --platform=browser --external:@nu
 
 ---
 
-## Installation in Nuclear
+## Installation in Aurora
 
 ### 1. Development / Local Testing
-Place the `nuclear-plugin-youtube-music` folder directly into Nuclear's user plugins directory:
+Place the `nuclear-plugin-youtube-music` folder directly into Aurora's user plugins directory:
 * **Windows**: `%APPDATA%\nuclear\plugins\nuclear-plugin-youtube-music`
 * **macOS**: `~/Library/Application Support/nuclear/plugins/nuclear-plugin-youtube-music`
 * **Linux**: `~/.config/nuclear/plugins/nuclear-plugin-youtube-music`

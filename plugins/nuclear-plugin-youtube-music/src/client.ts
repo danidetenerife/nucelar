@@ -241,6 +241,15 @@ export class YtMusicClient {
       const thumbnail = extractThumbnailUrl(item);
       const durationMs = parseDurationToMs(durationText);
 
+      const isLive = item.badges?.some((badge) => {
+        const badgeStr = JSON.stringify(badge);
+        return badgeStr.includes('LIVE');
+      });
+
+      if (isLive || !durationMs || durationMs > 900000) {
+        continue;
+      }
+
       songs.push({
         id: videoId,
         title,

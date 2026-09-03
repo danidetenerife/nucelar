@@ -1,12 +1,12 @@
-# Nuclear Music Player - Copilot Instructions
+# Aurora Music Player - Copilot Instructions
 
 ## Project overview
 
-Nuclear is a free, open-source music player without ads or tracking. Search for any song or artist, build playlists, and start listening.
+Aurora is a free, open-source music player without ads or tracking. Search for any song or artist, build playlists, and start listening.
 
 It's a monorepo managed with pnpm and turbo.
 
-This particular repo is a rewrite project, with the original Nuclear codebase in a different repo. 
+This particular repo is a rewrite project, with the original Aurora codebase in a different repo. 
 
 ### Key features
 

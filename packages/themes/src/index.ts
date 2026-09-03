@@ -35,7 +35,7 @@ const BUILT_INS: BasicThemeMeta[] = [
     ],
   },
   {
-    id: 'nuclear:aurora',
+    id: 'aurora:aurora',
     name: 'Aurora',
     palette: [
       'oklch(0.74 0.15 305)',
@@ -45,7 +45,7 @@ const BUILT_INS: BasicThemeMeta[] = [
     ],
   },
   {
-    id: 'nuclear:ember',
+    id: 'aurora:ember',
     name: 'Ember',
     palette: [
       'oklch(0.76 0.14 30)',
@@ -55,7 +55,7 @@ const BUILT_INS: BasicThemeMeta[] = [
     ],
   },
   {
-    id: 'nuclear:lagoon',
+    id: 'aurora:lagoon',
     name: 'Lagoon',
     palette: [
       'oklch(0.67 0.16 205)',
@@ -65,7 +65,7 @@ const BUILT_INS: BasicThemeMeta[] = [
     ],
   },
   {
-    id: 'nuclear:arctic-moss',
+    id: 'aurora:arctic-moss',
     name: 'Moss',
     palette: [
       'oklch(0.70 0.12 175)',

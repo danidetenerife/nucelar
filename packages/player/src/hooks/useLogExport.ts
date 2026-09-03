@@ -29,7 +29,7 @@ export const generateExportContent = async (
   const appVersion = await getVersion();
 
   const header = [
-    '# Nuclear Music Player - Log Export',
+    '# Aurora Music Player - Log Export',
     `# Version: ${appVersion}`,
     `# Platform: ${navigator.platform}`,
     `# Exported: ${new Date().toISOString()}`,
@@ -47,7 +47,7 @@ export const useLogExport = (logs: LogEntryData[]) => {
 
   const exportLogs = useCallback(async () => {
     const filePath = await save({
-      defaultPath: `nuclear-logs-${new Date().toISOString().slice(0, 10)}.txt`,
+      defaultPath: `aurora-logs-${new Date().toISOString().slice(0, 10)}.txt`,
       filters: [{ name: 'Text Files', extensions: ['txt'] }],
     });
 

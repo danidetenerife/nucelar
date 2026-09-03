@@ -1,4 +1,4 @@
-# YouTube Streaming Plugin for Nuclear
+# YouTube Streaming Plugin for Aurora
 
 A streaming provider plugin that plays audio from Youtube using yt-dlp.
 

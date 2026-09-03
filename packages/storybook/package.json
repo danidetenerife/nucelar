@@ -1,7 +1,7 @@
 {
   "name": "@nuclearplayer/storybook",
   "version": "0.0.10",
-  "description": "Storybook for Nuclear UI components",
+  "description": "Storybook for Aurora UI components",
   "type": "module",
   "private": true,
   "scripts": {

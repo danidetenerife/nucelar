@@ -1,7 +1,7 @@
 {
   "name": "@nuclearplayer/website",
   "version": "2.10.1",
-  "description": "Nuclear website",
+  "description": "Aurora website",
   "type": "module",
   "private": true,
   "scripts": {

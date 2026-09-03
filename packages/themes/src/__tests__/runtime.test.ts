@@ -9,16 +9,16 @@ import {
 
 describe('runtime API', () => {
   it('sets data-theme-id via setThemeId', () => {
-    setThemeId('nuclear:aurora');
+    setThemeId('aurora:aurora');
     expect(document.documentElement.getAttribute('data-theme-id')).toBe(
-      'nuclear:aurora',
+      'aurora:aurora',
     );
   });
 
   it('sets data-theme-id via setBasicTheme', () => {
-    setBasicTheme('nuclear:ember');
+    setBasicTheme('aurora:ember');
     expect(document.documentElement.getAttribute('data-theme-id')).toBe(
-      'nuclear:ember',
+      'aurora:ember',
     );
   });
 

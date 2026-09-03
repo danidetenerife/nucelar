@@ -1,7 +1,7 @@
 {
   "common": {
     "app": {
-      "name": "Nuclear",
+      "name": "Aurora",
       "description": "Бесплатное приложение для стриминга музыки"
     },
     "actions": {
@@ -311,7 +311,7 @@
     "clickToRestart": "Нажмите, чтобы перезапустить"
   },
   "flatpak": {
-    "sandboxWarning": "Вы используете Nuclear в среде Flatpak. Некоторые функции могут работать неправильно. Если вы столкнулись с проблемами, попробуйте .deb или AppImage.",
+    "sandboxWarning": "Вы используете Aurora в среде Flatpak. Некоторые функции могут работать неправильно. Если вы столкнулись с проблемами, попробуйте .deb или AppImage.",
     "dismiss": "Хорошо"
   },
   "preferences": {
@@ -426,12 +426,12 @@
       "title": "Интеграции",
       "jam": {
         "enabled": {
-          "title": "Nuclear Jam",
-          "description": "Запускает локальный веб-сервер, позволяющий управлять Nuclear с других устройств в вашей сети."
+          "title": "Aurora Jam",
+          "description": "Запускает локальный веб-сервер, позволяющий управлять Aurora с других устройств в вашей сети."
         },
         "remoteUrl": {
           "title": "URL удалённого доступа",
-          "description": "Откройте этот URL на другом устройстве, чтобы управлять Nuclear."
+          "description": "Откройте этот URL на другом устройстве, чтобы управлять Aurora."
         },
         "apiUrl": {
           "title": "URL API",
@@ -441,21 +441,21 @@
       "mcp": {
         "enabled": {
           "title": "Включить MCP сервер",
-          "description": "Запустит локальный MCP сервер, позволяющий ИИ инструментам контролировать Nuclear."
+          "description": "Запустит локальный MCP сервер, позволяющий ИИ инструментам контролировать Aurora."
         },
         "serverUrl": {
           "title": "URL MCP сервера",
-          "description": "Направьте Ваш ИИ инструмент на этот URL для подключения к Nuclear."
+          "description": "Направьте Ваш ИИ инструмент на этот URL для подключения к Aurora."
         }
       },
       "mpd": {
         "enabled": {
           "title": "Включить сервер MPD",
-          "description": "Запускает локальный сервер, совместимый с MPD, чтобы клиенты MPD могли управлять Nuclear."
+          "description": "Запускает локальный сервер, совместимый с MPD, чтобы клиенты MPD могли управлять Aurora."
         },
         "serverUrl": {
           "title": "URL сервера MPD",
-          "description": "Укажите этот адрес в вашем клиенте MPD, чтобы подключиться к Nuclear."
+          "description": "Укажите этот адрес в вашем клиенте MPD, чтобы подключиться к Aurora."
         }
       },
       "discord": {
@@ -557,12 +557,12 @@
   },
   "remote": {
     "connecting": {
-      "title": "Подключение к Nuclear...",
-      "subtitle": "Убедитесь, что Nuclear запущен и функция Nuclear Jam включена"
+      "title": "Подключение к Aurora...",
+      "subtitle": "Убедитесь, что Aurora запущен и функция Aurora Jam включена"
     },
     "error": {
-      "title": "Не удалось подключиться к Nuclear",
-      "subtitle": "Убедитесь, что Nuclear запущен и функция Nuclear Jam включена в настройках"
+      "title": "Не удалось подключиться к Aurora",
+      "subtitle": "Убедитесь, что Aurora запущен и функция Aurora Jam включена в настройках"
     },
     "connection": {
       "connecting": "Подключение",
@@ -573,22 +573,22 @@
     "queue": {
       "upNext": "Далее",
       "emptyTitle": "Очередь пуста",
-      "emptySubtitle": "Добавьте треки в Nuclear, чтобы увидеть их здесь"
+      "emptySubtitle": "Добавьте треки в Aurora, чтобы увидеть их здесь"
     },
     "search": {
       "placeholder": "Поиск музыки",
       "emptyTitle": "Ничего не найдено",
       "emptyDescription": "По вашему запросу ничего не найдено",
       "errorTitle": "Ошибка поиска",
-      "errorDescription": "Проверьте подключение к Nuclear и повторите попытку"
+      "errorDescription": "Проверьте подключение к Aurora и повторите попытку"
     },
     "qrCode": {
-      "tooltip": "Пульт управления Nuclear Jam",
-      "instructions": "Отсканируйте QR-код или скопируйте адрес ниже, чтобы подключиться к Nuclear Jam"
+      "tooltip": "Пульт управления Aurora Jam",
+      "instructions": "Отсканируйте QR-код или скопируйте адрес ниже, чтобы подключиться к Aurora Jam"
     }
   },
   "titleBar": {
-    "title": "Nuclear — музыкальный плеер",
+    "title": "Aurora — музыкальный плеер",
     "minimize": "Свернуть",
     "maximize": "Развернуть",
     "close": "Закрыть"

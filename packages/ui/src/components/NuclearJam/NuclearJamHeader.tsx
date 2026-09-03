@@ -41,7 +41,7 @@ export const NuclearJamHeader: FC<NuclearJamHeaderProps> = ({
     <span className="my-3 ml-4 flex shrink-0 flex-row gap-2">
       <TopBarLogo />
       <h1 className="text-foreground inline text-base font-black tracking-tight uppercase">
-        Nuclear{' '}
+        Aurora{' '}
         <PulsingText
           text="Jam"
           className="text-primary text-stroke-4 stroke-text-black dark:stroke-text-foreground"

@@ -1,7 +1,7 @@
 {
   "name": "@nuclearplayer/plugin-sdk",
   "version": "2.8.0",
-  "description": "Plugin SDK for Nuclear music player",
+  "description": "Plugin SDK for Aurora music player",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -63,7 +63,7 @@
     "react": "^18.3.1"
   },
   "keywords": [
-    "nuclear",
+    "aurora",
     "music",
     "player",
     "plugin",

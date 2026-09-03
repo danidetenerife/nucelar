@@ -30,7 +30,7 @@ export const AllVariants: Story = {
         <p className="text-foreground/50 mb-2 text-sm">macOS</p>
         <TitleBar
           {...args}
-          title="Nuclear Music Player"
+          title="Aurora Music Player"
           styleOverride="macos"
         />
       </div>
@@ -38,7 +38,7 @@ export const AllVariants: Story = {
         <p className="text-foreground/50 mb-2 text-sm">Windows / Linux</p>
         <TitleBar
           {...args}
-          title="Nuclear Music Player"
+          title="Aurora Music Player"
           styleOverride="windows"
         />
       </div>

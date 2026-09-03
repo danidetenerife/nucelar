@@ -32,7 +32,7 @@ export const CORE_SETTINGS: SettingDefinition[] = [
     description: 'preferences.theme.active.id.description',
     category: 'appearance',
     kind: 'string',
-    default: 'nuclear:default',
+    default: 'aurora:default',
     hidden: true,
     widget: { type: 'text' },
   },

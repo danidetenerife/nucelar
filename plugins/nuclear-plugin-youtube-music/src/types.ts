@@ -152,6 +152,7 @@ export type InnerTubeResponsiveListItem = {
   };
   flexColumns?: InnerTubeFlexColumn[];
   fixedColumns?: InnerTubeFixedColumn[];
+  badges?: any[];
 };
 
 export type InnerTubeShelf = {

@@ -20,6 +20,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
+import android.media.AudioManager;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
@@ -56,6 +58,65 @@ public class AudioForegroundService extends Service {
     private Bitmap currentArtworkBitmap = null;
     private long currentDurationMs = 0;
     private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
+
+    private AudioManager audioManager;
+    private AudioFocusRequest audioFocusRequest;
+    private boolean resumeOnFocusGain = false;
+    private boolean currentlyPlaying = false;
+
+    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = (focusChange) -> {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                if (currentlyPlaying) {
+                    resumeOnFocusGain = true;
+                    Log.d(TAG, "Audio focus lost transiently, pausing playback");
+                    notifyJsMediaAction("pause");
+                }
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+                Log.d(TAG, "Audio focus lost permanently, pausing and abandoning");
+                resumeOnFocusGain = false;
+                currentlyPlaying = false;
+                notifyJsMediaAction("pause");
+                abandonAudioFocus();
+                break;
+            case AudioManager.AUDIOFOCUS_GAIN:
+                if (resumeOnFocusGain) {
+                    resumeOnFocusGain = false;
+                    Log.d(TAG, "Audio focus regained, resuming playback");
+                    notifyJsMediaAction("play");
+                }
+                break;
+        }
+    };
+
+    private void requestAudioFocus() {
+        if (audioManager == null) {
+            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        }
+        if (audioManager == null) return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+            audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                    .setAudioAttributes(audioAttributes)
+                    .setOnAudioFocusChangeListener(audioFocusChangeListener)
+                    .build();
+            int result = audioManager.requestAudioFocus(audioFocusRequest);
+            Log.d(TAG, "requestAudioFocus result: " + result);
+        }
+    }
+
+    private void abandonAudioFocus() {
+        if (audioManager != null && audioFocusRequest != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioManager.abandonAudioFocusRequest(audioFocusRequest);
+            Log.d(TAG, "Audio focus abandoned");
+        }
+    }
 
     private static AudioForegroundService instance;
 
@@ -104,7 +165,7 @@ public class AudioForegroundService extends Service {
             if (powerManager != null && serviceWakeLock == null) {
                 serviceWakeLock = powerManager.newWakeLock(
                     PowerManager.PARTIAL_WAKE_LOCK,
-                    "Nuclear::ServiceAudioWakeLock"
+                    "Aurora::ServiceAudioWakeLock"
                 );
                 serviceWakeLock.setReferenceCounted(false);
                 serviceWakeLock.acquire();
@@ -115,7 +176,7 @@ public class AudioForegroundService extends Service {
             if (wifiManager != null && serviceWifiLock == null) {
                 serviceWifiLock = wifiManager.createWifiLock(
                     WifiManager.WIFI_MODE_FULL_HIGH_PERF,
-                    "Nuclear::ServiceAudioWifiLock"
+                    "Aurora::ServiceAudioWifiLock"
                 );
                 serviceWifiLock.setReferenceCounted(false);
                 serviceWifiLock.acquire();
@@ -124,7 +185,7 @@ public class AudioForegroundService extends Service {
     }
 
     private void initMediaSession() {
-        mediaSession = new MediaSessionCompat(this, "NuclearMusicPlayer");
+        mediaSession = new MediaSessionCompat(this, "AuroraMusicPlayer");
 
         mediaSession.setFlags(
             MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
@@ -357,7 +418,7 @@ public class AudioForegroundService extends Service {
                                 break;
                             }
                         }
-                    }, "NuclearAudioKeepAlive");
+                    }, "AuroraAudioKeepAlive");
                     audioKeepAliveThread.setDaemon(true);
                     audioKeepAliveThread.start();
                 } catch (Throwable t) {
@@ -385,6 +446,14 @@ public class AudioForegroundService extends Service {
     private void handlePlaybackStateUpdate(Intent intent) {
         boolean isPlaying = intent.getBooleanExtra("isPlaying", false);
         long positionMs = intent.getLongExtra("positionMs", 0);
+
+        if (isPlaying) {
+            currentlyPlaying = true;
+            requestAudioFocus();
+        } else {
+            currentlyPlaying = false;
+            abandonAudioFocus();
+        }
 
         ensureNativeAudioTrack(isPlaying);
 
@@ -591,6 +660,7 @@ public class AudioForegroundService extends Service {
 
     @Override
     public void onDestroy() {
+        abandonAudioFocus();
         if (mediaSession != null) {
             mediaSession.setActive(false);
             mediaSession.release();

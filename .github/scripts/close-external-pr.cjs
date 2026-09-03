@@ -13,14 +13,14 @@ module.exports = async ({ github, context }) => {
   );
 
   const defaultMessage = [
-    'Thanks for your interest in Nuclear, but this repository does not accept external pull requests.',
+    'Thanks for your interest in Aurora, but this repository does not accept external pull requests.',
     '',
-    'If you want to extend Nuclear, consider writing a plugin instead.',
+    'If you want to extend Aurora, consider writing a plugin instead.',
     'See [CONTRIBUTING.md](../blob/master/CONTRIBUTING.md) and the [contributing guide](https://docs.nuclearplayer.com/nuclear/development/contributing) for details.',
   ].join('\n');
 
   const i18nMessage = [
-    'Thanks for your interest in translating Nuclear!',
+    'Thanks for your interest in translating Aurora!',
     '',
     'We use Crowdin to manage translations. Please contribute translations there instead:',
     'https://crowdin.com/project/nuclear',

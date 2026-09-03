@@ -83,7 +83,7 @@ jobs:
       - name: Upload Android APK Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: nuclear-android-apk
+          name: aurora-android-apk
           path: |
             packages/player/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
           retention-days: 30

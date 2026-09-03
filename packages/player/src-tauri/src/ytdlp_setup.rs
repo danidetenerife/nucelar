@@ -248,7 +248,7 @@ async fn fetch_latest_release_tag() -> Result<String, String> {
 
     let response = client
         .get("https://api.github.com/repos/yt-dlp/yt-dlp-nightly-builds/releases/latest")
-        .header("User-Agent", "nuclear-player")
+        .header("User-Agent", "aurora-player")
         .send()
         .await
         .map_err(|error| format!("GitHub API request failed: {}", error))?;

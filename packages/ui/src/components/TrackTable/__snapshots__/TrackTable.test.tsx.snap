@@ -219,7 +219,7 @@ exports[`TrackTable > (Snapshot) Basic 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -297,7 +297,7 @@ exports[`TrackTable > (Snapshot) Basic 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -375,7 +375,7 @@ exports[`TrackTable > (Snapshot) Basic 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -657,7 +657,7 @@ exports[`TrackTable > (Snapshot) DragAndDrop 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -735,7 +735,7 @@ exports[`TrackTable > (Snapshot) DragAndDrop 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -813,7 +813,7 @@ exports[`TrackTable > (Snapshot) DragAndDrop 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -891,7 +891,7 @@ exports[`TrackTable > (Snapshot) DragAndDrop 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -969,7 +969,7 @@ exports[`TrackTable > (Snapshot) DragAndDrop 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -1268,7 +1268,7 @@ exports[`TrackTable > (Snapshot) Filtering 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -1346,7 +1346,7 @@ exports[`TrackTable > (Snapshot) Filtering 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -1424,7 +1424,7 @@ exports[`TrackTable > (Snapshot) Filtering 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -1502,7 +1502,7 @@ exports[`TrackTable > (Snapshot) Filtering 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -1580,7 +1580,7 @@ exports[`TrackTable > (Snapshot) Filtering 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -1865,7 +1865,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -1943,7 +1943,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2021,7 +2021,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2099,7 +2099,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2177,7 +2177,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2255,7 +2255,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2333,7 +2333,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2411,7 +2411,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2489,7 +2489,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2567,7 +2567,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2645,7 +2645,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2723,7 +2723,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2801,7 +2801,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2879,7 +2879,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -2957,7 +2957,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -3035,7 +3035,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -3113,7 +3113,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -3191,7 +3191,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -3269,7 +3269,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -3347,7 +3347,7 @@ exports[`TrackTable > (Snapshot) LargeDataset 1`] = `
                   >
                     <img
                       alt=""
-                      class="w-10 min-w-10 rounded object-cover"
+                      class="h-10 w-10 min-w-10 rounded object-cover"
                       src="https://i.imgur.com/4euOws2.jpg"
                     />
                   </div>
@@ -3693,7 +3693,7 @@ exports[`TrackTable > (Snapshot) Toolbar 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -3771,7 +3771,7 @@ exports[`TrackTable > (Snapshot) Toolbar 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>
@@ -3849,7 +3849,7 @@ exports[`TrackTable > (Snapshot) Toolbar 1`] = `
                 >
                   <img
                     alt=""
-                    class="w-10 min-w-10 rounded object-cover"
+                    class="h-10 w-10 min-w-10 rounded object-cover"
                     src="https://i.imgur.com/4euOws2.jpg"
                   />
                 </div>

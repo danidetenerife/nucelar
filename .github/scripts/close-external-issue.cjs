@@ -7,9 +7,9 @@ module.exports = async ({ github, context }) => {
     repo,
     issue_number: issueNumber,
     body: [
-      'Nuclear does not accept external issues.',
+      'Aurora does not accept external issues.',
       '',
-      'If you want to discuss Nuclear, use the [Discussions](https://github.com/nukeop/nuclear/discussions) tab.',
+      'If you want to discuss Aurora, use the [Discussions](https://github.com/nukeop/nuclear/discussions) tab.',
     ].join('\n'),
   });
 

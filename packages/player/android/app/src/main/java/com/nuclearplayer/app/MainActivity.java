@@ -1,6 +1,5 @@
 package com.nuclearplayer.app;
 
-import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,13 +12,8 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.WebViewListener;
@@ -30,7 +24,6 @@ public class MainActivity extends BridgeActivity {
     private PowerManager.WakeLock wakeLock;
     private WifiManager.WifiLock wifiLock;
     private BroadcastReceiver screenStateReceiver;
-    private boolean isTelevision;
 
     public static MainActivity getInstance() {
         return instance;
@@ -53,16 +46,9 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         instance = this;
-        isTelevision = isTelevisionDevice();
         bridgeBuilder.addWebViewListener(new WebViewListener() {
             @Override
             public void onPageLoaded(WebView webView) {
-                if (isTelevision) {
-                    webView.evaluateJavascript(
-                        "document.documentElement.dataset.platform='tv';window.dispatchEvent(new Event('resize'))",
-                        null
-                    );
-                }
             }
         });
         registerPlugin(MediaRouterPlugin.class);
@@ -73,7 +59,6 @@ public class MainActivity extends BridgeActivity {
 
         setupWakeLocks();
         setupWebView();
-        setupTelevisionDisplay();
         setupScreenStateReceiver();
         requestNotificationPermission();
         startAudioService();
@@ -87,36 +72,13 @@ public class MainActivity extends BridgeActivity {
         }
     }
 
-    private boolean isTelevisionDevice() {
-        UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
-        return uiModeManager != null &&
-            uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
-    }
-
-    private void setupTelevisionDisplay() {
-        if (!isTelevision) {
-            return;
-        }
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(
-            getWindow(),
-            getWindow().getDecorView()
-        );
-        controller.hide(WindowInsetsCompat.Type.systemBars());
-        controller.setSystemBarsBehavior(
-            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        );
-    }
-
     private void setupWakeLocks() {
         try {
             PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
             if (powerManager != null) {
                 wakeLock = powerManager.newWakeLock(
                     PowerManager.PARTIAL_WAKE_LOCK,
-                    "Nuclear::AudioWakeLock"
+                    "Aurora::AudioWakeLock"
                 );
                 wakeLock.setReferenceCounted(false);
                 wakeLock.acquire();
@@ -127,7 +89,7 @@ public class MainActivity extends BridgeActivity {
             if (wifiManager != null) {
                 wifiLock = wifiManager.createWifiLock(
                     WifiManager.WIFI_MODE_FULL_HIGH_PERF,
-                    "Nuclear::AudioWifiLock"
+                    "Aurora::AudioWifiLock"
                 );
                 wifiLock.setReferenceCounted(false);
                 wifiLock.acquire();
@@ -223,16 +185,12 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            setupTelevisionDisplay();
-        }
         ensureActiveWebView();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        setupTelevisionDisplay();
         WebView webView = getBridge() != null ? getBridge().getWebView() : null;
         if (webView != null) {
             webView.requestLayout();
@@ -263,3 +221,4 @@ public class MainActivity extends BridgeActivity {
         super.onDestroy();
     }
 }
+

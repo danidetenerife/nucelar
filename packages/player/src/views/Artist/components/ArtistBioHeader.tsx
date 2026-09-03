@@ -1,7 +1,5 @@
-import isEmpty from 'lodash-es/isEmpty';
 import { FC } from 'react';
 
-import { useTranslation } from '@nuclearplayer/i18n';
 import { pickArtwork } from '@nuclearplayer/model';
 import { Loader } from '@nuclearplayer/ui';
 
@@ -20,7 +18,6 @@ export const ArtistBioHeader: FC<ArtistBioHeaderProps> = ({
   providerId,
   artistId,
 }) => {
-  const { t } = useTranslation('artist');
   const {
     data: artist,
     isLoading,
@@ -52,7 +49,6 @@ export const ArtistBioHeader: FC<ArtistBioHeaderProps> = ({
     return null;
   }
 
-  const cover = pickArtwork(artist.artwork, 'cover', 1200);
   const avatar = pickArtwork(artist.artwork, 'avatar', AVATAR_SIZE_PX);
 
   return (
@@ -64,60 +60,37 @@ export const ArtistBioHeader: FC<ArtistBioHeaderProps> = ({
         className="bg-background border-border absolute top-4 right-4 z-10 rounded-md border-(length:--border-width)"
         data-testid="artist-favorite-button"
       />
-      <div className="flex flex-col gap-4 md:flex-row md:gap-6">
-        <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <div className="flex items-center gap-4">
-            {avatar && (
-              <img
-                className="border-border shadow-shadow h-16 w-16 shrink-0 rounded-full border-(length:--border-width) object-cover md:h-24 md:w-24"
-                src={avatar.url}
-                alt={`${artist.name} avatar`}
-              />
-            )}
-            <div className="flex min-w-0 flex-col gap-1">
-              <h1 className="font-heading truncate text-2xl font-extrabold tracking-tight md:text-5xl">
-                {artist.name}
-              </h1>
-              {artist.disambiguation && (
-                <span className="text-foreground-secondary truncate text-sm">
-                  {artist.disambiguation}
-                </span>
-              )}
-            </div>
-          </div>
-          {!isEmpty(artist.tags) && (
-            <div className="flex flex-wrap gap-2">
-              {artist.tags?.map((tag) => (
-                <span
-                  key={tag}
-                  className="border-border bg-background rounded-md border px-2 py-0.5 text-sm font-bold"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-          {artist.onTour && (
-            <span className="bg-accent-green border-border inline-flex w-fit rounded-md border px-2 py-0.5 text-sm font-bold">
-              {t('onTour')}
+      <div className="flex items-center gap-4">
+        {avatar && (
+          <img
+            className="border-border shadow-shadow h-16 w-16 shrink-0 rounded-full border-(length:--border-width) object-cover md:h-24 md:w-24"
+            src={avatar.url}
+            alt={`${artist.name} avatar`}
+          />
+        )}
+        <div className="flex min-w-0 flex-col gap-1">
+          <h1 className="font-heading truncate text-2xl font-extrabold tracking-tight md:text-5xl">
+            {artist.name}
+          </h1>
+          {artist.disambiguation && (
+            <span className="text-foreground-secondary truncate text-sm">
+              {artist.disambiguation}
             </span>
           )}
-          {artist.bio && (
-            <p className="text-foreground-secondary line-clamp-5 text-sm leading-relaxed">
-              {artist.bio}
-            </p>
-          )}
         </div>
-        {cover && (
-          <div className="hidden w-72 shrink-0 self-stretch md:block">
-            <img
-              className="border-border shadow-shadow h-full w-full rounded-md border-(length:--border-width) object-cover"
-              src={cover.url}
-              alt={`${artist.name} cover`}
-            />
-          </div>
-        )}
       </div>
+      {artist.tags && artist.tags.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {artist.tags.map((tag) => (
+            <span
+              key={tag}
+              className="border-border bg-background rounded-md border px-2 py-0.5 text-sm font-bold"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

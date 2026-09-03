@@ -89,14 +89,13 @@ describe('Artist view', () => {
 
       await ArtistWrapper.mount('The Beatles');
 
-      expect(ArtistWrapper.socialHeader.element).not.toBeInTheDocument();
       expect(ArtistWrapper.albums.loader).not.toBeInTheDocument();
       expect(ArtistWrapper.similarArtists.loader).not.toBeInTheDocument();
       expect(ArtistWrapper.albums.cards).toHaveLength(0);
     });
   });
 
-  describe('with social stats provider', () => {
+  describe('with social stats provider (no bio header)', () => {
     beforeEach(() => {
       resetStores();
       providersHost.register(
@@ -104,12 +103,7 @@ describe('Artist view', () => {
       );
     });
 
-    it('(Snapshot) renders the artist view with social stats', async () => {
-      const component = await ArtistWrapper.mount('Deadmau5');
-      expect(component.asFragment()).toMatchSnapshot();
-    });
-
-    it('shows loading states for social stats, top tracks, playlists, and related artists', async () => {
+    it('shows loading states for top tracks, playlists, and related artists', async () => {
       providersHost.clear();
       const delay = () => new Promise<never>(() => {});
       providersHost.register(
@@ -124,7 +118,6 @@ describe('Artist view', () => {
 
       await ArtistWrapper.mountNoWait();
 
-      expect(await ArtistWrapper.socialHeader.findLoader()).toBeInTheDocument();
       expect(
         await ArtistWrapper.popularTracks.findLoader(),
       ).toBeInTheDocument();
@@ -135,7 +128,19 @@ describe('Artist view', () => {
     });
 
     it('does not render bio header or albums grid', async () => {
-      await ArtistWrapper.mount('Deadmau5');
+      providersHost.clear();
+      const delay = () => new Promise<never>(() => {});
+      providersHost.register(
+        MetadataProviderBuilder.socialStatsStyleProvider()
+          .withId('social-no-bio')
+          .withFetchArtistSocialStats(delay)
+          .withFetchArtistTopTracks(delay)
+          .withFetchArtistPlaylists(delay)
+          .withFetchArtistRelatedArtists(delay)
+          .build(),
+      );
+
+      await ArtistWrapper.mountNoWait();
 
       expect(ArtistWrapper.bioHeader.loader).not.toBeInTheDocument();
       expect(ArtistWrapper.albums.loader).not.toBeInTheDocument();

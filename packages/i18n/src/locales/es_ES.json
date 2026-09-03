@@ -311,7 +311,7 @@
     "clickToRestart": "Haz clic para reiniciar"
   },
   "flatpak": {
-    "sandboxWarning": "Está ejecutando Nuclear en un sandbox de Flatpak. Algunas características pueden no funcionar correctamente. Si experimenta problemas, pruebe el .deb o AppImage en su lugar.",
+    "sandboxWarning": "Está ejecutando Aurora en un sandbox de Flatpak. Algunas características pueden no funcionar correctamente. Si experimenta problemas, pruebe el .deb o AppImage en su lugar.",
     "dismiss": "Entendido"
   },
   "preferences": {
@@ -426,12 +426,12 @@
       "title": "Integraciones",
       "jam": {
         "enabled": {
-          "title": "Nuclear Jam",
-          "description": "Inicia un servidor web local que te permite controlar Nuclear desde otros dispositivos de tu red."
+          "title": "Aurora Jam",
+          "description": "Inicia un servidor web local que te permite controlar Aurora desde otros dispositivos de tu red."
         },
         "remoteUrl": {
           "title": "URL remota",
-          "description": "Abre esta URL en otro dispositivo para controlar Nuclear."
+          "description": "Abre esta URL en otro dispositivo para controlar Aurora."
         },
         "apiUrl": {
           "title": "URL de la API",
@@ -441,21 +441,21 @@
       "mcp": {
         "enabled": {
           "title": "Habilitar servidor MCP",
-          "description": "Inicia un servidor MCP local que permite que herramientas de IA controlen Nuclear."
+          "description": "Inicia un servidor MCP local que permite que herramientas de IA controlen Aurora."
         },
         "serverUrl": {
           "title": "URL del servidor MCP",
-          "description": "Apunta tu herramienta de IA a esta URL para conectarse a Nuclear."
+          "description": "Apunta tu herramienta de IA a esta URL para conectarse a Aurora."
         }
       },
       "mpd": {
         "enabled": {
           "title": "Habilitar servidor MPD",
-          "description": "Inicia un servidor local compatible con MPD para que los clientes MPD puedan controlar Nuclear."
+          "description": "Inicia un servidor local compatible con MPD para que los clientes MPD puedan controlar Aurora."
         },
         "serverUrl": {
           "title": "URL del servidor MPD",
-          "description": "Apunta tu cliente MPD a esta dirección para conectarse a Nuclear."
+          "description": "Apunta tu cliente MPD a esta dirección para conectarse a Aurora."
         }
       },
       "discord": {
@@ -557,12 +557,12 @@
   },
   "remote": {
     "connecting": {
-      "title": "Conectando con Nuclear...",
-      "subtitle": "Asegúrate de que Nuclear esté en ejecución y de que Nuclear Jam esté activado"
+      "title": "Conectando con Aurora...",
+      "subtitle": "Asegúrate de que Aurora esté en ejecución y de que Aurora Jam esté activado"
     },
     "error": {
-      "title": "No se pudo conectar con Nuclear",
-      "subtitle": "Asegúrate de que Nuclear esté en ejecución y de que Nuclear Jam esté activado en Configuración"
+      "title": "No se pudo conectar con Aurora",
+      "subtitle": "Asegúrate de que Aurora esté en ejecución y de que Aurora Jam esté activado en Configuración"
     },
     "connection": {
       "connecting": "Conectando",
@@ -573,18 +573,18 @@
     "queue": {
       "upNext": "A continuación",
       "emptyTitle": "La cola está vacía",
-      "emptySubtitle": "Añade canciones en Nuclear para verlas aquí"
+      "emptySubtitle": "Añade canciones en Aurora para verlas aquí"
     },
     "search": {
       "placeholder": "Buscar música",
       "emptyTitle": "Sin resultados",
       "emptyDescription": "No se encontró nada para tu búsqueda",
       "errorTitle": "Error en la búsqueda",
-      "errorDescription": "Comprueba la conexión con Nuclear e inténtalo de nuevo"
+      "errorDescription": "Comprueba la conexión con Aurora e inténtalo de nuevo"
     },
     "qrCode": {
-      "tooltip": "Control remoto de Nuclear Jam",
-      "instructions": "Escanea el código QR o copia la dirección de abajo para conectarte a Nuclear Jam"
+      "tooltip": "Control remoto de Aurora Jam",
+      "instructions": "Escanea el código QR o copia la dirección de abajo para conectarte a Aurora Jam"
     }
   },
   "titleBar": {

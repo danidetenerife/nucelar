@@ -102,6 +102,7 @@ async function extractAudioStreamDirect(videoId: string): Promise<YtdlpStreamInf
     }
 
     const data = JSON.parse(res.body);
+    if (data.videoDetails?.isLive || data.videoDetails?.isLiveContent) return null;
     const hlsManifestUrl = data.streamingData?.hlsManifestUrl;
     let audioUrl = hlsManifestUrl;
 
@@ -161,6 +162,10 @@ export const ytdlpHost: YtdlpHost = {
   },
 
   getStream: async (url: string): Promise<YtdlpStreamInfo> => {
+    if (isTauriEnvironment()) {
+      return invoke<YtdlpStreamInfo>('ytdlp_get_stream', { url });
+    }
+
     let videoId = url;
     const match = url.match(
       /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
@@ -172,10 +177,6 @@ export const ytdlpHost: YtdlpHost = {
     const directInfo = await extractAudioStreamDirect(videoId);
     if (directInfo) {
       return directInfo;
-    }
-
-    if (isTauriEnvironment()) {
-      return invoke<YtdlpStreamInfo>('ytdlp_get_stream', { url });
     }
 
     if (isCapacitorEnvironment()) {

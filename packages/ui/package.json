@@ -1,7 +1,7 @@
 {
   "name": "@nuclearplayer/ui",
   "version": "0.0.10",
-  "description": "Shared UI component library for Nuclear",
+  "description": "Shared UI component library for Aurora",
   "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",

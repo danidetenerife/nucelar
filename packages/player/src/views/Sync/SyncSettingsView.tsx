@@ -74,7 +74,7 @@ export const SyncSettingsView: FC = () => {
 
   const handleLanDiscovery = async () => {
     setIsSearchingLan(true);
-    toast.info('Buscando Nuclear PC en la red Wi-Fi...');
+    toast.info('Buscando Aurora PC en la red Wi-Fi...');
     const foundUrl = await p2pSyncService.discoverPcOnLan();
     setIsSearchingLan(false);
 
@@ -83,9 +83,9 @@ export const SyncSettingsView: FC = () => {
       setInputUrl(foundUrl);
       setIsOnline(true);
       setLastSync(Date.now());
-      toast.success(`¡Nuclear PC encontrado en ${foundUrl}! Sincronizado.`);
+      toast.success(`¡Aurora PC encontrado en ${foundUrl}! Sincronizado.`);
     } else {
-      toast.error('No se encontró ningún PC con Nuclear abierto en esta red Wi-Fi.');
+      toast.error('No se encontró ningún PC con Aurora abierto en esta red Wi-Fi.');
     }
   };
 
@@ -122,7 +122,7 @@ export const SyncSettingsView: FC = () => {
           <div className="flex items-center gap-2.5">
             <Laptop className="text-primary size-6" />
             <div>
-              <h2 className="text-base font-bold">Vincular con Nuclear PC</h2>
+              <h2 className="text-base font-bold">Vincular con Aurora PC</h2>
               <p className="text-foreground-secondary text-xs">
                 Sincronización P2P local (favoritos, historial y preferencias)
               </p>

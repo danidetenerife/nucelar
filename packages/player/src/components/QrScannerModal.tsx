@@ -71,7 +71,7 @@ export const QrScannerModal: FC<QrScannerModalProps> = ({
           const raw = code.data.trim();
           let parsedUrl = raw;
 
-          if (raw.startsWith('nuclear://')) {
+          if (raw.startsWith('aurora://')) {
             try {
               const urlObj = new URL(raw);
               const hostParam = urlObj.searchParams.get('host') || urlObj.searchParams.get('url');
@@ -117,7 +117,7 @@ export const QrScannerModal: FC<QrScannerModalProps> = ({
       <div className="flex items-center justify-between p-4 bg-background-secondary/80 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-2">
           <Camera className="text-primary size-5" />
-          <h2 className="text-base font-bold">Escanear QR de Nuclear PC</h2>
+          <h2 className="text-base font-bold">Escanear QR de Aurora PC</h2>
         </div>
         <Button size="icon-sm" variant="text" onClick={onClose} className="text-white">
           <X size={20} />
@@ -161,7 +161,7 @@ export const QrScannerModal: FC<QrScannerModalProps> = ({
         )}
 
         <p className="mt-6 text-xs text-center text-zinc-400 max-w-xs">
-          Apunta con la cámara al código QR que aparece en tu PC (icono de código QR en la barra superior de Nuclear).
+          Apunta con la cámara al código QR que aparece en tu PC (icono de código QR en la barra superior de Aurora).
         </p>
       </div>
     </div>
