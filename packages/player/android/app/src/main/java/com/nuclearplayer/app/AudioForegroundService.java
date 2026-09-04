@@ -61,63 +61,43 @@ public class AudioForegroundService extends Service {
     private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
 
     private AudioManager audioManager;
-    private AudioFocusRequest audioFocusRequest;
-    private boolean resumeOnFocusGain = false;
     private boolean currentlyPlaying = false;
+    private android.telephony.TelephonyManager telephonyManager;
+    private boolean pausedByPhoneCall = false;
 
-    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = (focusChange) -> {
-        switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+    @SuppressWarnings("deprecation")
+    private void registerPhoneCallListener() {
+        telephonyManager = (android.telephony.TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (telephonyManager == null) return;
+
+        telephonyManager.listen(
+            new android.telephony.PhoneStateListener() {
+                @Override
+                public void onCallStateChanged(int state, String phoneNumber) {
+                    handleCallState(state);
+                }
+            },
+            android.telephony.PhoneStateListener.LISTEN_CALL_STATE
+        );
+    }
+
+    private void handleCallState(int state) {
+        switch (state) {
+            case android.telephony.TelephonyManager.CALL_STATE_RINGING:
+            case android.telephony.TelephonyManager.CALL_STATE_OFFHOOK:
                 if (currentlyPlaying) {
-                    resumeOnFocusGain = true;
-                    Log.d(TAG, "Audio focus lost transiently, pausing playback");
+                    pausedByPhoneCall = true;
+                    Log.d(TAG, "Phone call detected, pausing playback");
                     notifyJsMediaAction("pause");
                 }
                 break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                Log.d(TAG, "Audio focus lost transiently (can duck), lowering volume");
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS:
-                Log.d(TAG, "Audio focus lost permanently, pausing and abandoning");
-                resumeOnFocusGain = false;
-                currentlyPlaying = false;
-                notifyJsMediaAction("pause");
-                abandonAudioFocus();
-                break;
-            case AudioManager.AUDIOFOCUS_GAIN:
-                if (resumeOnFocusGain) {
-                    resumeOnFocusGain = false;
-                    Log.d(TAG, "Audio focus regained, resuming playback");
+            case android.telephony.TelephonyManager.CALL_STATE_IDLE:
+                if (pausedByPhoneCall) {
+                    pausedByPhoneCall = false;
+                    Log.d(TAG, "Phone call ended, resuming playback");
                     notifyJsMediaAction("play");
                 }
                 break;
-        }
-    };
-
-    private void requestAudioFocus() {
-        if (audioManager == null) {
-            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        }
-        if (audioManager == null) return;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build();
-            audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                    .setAudioAttributes(audioAttributes)
-                    .setOnAudioFocusChangeListener(audioFocusChangeListener)
-                    .build();
-            int result = audioManager.requestAudioFocus(audioFocusRequest);
-            Log.d(TAG, "requestAudioFocus result: " + result);
-        }
-    }
-
-    private void abandonAudioFocus() {
-        if (audioManager != null && audioFocusRequest != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioManager.abandonAudioFocusRequest(audioFocusRequest);
-            Log.d(TAG, "Audio focus abandoned");
         }
     }
 
@@ -238,6 +218,12 @@ public class AudioForegroundService extends Service {
         });
 
         mediaSession.setActive(true);
+
+        try {
+            registerPhoneCallListener();
+        } catch (Throwable t) {
+            Log.w(TAG, "Failed to register phone call listener", t);
+        }
 
         PlaybackStateCompat initialState = new PlaybackStateCompat.Builder()
             .setActions(
@@ -454,13 +440,7 @@ public class AudioForegroundService extends Service {
         long positionMs = intent.getLongExtra("positionMs", 0);
 
         if (isPlaying != currentlyPlaying) {
-            if (isPlaying) {
-                currentlyPlaying = true;
-                requestAudioFocus();
-            } else {
-                currentlyPlaying = false;
-                abandonAudioFocus();
-            }
+            currentlyPlaying = isPlaying;
             ensureNativeAudioTrack(isPlaying);
         }
 
@@ -688,7 +668,6 @@ public class AudioForegroundService extends Service {
 
     @Override
     public void onDestroy() {
-        abandonAudioFocus();
         if (mediaSession != null) {
             mediaSession.setActive(false);
             mediaSession.release();
