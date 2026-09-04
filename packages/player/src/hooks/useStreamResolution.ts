@@ -4,7 +4,6 @@ import type { QueueItem } from '@nuclearplayer/model';
 
 import { streamResolution } from '../services/streamResolution';
 import { useQueueStore } from '../stores/queueStore';
-import { useSoundStore } from '../stores/soundStore';
 import { useStreamRecovery } from './useStreamRecovery';
 
 const buildResolutionKey = (item: QueueItem): string => {
@@ -35,16 +34,7 @@ export const useStreamResolution = (): void => {
       }
       resolutionKeyRef.current = resolutionKey;
 
-      if (currentItem.status === 'loading') {
-        return;
-      }
-
-      // Only skip if the exact SAME item is already actively playing
-      if (
-        isSameItem &&
-        currentItem.status === 'success' &&
-        useSoundStore.getState().status === 'playing'
-      ) {
+      if (currentItem.status === 'loading' || currentItem.status === 'success') {
         return;
       }
 
