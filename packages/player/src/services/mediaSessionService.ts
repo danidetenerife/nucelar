@@ -49,15 +49,20 @@ export const initMediaSessionService = () => {
     }
   }
 
+  let lastSentItemId: string | null = null;
+
   useQueueStore.subscribe((state) => {
     const currentItem = state.getCurrentItem();
     if (!currentItem) {
-      console.log('[mediaSessionService] queue subscribe fired but no currentItem');
       return;
     }
 
+    if (currentItem.id === lastSentItemId) {
+      return;
+    }
+    lastSentItemId = currentItem.id;
+
     const track = currentItem.track;
-    console.log('[mediaSessionService] currentItem changed, track.title=', track?.title);
     const artwork = pickArtwork(track.artwork, 'thumbnail', 512);
     const artist = track.artists?.map((artistCredit) => artistCredit.name).join(', ') || '';
     const albumTitle = track.album?.title || '';
@@ -87,19 +92,13 @@ export const initMediaSessionService = () => {
     const durationMs = track.durationMs;
 
     if (isCapacitorEnvironment()) {
-      console.log('[mediaSessionService] calling NativeMediaSessionPlugin.updateMetadata', {
-        title: track.title,
-        artist,
-      });
       NativeMediaSessionPlugin.updateMetadata({
         title: track.title,
         artist,
         album: albumTitle,
         artworkUrl,
         durationMs,
-      })
-        .then(() => console.log('[mediaSessionService] updateMetadata resolved OK'))
-        .catch((err) => console.error('[mediaSessionService] updateMetadata FAILED', err));
+      }).catch((err) => console.error('[mediaSessionService] updateMetadata FAILED', err));
     }
   });
 

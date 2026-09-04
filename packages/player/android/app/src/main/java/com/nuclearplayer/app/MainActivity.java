@@ -66,8 +66,15 @@ public class MainActivity extends BridgeActivity {
 
     private void requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            java.util.List<String> needed = new java.util.ArrayList<>();
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+                needed.add(android.Manifest.permission.POST_NOTIFICATIONS);
+            }
+            if (checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                needed.add(android.Manifest.permission.READ_PHONE_STATE);
+            }
+            if (!needed.isEmpty()) {
+                requestPermissions(needed.toArray(new String[0]), 101);
             }
         }
     }

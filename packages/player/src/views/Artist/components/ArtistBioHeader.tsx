@@ -52,33 +52,33 @@ export const ArtistBioHeader: FC<ArtistBioHeaderProps> = ({
   const avatar = pickArtwork(artist.artwork, 'avatar', AVATAR_SIZE_PX);
 
   return (
-    <div className="border-border bg-primary shadow-shadow relative m-4 overflow-hidden rounded-md border-(length:--border-width) p-6 md:p-8">
+    <div className="border-border bg-primary shadow-shadow relative m-4 overflow-hidden rounded-md border-(length:--border-width) p-3 md:p-8">
       <ConnectedFavoriteButton
         type="artist"
         source={{ provider: providerId, id: artistId }}
         data={{ name: artist.name, artwork: artist.artwork }}
-        className="bg-background border-border absolute top-4 right-4 z-10 rounded-md border-(length:--border-width)"
+        className="bg-background border-border absolute top-3 right-3 z-10 rounded-md border-(length:--border-width) md:top-4 md:right-4"
         data-testid="artist-favorite-button"
       />
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 md:gap-6">
         {avatar && (
           <img
-            className="border-border shadow-shadow h-24 w-24 shrink-0 rounded-full border-(length:--border-width) object-cover md:h-36 md:w-36"
+            className="border-border shadow-shadow h-14 w-14 shrink-0 rounded-full border-(length:--border-width) object-cover md:h-36 md:w-36"
             src={avatar.url}
             alt={`${artist.name} avatar`}
           />
         )}
-        <div className="flex min-w-0 flex-col gap-2">
-          <h1 className="font-heading truncate text-3xl font-extrabold tracking-tight md:text-6xl">
+        <div className="flex min-w-0 flex-col gap-0.5 md:gap-2 pr-8 md:pr-0">
+          <h1 className="font-heading text-xl font-extrabold leading-tight tracking-tight md:truncate md:text-6xl">
             {artist.name}
           </h1>
           {artist.disambiguation && (
-            <span className="text-foreground-secondary truncate text-base">
+            <span className="text-foreground-secondary truncate text-sm md:text-base">
               {artist.disambiguation}
             </span>
           )}
           {artist.tags && artist.tags.length > 0 && (
-            <div className="mt-1 flex flex-wrap gap-2">
+            <div className="mt-1 hidden flex-wrap gap-2 md:flex">
               {artist.tags.map((tag) => (
                 <span
                   key={tag}

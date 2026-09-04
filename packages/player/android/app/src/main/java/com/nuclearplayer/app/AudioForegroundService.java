@@ -20,8 +20,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 import android.media.AudioAttributes;
-import android.media.AudioFocusRequest;
-import android.media.AudioManager;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
@@ -33,11 +31,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.content.Context;
-import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AudioForegroundService extends Service {
     private static final String TAG = "AudioForegroundService";
@@ -60,13 +55,19 @@ public class AudioForegroundService extends Service {
     private long currentDurationMs = 0;
     private final ExecutorService artworkExecutor = Executors.newSingleThreadExecutor();
 
-    private AudioManager audioManager;
     private boolean currentlyPlaying = false;
     private android.telephony.TelephonyManager telephonyManager;
     private boolean pausedByPhoneCall = false;
+    private boolean phoneCallListenerRegistered = false;
 
     @SuppressWarnings("deprecation")
     private void registerPhoneCallListener() {
+        if (phoneCallListenerRegistered) return;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
+            checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "READ_PHONE_STATE not granted yet, skipping phone call listener");
+            return;
+        }
         telephonyManager = (android.telephony.TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         if (telephonyManager == null) return;
 
@@ -79,6 +80,8 @@ public class AudioForegroundService extends Service {
             },
             android.telephony.PhoneStateListener.LISTEN_CALL_STATE
         );
+        phoneCallListenerRegistered = true;
+        Log.i(TAG, "Phone call listener registered successfully");
     }
 
     private void handleCallState(int state) {
@@ -258,6 +261,11 @@ public class AudioForegroundService extends Service {
         if (intent != null) {
             String action = intent.getAction();
             Log.i(TAG, "onStartCommand action=" + action);
+
+            if (!phoneCallListenerRegistered) {
+                try { registerPhoneCallListener(); } catch (Throwable ignored) {}
+            }
+
             if (ACTION_UPDATE_METADATA.equals(action)) {
                 handleMetadataUpdate(intent);
                 return START_STICKY;
@@ -293,15 +301,27 @@ public class AudioForegroundService extends Service {
         String album = intent.getStringExtra("album");
         String artworkUrl = intent.getStringExtra("artworkUrl");
         long durationMs = intent.getLongExtra("durationMs", 0);
-        Log.i(TAG, "handleMetadataUpdate: title='" + title + "' artist='" + artist
-            + "' album='" + album + "' artworkUrl='" + artworkUrl + "' durationMs=" + durationMs);
+
+        String newTitle = (title != null && !title.trim().isEmpty()) ? title.trim() : currentTitle;
+        String newArtist = (artist != null && !artist.trim().isEmpty()) ? artist.trim() : currentArtist;
+        String newAlbum = (album != null && !album.trim().isEmpty()) ? album.trim() : currentAlbum;
+
+        boolean metadataChanged = !newTitle.equals(currentTitle) || !newArtist.equals(currentArtist)
+            || !newAlbum.equals(currentAlbum) || (durationMs > 0 && durationMs != currentDurationMs);
+
+        if (!metadataChanged && (artworkUrl == null || artworkUrl.equals(currentArtworkUrl))) {
+            return;
+        }
+
+        Log.i(TAG, "handleMetadataUpdate: title='" + newTitle + "' artist='" + newArtist
+            + "' album='" + newAlbum + "' durationMs=" + durationMs);
+
+        currentTitle = newTitle;
+        currentArtist = newArtist;
+        currentAlbum = newAlbum;
         if (durationMs > 0) {
             currentDurationMs = durationMs;
         }
-
-        if (title != null && !title.trim().isEmpty()) currentTitle = title.trim();
-        if (artist != null && !artist.trim().isEmpty()) currentArtist = artist.trim();
-        if (album != null && !album.trim().isEmpty()) currentAlbum = album.trim();
 
         MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentTitle)
@@ -439,7 +459,8 @@ public class AudioForegroundService extends Service {
         boolean isPlaying = intent.getBooleanExtra("isPlaying", false);
         long positionMs = intent.getLongExtra("positionMs", 0);
 
-        if (isPlaying != currentlyPlaying) {
+        boolean stateChanged = isPlaying != currentlyPlaying;
+        if (stateChanged) {
             currentlyPlaying = isPlaying;
             ensureNativeAudioTrack(isPlaying);
         }
@@ -461,16 +482,18 @@ public class AudioForegroundService extends Service {
 
         mediaSession.setPlaybackState(playbackState);
 
-        MediaMetadataCompat metadata = mediaSession.getController().getMetadata();
-        String title = "";
-        String artist = "";
-        if (metadata != null) {
-            CharSequence t = metadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE);
-            CharSequence a = metadata.getText(MediaMetadataCompat.METADATA_KEY_ARTIST);
-            if (t != null) title = t.toString();
-            if (a != null) artist = a.toString();
+        if (stateChanged) {
+            MediaMetadataCompat metadata = mediaSession.getController().getMetadata();
+            String title = "";
+            String artist = "";
+            if (metadata != null) {
+                CharSequence t = metadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE);
+                CharSequence a = metadata.getText(MediaMetadataCompat.METADATA_KEY_ARTIST);
+                if (t != null) title = t.toString();
+                if (a != null) artist = a.toString();
+            }
+            updateNotification(title, artist);
         }
-        updateNotification(title, artist);
     }
 
     private void handlePositionUpdate(Intent intent) {
@@ -666,8 +689,15 @@ public class AudioForegroundService extends Service {
         return binder;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onDestroy() {
+        ensureNativeAudioTrack(false);
+        if (phoneCallListenerRegistered && telephonyManager != null) {
+            try {
+                telephonyManager.listen(new android.telephony.PhoneStateListener() {}, android.telephony.PhoneStateListener.LISTEN_NONE);
+            } catch (Throwable ignored) {}
+        }
         if (mediaSession != null) {
             mediaSession.setActive(false);
             mediaSession.release();
