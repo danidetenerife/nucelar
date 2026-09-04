@@ -1,3 +1,5 @@
+import { produce } from 'immer';
+
 import type { ArtworkSet, QueueItem, Track } from '@nuclearplayer/model';
 
 import {
@@ -66,13 +68,14 @@ export const resolveArtworkForTrack = async (
 export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
   const artwork = await resolveArtworkForTrack(item.track);
   if (artwork) {
-    const currentItem = useQueueStore.getState().getItemById(item.id);
-    if (!currentItem) {
-      return;
-    }
-    useQueueStore.getState().updateItemState(item.id, {
-      track: { ...currentItem.track, artwork },
-    });
+    useQueueStore.setState(
+      produce((state: { items: QueueItem[] }) => {
+        const target = state.items.find((queueItem) => queueItem.id === item.id);
+        if (target) {
+          target.track.artwork = artwork;
+        }
+      }),
+    );
   }
 };
 
