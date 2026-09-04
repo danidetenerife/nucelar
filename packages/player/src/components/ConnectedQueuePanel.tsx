@@ -25,7 +25,7 @@ export const ConnectedQueuePanel: FC<ConnectedQueuePanelProps> = ({
 
   useEffect(() => {
     enrichTracksInQueue();
-  }, [queue.items]);
+  }, [queue.items.length]);
 
   const handleReorder = (fromIndex: number, toIndex: number) => {
     actions.reorder(fromIndex, toIndex);
