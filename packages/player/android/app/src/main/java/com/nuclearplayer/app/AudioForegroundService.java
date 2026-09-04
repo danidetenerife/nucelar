@@ -304,7 +304,8 @@ public class AudioForegroundService extends Service {
 
         String newTitle = (title != null && !title.trim().isEmpty()) ? title.trim() : currentTitle;
         String newArtist = (artist != null && !artist.trim().isEmpty()) ? artist.trim() : currentArtist;
-        String newAlbum = (album != null && !album.trim().isEmpty()) ? album.trim() : currentAlbum;
+        String rawAlbum = (album != null && !album.trim().isEmpty()) ? album.trim() : "";
+        String newAlbum = rawAlbum.isEmpty() ? newArtist : rawAlbum;
 
         boolean metadataChanged = !newTitle.equals(currentTitle) || !newArtist.equals(currentArtist)
             || !newAlbum.equals(currentAlbum) || (durationMs > 0 && durationMs != currentDurationMs);

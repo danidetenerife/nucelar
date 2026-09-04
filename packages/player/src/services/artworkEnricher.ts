@@ -66,8 +66,12 @@ export const resolveArtworkForTrack = async (
 export const enrichTrackArtwork = async (item: QueueItem): Promise<void> => {
   const artwork = await resolveArtworkForTrack(item.track);
   if (artwork) {
+    const currentItem = useQueueStore.getState().getItemById(item.id);
+    if (!currentItem) {
+      return;
+    }
     useQueueStore.getState().updateItemState(item.id, {
-      track: { ...item.track, artwork },
+      track: { ...currentItem.track, artwork },
     });
   }
 };
