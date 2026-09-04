@@ -52,7 +52,7 @@ export const ArtistBioHeader: FC<ArtistBioHeaderProps> = ({
   const avatar = pickArtwork(artist.artwork, 'avatar', AVATAR_SIZE_PX);
 
   return (
-    <div className="border-border bg-primary shadow-shadow relative m-4 overflow-hidden rounded-md border-(length:--border-width) p-3 md:p-8">
+    <div className="border-border bg-primary shadow-shadow relative m-4 rounded-md border-(length:--border-width) p-3 md:overflow-hidden md:p-8">
       <ConnectedFavoriteButton
         type="artist"
         source={{ provider: providerId, id: artistId }}
