@@ -55,9 +55,14 @@ export const usePlaybackStatus = (
   }, [status, srcUrl, audioRef, onError]);
 
   // Keep playback running through screen off, backgrounding, and foregrounding
+  // On Capacitor (Android), the native AudioForegroundService handles background
+  // playback. The handleUnintendedPause listener would fight Chromium's AudioFocus
+  // by re-calling audio.play() after every native pause, creating an infinite loop.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+
+    const isCapacitor = typeof (window as unknown as Record<string, unknown>).Capacitor !== 'undefined';
 
     const handleUnintendedPause = () => {
       if (status === 'playing') {
@@ -76,13 +81,17 @@ export const usePlaybackStatus = (
       }
     };
 
-    audio.addEventListener('pause', handleUnintendedPause);
+    if (!isCapacitor) {
+      audio.addEventListener('pause', handleUnintendedPause);
+    }
     document.addEventListener('visibilitychange', handleKeepPlaying);
     window.addEventListener('blur', handleKeepPlaying);
     window.addEventListener('focus', handleKeepPlaying);
 
     return () => {
-      audio.removeEventListener('pause', handleUnintendedPause);
+      if (!isCapacitor) {
+        audio.removeEventListener('pause', handleUnintendedPause);
+      }
       document.removeEventListener('visibilitychange', handleKeepPlaying);
       window.removeEventListener('blur', handleKeepPlaying);
       window.removeEventListener('focus', handleKeepPlaying);

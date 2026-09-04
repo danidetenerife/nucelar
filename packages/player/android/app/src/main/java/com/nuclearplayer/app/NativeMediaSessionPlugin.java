@@ -217,6 +217,31 @@ public class NativeMediaSessionPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void updatePosition(PluginCall call) {
+        long positionMs = 0;
+        Double positionDouble = call.getDouble("positionMs");
+        if (positionDouble != null) {
+            positionMs = positionDouble.longValue();
+        }
+
+        Intent intent = new Intent(getContext(), AudioForegroundService.class);
+        intent.setAction(AudioForegroundService.ACTION_UPDATE_POSITION);
+        intent.putExtra("positionMs", positionMs);
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                getContext().startForegroundService(intent);
+            } else {
+                getContext().startService(intent);
+            }
+        } catch (Throwable t) {
+            // ignore
+        }
+
+        call.resolve();
+    }
+
+    @PluginMethod
     public void playStream(PluginCall call) {
         String url = call.getString("url", "");
         Double posDouble = call.getDouble("positionMs");

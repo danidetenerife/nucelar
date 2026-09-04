@@ -23,6 +23,9 @@ type NativeMediaSessionPluginInterface = {
     isPlaying: boolean;
     positionMs: number;
   }): Promise<void>;
+  updatePosition(options: {
+    positionMs: number;
+  }): Promise<void>;
   playStream(options: {
     url: string;
     positionMs?: number;
@@ -51,6 +54,7 @@ const NativeMediaSessionPlugin =
       web: {
         updateMetadata: () => Promise.resolve(),
         updatePlaybackState: () => Promise.resolve(),
+        updatePosition: () => Promise.resolve(),
         playStream: () => Promise.resolve(),
         pauseStream: () => Promise.resolve(),
         resumeStream: () => Promise.resolve(),

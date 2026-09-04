@@ -122,13 +122,20 @@ export const initMediaSessionService = () => {
     }
 
     if (isCapacitorEnvironment()) {
-      if (statusChanged || seekDelta > 3 || timeDelta > 15000) {
+      if (statusChanged) {
         lastStatus = state.status;
         lastReportedSeek = state.seek;
         lastReportedTime = now;
 
         NativeMediaSessionPlugin.updatePlaybackState({
           isPlaying,
+          positionMs: secondsToMs(state.seek),
+        }).catch(() => {});
+      } else if (seekDelta > 3 || timeDelta > 15000) {
+        lastReportedSeek = state.seek;
+        lastReportedTime = now;
+
+        NativeMediaSessionPlugin.updatePosition({
           positionMs: secondsToMs(state.seek),
         }).catch(() => {});
       }

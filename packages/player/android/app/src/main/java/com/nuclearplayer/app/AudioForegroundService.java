@@ -44,6 +44,7 @@ public class AudioForegroundService extends Service {
     public static final String CHANNEL_ID = "aurora_media_playback_v5";
     public static final String ACTION_UPDATE_METADATA = "com.nuclearplayer.UPDATE_METADATA";
     public static final String ACTION_UPDATE_PLAYBACK_STATE = "com.nuclearplayer.UPDATE_PLAYBACK_STATE";
+    public static final String ACTION_UPDATE_POSITION = "com.nuclearplayer.UPDATE_POSITION";
 
     private static final int NOTIFICATION_ID = 1;
 
@@ -67,12 +68,14 @@ public class AudioForegroundService extends Service {
     private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = (focusChange) -> {
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 if (currentlyPlaying) {
                     resumeOnFocusGain = true;
                     Log.d(TAG, "Audio focus lost transiently, pausing playback");
                     notifyJsMediaAction("pause");
                 }
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                Log.d(TAG, "Audio focus lost transiently (can duck), lowering volume");
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 Log.d(TAG, "Audio focus lost permanently, pausing and abandoning");
@@ -275,6 +278,9 @@ public class AudioForegroundService extends Service {
             } else if (ACTION_UPDATE_PLAYBACK_STATE.equals(action)) {
                 handlePlaybackStateUpdate(intent);
                 return START_STICKY;
+            } else if (ACTION_UPDATE_POSITION.equals(action)) {
+                handlePositionUpdate(intent);
+                return START_STICKY;
             } else if ("com.nuclearplayer.ACTION_PREVIOUS".equals(action)) {
                 notifyJsMediaAction("previoustrack");
                 return START_STICKY;
@@ -447,15 +453,16 @@ public class AudioForegroundService extends Service {
         boolean isPlaying = intent.getBooleanExtra("isPlaying", false);
         long positionMs = intent.getLongExtra("positionMs", 0);
 
-        if (isPlaying) {
-            currentlyPlaying = true;
-            requestAudioFocus();
-        } else {
-            currentlyPlaying = false;
-            abandonAudioFocus();
+        if (isPlaying != currentlyPlaying) {
+            if (isPlaying) {
+                currentlyPlaying = true;
+                requestAudioFocus();
+            } else {
+                currentlyPlaying = false;
+                abandonAudioFocus();
+            }
+            ensureNativeAudioTrack(isPlaying);
         }
-
-        ensureNativeAudioTrack(isPlaying);
 
         int state = isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
 
@@ -484,6 +491,27 @@ public class AudioForegroundService extends Service {
             if (a != null) artist = a.toString();
         }
         updateNotification(title, artist);
+    }
+
+    private void handlePositionUpdate(Intent intent) {
+        long positionMs = intent.getLongExtra("positionMs", 0);
+
+        int state = currentlyPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
+
+        PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
+            .setActions(
+                PlaybackStateCompat.ACTION_PLAY |
+                PlaybackStateCompat.ACTION_PAUSE |
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                PlaybackStateCompat.ACTION_SEEK_TO |
+                PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                PlaybackStateCompat.ACTION_STOP
+            )
+            .setState(state, positionMs, currentlyPlaying ? 1.0f : 0f)
+            .build();
+
+        mediaSession.setPlaybackState(playbackState);
     }
 
     public void setOptimisticPlaybackState(boolean isPlaying) {
