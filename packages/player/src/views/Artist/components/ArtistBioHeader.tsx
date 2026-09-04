@@ -52,7 +52,7 @@ export const ArtistBioHeader: FC<ArtistBioHeaderProps> = ({
   const avatar = pickArtwork(artist.artwork, 'avatar', AVATAR_SIZE_PX);
 
   return (
-    <div className="border-border bg-primary shadow-shadow relative m-4 overflow-hidden rounded-md border-(length:--border-width) p-4 md:p-6">
+    <div className="border-border bg-primary shadow-shadow relative m-4 overflow-hidden rounded-md border-(length:--border-width) p-6 md:p-8">
       <ConnectedFavoriteButton
         type="artist"
         source={{ provider: providerId, id: artistId }}
@@ -60,37 +60,37 @@ export const ArtistBioHeader: FC<ArtistBioHeaderProps> = ({
         className="bg-background border-border absolute top-4 right-4 z-10 rounded-md border-(length:--border-width)"
         data-testid="artist-favorite-button"
       />
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
         {avatar && (
           <img
-            className="border-border shadow-shadow h-16 w-16 shrink-0 rounded-full border-(length:--border-width) object-cover md:h-24 md:w-24"
+            className="border-border shadow-shadow h-24 w-24 shrink-0 rounded-full border-(length:--border-width) object-cover md:h-36 md:w-36"
             src={avatar.url}
             alt={`${artist.name} avatar`}
           />
         )}
-        <div className="flex min-w-0 flex-col gap-1">
-          <h1 className="font-heading truncate text-2xl font-extrabold tracking-tight md:text-5xl">
+        <div className="flex min-w-0 flex-col gap-2">
+          <h1 className="font-heading truncate text-3xl font-extrabold tracking-tight md:text-6xl">
             {artist.name}
           </h1>
           {artist.disambiguation && (
-            <span className="text-foreground-secondary truncate text-sm">
+            <span className="text-foreground-secondary truncate text-base">
               {artist.disambiguation}
             </span>
           )}
+          {artist.tags && artist.tags.length > 0 && (
+            <div className="mt-1 flex flex-wrap gap-2">
+              {artist.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="border-border bg-background rounded-md border px-2 py-0.5 text-sm font-bold"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-      {artist.tags && artist.tags.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {artist.tags.map((tag) => (
-            <span
-              key={tag}
-              className="border-border bg-background rounded-md border px-2 py-0.5 text-sm font-bold"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
