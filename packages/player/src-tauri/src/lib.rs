@@ -8,6 +8,7 @@ pub mod net;
 pub mod pagination;
 mod setup;
 pub mod stream_server;
+pub mod sync_server;
 pub mod ytdlp;
 pub mod ytdlp_setup;
 
@@ -53,7 +54,8 @@ fn specta_builder() -> tauri_specta::Builder<tauri::Wry> {
         history::commands::history_first_play_at,
         history::commands::history_top_artists,
         history::commands::history_top_albums,
-        history::commands::history_top_tracks
+        history::commands::history_top_tracks,
+        sync_server::sync_server_info
     ])
 }
 
@@ -96,6 +98,7 @@ pub fn run() {
             logging::mark_startup_complete();
             bridge::init_bridge(app.handle().clone());
             stream_server::init_stream_server(app.handle().clone());
+            sync_server::init_sync_server(app.handle());
             history::init_history(app.handle().clone());
 
             let ytdlp_app_handle = app.handle().clone();
@@ -108,6 +111,11 @@ pub fn run() {
 
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            if let tauri::RunEvent::ExitRequested { .. } = event {
+                sync_server::stop_sync_server(app);
+            }
+        });
 }

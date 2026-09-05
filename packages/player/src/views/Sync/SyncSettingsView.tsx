@@ -6,8 +6,19 @@ import { Badge, Button, Input, Toggle } from '@nuclearplayer/ui';
 
 import { QrScannerModal } from '../../components/QrScannerModal';
 import { p2pSyncService } from '../../services/p2pSyncService';
+import { DesktopSyncView } from './DesktopSyncView';
+
+const isTauri = typeof (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__ !== 'undefined';
 
 export const SyncSettingsView: FC = () => {
+  if (isTauri) {
+    return <DesktopSyncView />;
+  }
+
+  return <MobileSyncView />;
+};
+
+const MobileSyncView: FC = () => {
   const [serverUrl, setServerUrl] = useState('');
   const [inputUrl, setInputUrl] = useState('');
   const [isOnline, setIsOnline] = useState<boolean | null>(null);

@@ -78,7 +78,7 @@ if (-not (Test-Path -LiteralPath $SigningKeyPath) -or -not (Test-Path -LiteralPa
 $env:TAURI_SIGNING_PRIVATE_KEY = [System.IO.File]::ReadAllText($SigningKeyPath).Trim()
 $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = [System.IO.File]::ReadAllText($SigningPasswordPath).Trim()
 Set-Location "$Root\packages\player"
-npx pnpm tauri build
+pnpm tauri build
 if ($LASTEXITCODE -ne 0) {
     throw "La compilación firmada de escritorio ha fallado."
 }
