@@ -1,6 +1,6 @@
 {
     "name":  "@nuclearplayer/player",
-    "version":  "1.47.50",
+    "version":  "1.47.51",
     "private":  true,
     "type":  "module",
     "scripts":  {

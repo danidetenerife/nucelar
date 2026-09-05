@@ -122,12 +122,14 @@ function getFullSyncPayload() {
   const tracks = rawFavs['favorites.tracks'] || [];
   const artists = rawFavs['favorites.artists'] || [];
   const albums = rawFavs['favorites.albums'] || [];
+  const deletedKeys = rawFavs['favorites.deletedKeys'] || {};
 
   return {
     favorites: {
       tracks,
       artists,
       albums,
+      deletedKeys,
     },
     settings: rawSettings,
     plugins: rawPlugins,
@@ -199,6 +201,15 @@ const server = http.createServer((req, res) => {
           }
           if (pushData.favorites.albums) {
             currentFavs['favorites.albums'] = pushData.favorites.albums;
+          }
+          if (pushData.favorites.deletedKeys) {
+            const existingDeleted = currentFavs['favorites.deletedKeys'] || {};
+            for (const [key, timestamp] of Object.entries(pushData.favorites.deletedKeys)) {
+              if (!existingDeleted[key] || existingDeleted[key] < timestamp) {
+                existingDeleted[key] = timestamp;
+              }
+            }
+            currentFavs['favorites.deletedKeys'] = existingDeleted;
           }
           writeJsonFile('favorites.json', currentFavs);
         }
