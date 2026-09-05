@@ -1,4 +1,5 @@
 import { produce } from 'immer';
+import debounce from 'lodash-es/debounce';
 import partition from 'lodash-es/partition';
 import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
@@ -113,12 +114,16 @@ const saveToDisk = async (): Promise<void> => {
   }
 };
 
+const debouncedSaveToDisk = debounce(() => {
+  void saveToDisk();
+}, 2000, { leading: false, trailing: true });
+
 const withPersistence = <T extends unknown[]>(
   fn: (...args: T) => void,
 ): ((...args: T) => void) => {
   return (...args: T) => {
     fn(...args);
-    void saveToDisk();
+    debouncedSaveToDisk();
   };
 };
 
@@ -340,6 +345,9 @@ export const useQueueStore = create<QueueStore>((set, get) => ({
       useSoundStore.getState().stop();
       set({ currentIndex: nextIndex });
       Logger.queue.debug(`Moved to next track (index ${nextIndex})`);
+    } else {
+      useSoundStore.getState().stop();
+      Logger.queue.debug('Reached end of queue, stopping playback');
     }
   }),
 

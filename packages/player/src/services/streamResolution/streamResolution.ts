@@ -149,7 +149,7 @@ export class StreamResolution {
         const previousItem = getItemById(this.activeItemId);
         if (previousItem) {
           updateItemState(this.activeItemId, {
-            status: undefined,
+            status: 'idle',
             error: undefined,
             track: stripResolutionState(previousItem.track),
           });

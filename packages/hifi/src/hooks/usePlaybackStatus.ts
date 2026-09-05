@@ -63,11 +63,12 @@ export const usePlaybackStatus = (
     if (!audio) return;
 
     const isCapacitor = typeof (window as unknown as Record<string, unknown>).Capacitor !== 'undefined';
+    let resumeTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
     const handleUnintendedPause = () => {
       if (status === 'playing') {
         audio.play().catch(() => {});
-        setTimeout(() => {
+        resumeTimeoutId = setTimeout(() => {
           if (status === 'playing' && audio.paused) {
             audio.play().catch(() => {});
           }
@@ -89,6 +90,9 @@ export const usePlaybackStatus = (
     window.addEventListener('focus', handleKeepPlaying);
 
     return () => {
+      if (resumeTimeoutId !== undefined) {
+        clearTimeout(resumeTimeoutId);
+      }
       if (!isCapacitor) {
         audio.removeEventListener('pause', handleUnintendedPause);
       }

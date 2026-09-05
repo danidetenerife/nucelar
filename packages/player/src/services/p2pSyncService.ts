@@ -127,6 +127,7 @@ async function safeFetchJson<T>(
 export class P2PSyncService {
   private syncIntervalTimer: number | null = null;
   private eventSource: EventSource | null = null;
+  private sseDebounceTimer: number | null = null;
   private isSyncing = false;
   private isApplyingRemote = false;
   private pushDebounceTimer: number | null = null;
@@ -637,19 +638,21 @@ export class P2PSyncService {
       return;
     }
 
-    let sseDebounceTimer: number | null = null;
-
     try {
       this.eventSource = new EventSource(`${serverUrl}/api/sync/events`);
       this.eventSource.addEventListener('sync:update', () => {
-        if (sseDebounceTimer) clearTimeout(sseDebounceTimer);
-        sseDebounceTimer = window.setTimeout(() => {
+        if (this.sseDebounceTimer) clearTimeout(this.sseDebounceTimer);
+        this.sseDebounceTimer = window.setTimeout(() => {
           if (!this.isSyncing) {
             void this.syncNow();
           }
         }, 3000);
       });
       this.eventSource.onerror = () => {
+        if (this.sseDebounceTimer) {
+          clearTimeout(this.sseDebounceTimer);
+          this.sseDebounceTimer = null;
+        }
         if (this.eventSource) {
           this.eventSource.close();
           this.eventSource = null;
@@ -679,6 +682,10 @@ export class P2PSyncService {
     if (this.syncIntervalTimer) {
       clearInterval(this.syncIntervalTimer);
       this.syncIntervalTimer = null;
+    }
+    if (this.sseDebounceTimer) {
+      clearTimeout(this.sseDebounceTimer);
+      this.sseDebounceTimer = null;
     }
     if (this.eventSource) {
       this.eventSource.close();

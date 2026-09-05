@@ -87,7 +87,7 @@ export const SoundProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <>
-      {src && status !== 'stopped' && (
+      {src && (
         <Sound
           src={src}
           status={status}
